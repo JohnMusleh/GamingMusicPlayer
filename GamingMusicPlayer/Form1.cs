@@ -187,6 +187,21 @@ namespace GamingMusicPlayer
         {
             if (!mp.Playing)
             {
+                if(nameListBox.SelectedIndex != mp.SelectedTrackIndex)
+                {
+                    mp.stop();
+                    if (!mp.selectTrack(nameListBox.SelectedIndex))
+                    {
+                        log(mp.ErrorMsg);
+                        if (nameListBox.Items.Count > 0)
+                        {
+                            nameListBox.Items.RemoveAt(mp.SelectedTrackIndex);
+                            lengthListBox.Items.RemoveAt(mp.SelectedTrackIndex);
+                        }
+                        mp.removeTrack();
+                        return;
+                    }
+                }
                 log("mp before selected index=" + mp.SelectedTrackIndex);
                 if (nameListBox.SelectedItems.Count > 0)
                 {

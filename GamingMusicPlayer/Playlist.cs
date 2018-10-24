@@ -100,7 +100,7 @@ namespace GamingMusicPlayer
             if(tracklist.Count == 0)
                 return null;
             selected_index++;
-            if (selected_index >= play_order.Count)
+            if (selected_index >= tracklist.Count)
                 selected_index = 0;
             return tracklist.ElementAt(play_order.ElementAt(selected_index));
         }
@@ -125,18 +125,17 @@ namespace GamingMusicPlayer
         { 
             if (play_order.Count == 0)
                 return false;
-            int temp = play_order.Count - 1;
-            tracklist.RemoveAt(play_order.ElementAt(selected_index));
-            play_order.RemoveAt(selected_index);
-            if (selected_index == temp)//if removed the last element of play_order, update selected_index
-            {
-                if (selected_index > 0)
-                {
-                    selected_index--;
-                }
-            }
-            for(int i=0; i<play_order.Count; i++)
+            int track_index = play_order.ElementAt(selected_index);
+            Console.WriteLine("attempting to remove track index:" + track_index);
+            selected_index = 0;
+            for (int i = 0; i < play_order.Count; i++)
                 play_order[i] = i;
+            tracklist.RemoveAt(track_index);
+            play_order.RemoveAt(track_index);
+            for (int i = 0; i < play_order.Count; i++)
+                play_order[i] = i;
+
+
             if (shuffled)
                 shuffle();
             return true;
@@ -168,13 +167,10 @@ namespace GamingMusicPlayer
 
         public bool deshuffle()
         {
-            if (play_order.Count <= 2)
-                return false;
             int track_index = play_order.ElementAt(selected_index); //storing trackindex
             for (int i=0 ;i<play_order.Count; i++)
                 play_order[i] = i;
-            //find the new playing_index in the new list of index's
-            selected_index = play_order.FindIndex(item => item == track_index);
+            selected_index = track_index;
             shuffled = false;
             return true;
         }

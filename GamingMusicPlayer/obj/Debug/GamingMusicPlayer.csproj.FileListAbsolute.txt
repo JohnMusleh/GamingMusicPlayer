@@ -8,3 +8,13 @@ C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_projec
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\gaming_musicplayer\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.csproj.CoreCompileInputs.cache
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\gaming_musicplayer\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.exe
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\gaming_musicplayer\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.pdb
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Debug\GamingMusicPlayer.exe.config
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Debug\GamingMusicPlayer.exe
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Debug\GamingMusicPlayer.pdb
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.csprojAssemblyReference.cache
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.MainForm.resources
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.Properties.Resources.resources
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.csproj.GenerateResource.cache
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.csproj.CoreCompileInputs.cache
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.exe
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.pdb
