@@ -20,6 +20,10 @@ namespace GamingMusicPlayer
         private Thread updateMusicTrackbarThread;
         private Thread trackMouseOnMusicTBarThread;
         private int lastMouseX;//used to track mouse while on track bar
+
+        private KeyboardListener keyboard_listener;
+        private MouseListener mouse_listener;
+
         public MainForm()
         {
             mp = new MusicPlayer();
@@ -34,6 +38,25 @@ namespace GamingMusicPlayer
             txtMusicProgress.Text = "";
             updateMusicTrackbarThread = new Thread(new ThreadStart(updateMusicTrackbar));
             updateMusicTrackbarThread.Start();
+
+            //initializing keyboardlistener hook
+            keyboard_listener = new KeyboardListener();
+            keyboard_listener.HookKeyboard();
+            keyboard_listener.OnKeyPressed += OnKeyPressed;
+            mouse_listener = new MouseListener();
+            mouse_listener.HookMouse();
+            mouse_listener.OnMouseMoved += OnMouseMoved;
+        }
+
+        
+        public void OnKeyPressed(object sender, KeyPressedArgs e)
+        {
+            Console.WriteLine(e.KeyPressed.ToString());
+        }
+
+        public void OnMouseMoved(object sender, GlobalMouseEventArgs e)
+        {
+            Console.WriteLine(e.Position.X + "," + e.Position.Y);
         }
 
         private void updateMusicTrackbar()
@@ -332,6 +355,8 @@ namespace GamingMusicPlayer
         {
             mp.stop();
             running = false;
+            keyboard_listener.UnHookKeyboard();
+            mouse_listener.UnhookMouse();
             Application.Exit();
         }
 
