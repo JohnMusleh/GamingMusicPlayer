@@ -41,11 +41,11 @@
             this.cmdShuffle = new GamingMusicPlayer.CMButton();
             this.cmdLoop = new GamingMusicPlayer.CMButton();
             this.cmdAddSong = new System.Windows.Forms.Button();
-            this.dbgTxtBox = new System.Windows.Forms.RichTextBox();
             this.nameListBox = new System.Windows.Forms.ListBox();
             this.nameLabel = new System.Windows.Forms.Label();
             this.lengthLabel = new System.Windows.Forms.Label();
             this.lengthListBox = new System.Windows.Forms.ListBox();
+            this.cmdLogger = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -207,14 +207,6 @@
             this.cmdAddSong.UseVisualStyleBackColor = true;
             this.cmdAddSong.Click += new System.EventHandler(this.cmdAddSong_Click);
             // 
-            // dbgTxtBox
-            // 
-            this.dbgTxtBox.Location = new System.Drawing.Point(12, 60);
-            this.dbgTxtBox.Name = "dbgTxtBox";
-            this.dbgTxtBox.Size = new System.Drawing.Size(375, 366);
-            this.dbgTxtBox.TabIndex = 9;
-            this.dbgTxtBox.Text = "";
-            // 
             // nameListBox
             // 
             this.nameListBox.FormattingEnabled = true;
@@ -253,17 +245,27 @@
             this.lengthListBox.TabIndex = 11;
             this.lengthListBox.SelectedIndexChanged += new System.EventHandler(this.lengthListBox_SelectedIndexChanged);
             // 
+            // cmdLogger
+            // 
+            this.cmdLogger.Location = new System.Drawing.Point(12, 98);
+            this.cmdLogger.Name = "cmdLogger";
+            this.cmdLogger.Size = new System.Drawing.Size(147, 41);
+            this.cmdLogger.TabIndex = 14;
+            this.cmdLogger.Text = "Show logger";
+            this.cmdLogger.UseVisualStyleBackColor = true;
+            this.cmdLogger.Click += new System.EventHandler(this.cmdLogger_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1174, 633);
+            this.Controls.Add(this.cmdLogger);
             this.Controls.Add(this.lengthLabel);
             this.Controls.Add(this.nameLabel);
             this.Controls.Add(this.lengthListBox);
             this.Controls.Add(this.nameListBox);
-            this.Controls.Add(this.dbgTxtBox);
             this.Controls.Add(this.cmdAddSong);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.cmdRemove);
@@ -290,7 +292,6 @@
         private System.Windows.Forms.Panel panel1;
         private CMButton bottomLeftIcon;
         private System.Windows.Forms.Button cmdAddSong;
-        private System.Windows.Forms.RichTextBox dbgTxtBox;
         private System.Windows.Forms.ListBox nameListBox;
         private System.Windows.Forms.Label nameLabel;
         private System.Windows.Forms.Label lengthLabel;
@@ -298,6 +299,7 @@
         private System.Windows.Forms.TrackBar musicTrackBar;
         private System.Windows.Forms.Label txtMusicProgress;
         private System.Windows.Forms.Label seekLabel;
+        private System.Windows.Forms.Button cmdLogger;
     }
 }
 

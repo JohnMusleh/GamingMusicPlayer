@@ -15,6 +15,7 @@ namespace GamingMusicPlayer
     {
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
+        private const int WM_KEYUP = 0x0101;
         private const int WM_SYSKEYDOWN = 0x0104;
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -69,7 +70,15 @@ namespace GamingMusicPlayer
                 int vkCode = Marshal.ReadInt32(lparam);
                 if (OnKeyPressed != null)
                 {
-                    OnKeyPressed(this, new KeyPressedArgs(KeyInterop.KeyFromVirtualKey(vkCode)));
+                    OnKeyPressed(this, new KeyPressedArgs(KeyInterop.KeyFromVirtualKey(vkCode),true));
+                }
+            }
+            else if (ncode >= 0 && wparam == (IntPtr)WM_KEYUP)
+            {
+                int vkCode = Marshal.ReadInt32(lparam);
+                if (OnKeyPressed != null)
+                {
+                    OnKeyPressed(this, new KeyPressedArgs(KeyInterop.KeyFromVirtualKey(vkCode), false));
                 }
             }
             return CallNextHookEx(hookid, ncode, wparam, lparam);

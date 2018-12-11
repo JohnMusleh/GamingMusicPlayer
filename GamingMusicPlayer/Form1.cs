@@ -23,6 +23,8 @@ namespace GamingMusicPlayer
 
         private KeyboardListener keyboard_listener;
         private MouseListener mouse_listener;
+        private Logger loggerForm;
+        
 
         public MainForm()
         {
@@ -33,12 +35,12 @@ namespace GamingMusicPlayer
             this.lastMouseX = 0;
             InitializeComponent();
             seekLabel.Text = "";
-            dbgTxtBox.ReadOnly = true;
-            dbgTxtBox.Text = "~~* Error Logger *~~";
             txtMusicProgress.Text = "";
             updateMusicTrackbarThread = new Thread(new ThreadStart(updateMusicTrackbar));
             updateMusicTrackbarThread.Start();
 
+            loggerForm = new Logger();
+            
             //initializing keyboardlistener hook
             keyboard_listener = new KeyboardListener();
             keyboard_listener.HookKeyboard();
@@ -51,12 +53,12 @@ namespace GamingMusicPlayer
         
         public void OnKeyPressed(object sender, KeyPressedArgs e)
         {
-            Console.WriteLine(e.KeyPressed.ToString());
+            Console.WriteLine(e.ToString());
         }
 
         public void OnMouseMoved(object sender, GlobalMouseEventArgs e)
         {
-            Console.WriteLine(e.Position.X + "," + e.Position.Y);
+            //Console.WriteLine(e.Position.X + "," + e.Position.Y);
         }
 
         private void updateMusicTrackbar()
@@ -133,7 +135,7 @@ namespace GamingMusicPlayer
 
         private void log(string msg)
         {
-            dbgTxtBox.Text = dbgTxtBox.Text + "\n\n" + msg;
+            loggerForm.log(msg);
         }
 
         private void cmdAddSong_Click(object sender, EventArgs e)
@@ -357,6 +359,7 @@ namespace GamingMusicPlayer
             running = false;
             keyboard_listener.UnHookKeyboard();
             mouse_listener.UnhookMouse();
+            loggerForm.Dispose();
             Application.Exit();
         }
 
@@ -409,5 +412,19 @@ namespace GamingMusicPlayer
             });
         }
 
+        private void cmdLogger_Click(object sender, EventArgs e)
+        {
+            if (loggerForm.LoggerVisible)
+            {
+                loggerForm.hide();
+                cmdLogger.Text = "Show Logger";
+            }
+            else
+            {
+                loggerForm.show();
+                cmdLogger.Text = "Hide Logger";
+            }
+            
+        }
     }
 }

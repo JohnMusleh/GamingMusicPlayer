@@ -102,7 +102,8 @@ namespace GamingMusicPlayer
 
         public bool removeTrack()//removes selected track
         {
-            if (!loaded_playlist.removeTrack()) {
+            if (!loaded_playlist.removeTrack())
+            {
                 error_msg = "removeTrack(): playlist may be empty.";
                 return false;
             }
@@ -162,7 +163,8 @@ namespace GamingMusicPlayer
 
         private bool initPlay() //begin playing selected track
         {
-            if (loaded_playlist.Count == 0) {
+            if (loaded_playlist.Count == 0)
+            {
                 error_msg = "initPlay(): loaded playlist is empty.";
                 return false;
             }
@@ -286,20 +288,20 @@ namespace GamingMusicPlayer
                 error_msg = "getTrackLength(): loaded playlist is empty";
                 return -1;
             }
-            if(loaded_playlist.SelectedTrack.Length <= 0)
+            if (loaded_playlist.SelectedTrack.Length <= 0)
             {
                 mci_command = "status MediaFile length";
                 rflag = MusicFileInfo.mciSendString(mci_command, mci_return, mci_return.Capacity, IntPtr.Zero);
-                if(rflag == 0)
+                if (rflag == 0)
                 {
                     if (mci_return.Length == 0)
                         return 0;
                     try
                     {
-                        int l= int.Parse(mci_return.ToString());
+                        int l = int.Parse(mci_return.ToString());
                         return l;
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         error_msg = "getTrackLength(): return string:" + mci_return.ToString() + "  exception:" + e.Message;
                         return -1;
@@ -318,7 +320,7 @@ namespace GamingMusicPlayer
                 return 0;
             mci_command = "status MediaFile position";
             rflag = MusicFileInfo.mciSendString(mci_command, mci_return, mci_return.Capacity, IntPtr.Zero);
-            if(rflag == 0)
+            if (rflag == 0)
             {
                 if (mci_return.Length == 0)
                     return 0;
@@ -329,7 +331,7 @@ namespace GamingMusicPlayer
                         return SelectedTrack.Length;
                     return c;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     error_msg = "getCurrentPosition(): return string:" + mci_return.ToString() + "  exception:" + e.Message;
                     return -1;
@@ -347,7 +349,7 @@ namespace GamingMusicPlayer
                 error_msg = "setPosition(): desired position out of range";
                 return false;
             }
-                
+
             if (playing)
                 mci_command = "play MediaFile from " + ms.ToString();
             else
@@ -358,7 +360,7 @@ namespace GamingMusicPlayer
             }
 
             rflag = MusicFileInfo.mciSendString(mci_command, mci_return, mci_return.Capacity, IntPtr.Zero);
-            if(rflag == 0)
+            if (rflag == 0)
             {
                 return true;
             }
