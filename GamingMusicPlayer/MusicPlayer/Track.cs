@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace GamingMusicPlayer
 {
     //The track class represents a music track
-    class Track : ICloneable
+    public class Track : ICloneable
     {
 
         private string path;
@@ -54,7 +54,7 @@ namespace GamingMusicPlayer
             }
         }
 
-        public String ErrorMsg
+        public string ErrorMsg
         {
             get
             {
@@ -67,6 +67,21 @@ namespace GamingMusicPlayer
             get
             {
                 return this.length;
+            }
+        }
+
+        public string Format
+        {
+            get
+            {
+                string[] tokens = path.Split('.');
+                string fileType = "NA";
+                if (tokens.Length > 0)
+                {
+                    fileType = tokens[tokens.Length - 1];
+                }
+                fileType = fileType.ToUpper();
+                return fileType;
             }
         }
 

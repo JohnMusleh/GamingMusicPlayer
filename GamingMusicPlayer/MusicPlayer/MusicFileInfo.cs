@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace GamingMusicPlayer
 {
     //static class for the purpose of using mci device functions
-    static class MusicFileInfo
+    public static class MusicFileInfo
     {
         public static string error_msg = "no error";
         [DllImport("winmm.dll")]

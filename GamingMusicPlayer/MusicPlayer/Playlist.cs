@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GamingMusicPlayer
 {
-    class Playlist
+    public class Playlist
     {
         private List<Track> tracklist;
         private List<int> play_order; //list of index's of the tracklist

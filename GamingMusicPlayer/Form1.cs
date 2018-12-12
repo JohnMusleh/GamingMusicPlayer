@@ -21,9 +21,10 @@ namespace GamingMusicPlayer
         private Thread trackMouseOnMusicTBarThread;
         private int lastMouseX;//used to track mouse while on track bar
 
-        private KeyboardListener keyboard_listener;
         private MouseListener mouse_listener;
+
         private Logger loggerForm;
+        private Grapher grapherForm;
         
 
         public MainForm()
@@ -40,13 +41,10 @@ namespace GamingMusicPlayer
             updateMusicTrackbarThread.Start();
 
             loggerForm = new Logger();
-            
-            //initializing keyboardlistener hook
-            keyboard_listener = new KeyboardListener();
-            keyboard_listener.HookKeyboard();
-            keyboard_listener.OnKeyPressed += OnKeyPressed;
+            grapherForm = new Grapher();
+
             mouse_listener = new MouseListener();
-            mouse_listener.HookMouse();
+            //mouse_listener.HookMouse();
             mouse_listener.OnMouseMoved += OnMouseMoved;
         }
 
@@ -172,6 +170,7 @@ namespace GamingMusicPlayer
                 {
                     cmdPlayPause.Image = Properties.Resources.play_white;
                     cmdRemove.Enabled = true;
+                    grapherForm.Track = null;
                 }
                 else
                 {
@@ -183,6 +182,7 @@ namespace GamingMusicPlayer
                 if (nameListBox.SelectedIndex != mp.SelectedTrackIndex)
                 {
                     mp.stop();
+                    grapherForm.Track = null;
                     if (!mp.selectTrack(nameListBox.SelectedIndex))
                     {
                         log(mp.ErrorMsg);
@@ -200,6 +200,7 @@ namespace GamingMusicPlayer
                 {
                     cmdPlayPause.Image = Properties.Resources.pause_white;
                     cmdRemove.Enabled = false;
+                    grapherForm.Track = mp.SelectedTrack;
                 }
                 else
                 {
@@ -215,6 +216,7 @@ namespace GamingMusicPlayer
                 if(nameListBox.SelectedIndex != mp.SelectedTrackIndex)
                 {
                     mp.stop();
+                    grapherForm.Track = null;
                     if (!mp.selectTrack(nameListBox.SelectedIndex))
                     {
                         log(mp.ErrorMsg);
@@ -295,6 +297,7 @@ namespace GamingMusicPlayer
             cmdRemove.Enabled = false;
             nameListBox.SelectedIndex = mp.SelectedTrackIndex;
             cmdPlayPause.Image = Properties.Resources.pause_white;
+            grapherForm.Track = mp.SelectedTrack;
         }
 
         private void cmdPrev_Click(object sender, EventArgs e)
@@ -308,6 +311,7 @@ namespace GamingMusicPlayer
             nameListBox.SelectedIndex = mp.SelectedTrackIndex;
             cmdRemove.Enabled = false;
             cmdPlayPause.Image = Properties.Resources.pause_white;
+            grapherForm.Track = mp.SelectedTrack;
         }
 
         private void cmdShuffle_Click(object sender, EventArgs e)
@@ -357,9 +361,10 @@ namespace GamingMusicPlayer
         {
             mp.stop();
             running = false;
-            keyboard_listener.UnHookKeyboard();
             mouse_listener.UnhookMouse();
+
             loggerForm.Dispose();
+            grapherForm.Dispose();
             Application.Exit();
         }
 
@@ -425,6 +430,20 @@ namespace GamingMusicPlayer
                 cmdLogger.Text = "Hide Logger";
             }
             
+        }
+
+        private void cmdShowGrapher_Click(object sender, EventArgs e)
+        {
+            if (grapherForm.GrapherVisible)
+            {
+                grapherForm.hide();
+                cmdShowGrapher.Text = "Show Grapher";
+            }
+            else
+            {
+                grapherForm.show();
+                cmdShowGrapher.Text = "Hide Grapher";
+            }
         }
     }
 }

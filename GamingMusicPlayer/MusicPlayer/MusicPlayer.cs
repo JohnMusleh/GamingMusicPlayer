@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace GamingMusicPlayer
 {
-    class MusicPlayer
+    public class MusicPlayer
     {
         private string mci_command;
         private StringBuilder mci_return;

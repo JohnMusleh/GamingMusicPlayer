@@ -46,6 +46,7 @@
             this.lengthLabel = new System.Windows.Forms.Label();
             this.lengthListBox = new System.Windows.Forms.ListBox();
             this.cmdLogger = new System.Windows.Forms.Button();
+            this.cmdShowGrapher = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -247,7 +248,7 @@
             // 
             // cmdLogger
             // 
-            this.cmdLogger.Location = new System.Drawing.Point(12, 98);
+            this.cmdLogger.Location = new System.Drawing.Point(12, 147);
             this.cmdLogger.Name = "cmdLogger";
             this.cmdLogger.Size = new System.Drawing.Size(147, 41);
             this.cmdLogger.TabIndex = 14;
@@ -255,12 +256,23 @@
             this.cmdLogger.UseVisualStyleBackColor = true;
             this.cmdLogger.Click += new System.EventHandler(this.cmdLogger_Click);
             // 
+            // cmdShowGrapher
+            // 
+            this.cmdShowGrapher.Location = new System.Drawing.Point(12, 194);
+            this.cmdShowGrapher.Name = "cmdShowGrapher";
+            this.cmdShowGrapher.Size = new System.Drawing.Size(147, 41);
+            this.cmdShowGrapher.TabIndex = 15;
+            this.cmdShowGrapher.Text = "Show Grapher";
+            this.cmdShowGrapher.UseVisualStyleBackColor = true;
+            this.cmdShowGrapher.Click += new System.EventHandler(this.cmdShowGrapher_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1174, 633);
+            this.Controls.Add(this.cmdShowGrapher);
             this.Controls.Add(this.cmdLogger);
             this.Controls.Add(this.lengthLabel);
             this.Controls.Add(this.nameLabel);
@@ -300,6 +312,7 @@
         private System.Windows.Forms.Label txtMusicProgress;
         private System.Windows.Forms.Label seekLabel;
         private System.Windows.Forms.Button cmdLogger;
+        private System.Windows.Forms.Button cmdShowGrapher;
     }
 }
 

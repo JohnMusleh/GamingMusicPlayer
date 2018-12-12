@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GamingMusicPlayer
 {
-    class FileFormatNotSupported : Exception
+    public class FileFormatNotSupported : Exception
     {
         public FileFormatNotSupported(string msg) : base(msg)
         {
