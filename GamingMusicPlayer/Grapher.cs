@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows;
 
 namespace GamingMusicPlayer
 {
@@ -16,6 +16,7 @@ namespace GamingMusicPlayer
     {
         private Track t;
         private KeyboardProcessor kp;
+        private MouseProcessor mp;
         public Boolean GrapherVisible { get; private set; }
 
         private float[] readData = null;
@@ -33,7 +34,11 @@ namespace GamingMusicPlayer
             chart1.Series["wave"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
             chart1.Series["wave"].ChartArea = "ChartArea1";
             kp = new KeyboardProcessor();
-            kp.onDataReady += onDataReady;
+            kp.onDataReady += onKeyboardDataReady;
+
+            mp = new MouseProcessor();
+            mp.onDataReady+=onMouseDataReady;
+
             this.hide();
             GrapherVisible = false;
         }
@@ -86,19 +91,32 @@ namespace GamingMusicPlayer
             cmdRecordKeyboard.Text = "Recording..";
             cmdRecordKeyboard.Enabled = false;
             cmdPlotPlayingSong.Enabled = false;
+            cmdRecordMouse.Enabled = false;
 
         }
         
         //invoke all gui controls
-        private void onDataReady(object sender, EventArgs e)
+        private void onKeyboardDataReady(object sender, EventArgs e)
         {
             plot(kp.Data);
             cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
                 cmdRecordKeyboard.Text = "Record Keyboard";
                 cmdRecordKeyboard.Enabled = true;
                 cmdPlotPlayingSong.Enabled = true;
+                cmdRecordMouse.Enabled = true;
             }));
            
+        }
+
+        private void onMouseDataReady(object sender, EventArgs e)
+        {
+            plot(mp.Data);
+            cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
+                cmdRecordMouse.Text = "Record Mouse";
+                cmdRecordKeyboard.Enabled = true;
+                cmdPlotPlayingSong.Enabled = true;
+                cmdRecordMouse.Enabled = true;
+            }));
         }
 
         
@@ -145,6 +163,15 @@ namespace GamingMusicPlayer
             data.Clear();
         }
 
-
+        private void cmdRecordMouse_Click(object sender, EventArgs e)
+        {
+            double minDistance = 200;
+            //1164,364 pos of record mouse button
+            mp.record(10, (int)minDistance,new Point(1164, 364));
+            cmdRecordMouse.Text = "Recording..";
+            cmdRecordMouse.Enabled = false;
+            cmdRecordKeyboard.Enabled = false;
+            cmdPlotPlayingSong.Enabled = false;
+        }
     }
 }

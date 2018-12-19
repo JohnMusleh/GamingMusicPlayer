@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace GamingMusicPlayer
 {
-    class MouseListener
+    public static class MouseListener
     {
         private const int WM_MOUSEMOVE = 0x0200;
         private const int WM_LBUTTONDOWN = 0x0201;
@@ -32,34 +32,31 @@ namespace GamingMusicPlayer
 
         public delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
 
-        public event EventHandler<GlobalMouseEventArgs> OnMouseMoved;
+        public static event EventHandler<GlobalMouseEventArgs> OnMouseMoved;
 
-        private LowLevelMouseProc proc;
-        private IntPtr hookid = IntPtr.Zero;
+        private static LowLevelMouseProc proc=hookCallback;
+        private static IntPtr hookid = IntPtr.Zero;
 
-        public MouseListener()
-        {
-            proc = hookCallback;
-        }
+ 
 
-        public void HookMouse()
+        public static void HookMouse()
         {
             hookid = SetHook(proc);
         }
 
-        public void UnhookMouse()
+        public static void UnhookMouse()
         {
             UnhookWindowsHookEx(hookid);
         }
 
-        private IntPtr hookCallback(int ncode, IntPtr wparam, IntPtr lparam)
+        private static IntPtr hookCallback(int ncode, IntPtr wparam, IntPtr lparam)
         {
             if (ncode >= 0 && wparam == (IntPtr)WM_MOUSEMOVE)
             {
                 MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lparam, typeof(MSLLHOOKSTRUCT));
                 if (OnMouseMoved != null)
                 {
-                    OnMouseMoved(this, new GlobalMouseEventArgs(new Point(hookStruct.pt.x,hookStruct.pt.y)));
+                    OnMouseMoved(null, new GlobalMouseEventArgs(new Point(hookStruct.pt.x,hookStruct.pt.y)));
                 }
             }
             return CallNextHookEx(hookid, ncode, wparam, lparam);

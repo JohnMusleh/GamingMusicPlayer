@@ -32,6 +32,7 @@
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.cmdRecordKeyboard = new System.Windows.Forms.Button();
             this.cmdPlotPlayingSong = new System.Windows.Forms.Button();
+            this.cmdRecordMouse = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,7 +58,7 @@
             // 
             // cmdPlotPlayingSong
             // 
-            this.cmdPlotPlayingSong.Location = new System.Drawing.Point(942, 122);
+            this.cmdPlotPlayingSong.Location = new System.Drawing.Point(942, 191);
             this.cmdPlotPlayingSong.Name = "cmdPlotPlayingSong";
             this.cmdPlotPlayingSong.Size = new System.Drawing.Size(174, 50);
             this.cmdPlotPlayingSong.TabIndex = 3;
@@ -65,11 +66,22 @@
             this.cmdPlotPlayingSong.UseVisualStyleBackColor = true;
             this.cmdPlotPlayingSong.Click += new System.EventHandler(this.cmdPlotPlayingSong_Click);
             // 
+            // cmdRecordMouse
+            // 
+            this.cmdRecordMouse.Location = new System.Drawing.Point(942, 108);
+            this.cmdRecordMouse.Name = "cmdRecordMouse";
+            this.cmdRecordMouse.Size = new System.Drawing.Size(174, 50);
+            this.cmdRecordMouse.TabIndex = 4;
+            this.cmdRecordMouse.Text = "Record Mouse";
+            this.cmdRecordMouse.UseVisualStyleBackColor = true;
+            this.cmdRecordMouse.Click += new System.EventHandler(this.cmdRecordMouse_Click);
+            // 
             // Grapher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1127, 344);
+            this.Controls.Add(this.cmdRecordMouse);
             this.Controls.Add(this.cmdPlotPlayingSong);
             this.Controls.Add(this.cmdRecordKeyboard);
             this.Controls.Add(this.chart1);
@@ -87,5 +99,6 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.Button cmdRecordKeyboard;
         private System.Windows.Forms.Button cmdPlotPlayingSong;
+        private System.Windows.Forms.Button cmdRecordMouse;
     }
 }

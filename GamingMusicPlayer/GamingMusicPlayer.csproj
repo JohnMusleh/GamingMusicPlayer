@@ -68,6 +68,7 @@
     <Compile Include="Logger.Designer.cs">
       <DependentUpon>Logger.cs</DependentUpon>
     </Compile>
+    <Compile Include="MouseProcessor.cs" />
     <Compile Include="MusicPlayer\FileFormatNotSupported.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

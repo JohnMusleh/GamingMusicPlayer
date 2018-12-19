@@ -21,7 +21,6 @@ namespace GamingMusicPlayer
         private float[] signalData;
         private float[][] signalDataBySamples; //an array of 10 sample arrays [ [firt 10 samples] , [2nd 10 samples], ..]
         private int targetNumOfSamples;
-        private bool dataReady;
 
         public event EventHandler onDataReady;
 
@@ -43,14 +42,11 @@ namespace GamingMusicPlayer
             }
         }
 
-        public bool Ready { get { return dataReady; } }
-
         public KeyboardProcessor()
         {
             keyInputQueue = new Queue<KeyPressedArgs>();
             KeyboardListener.OnKeyPressed += OnKeyPressed;//this needs to happen only once!
             signalData = null;
-            dataReady = false;
         }
 
         //record keyboard data for secs amount of seconds and convert it into signal data
@@ -68,7 +64,6 @@ namespace GamingMusicPlayer
 
         private void process()
         {
-            dataReady = false;
             int numOfSamples = 0;
             int sec = 0;
             int sampleInSec = 0;
