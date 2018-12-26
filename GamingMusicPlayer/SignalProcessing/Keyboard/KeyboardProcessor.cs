@@ -7,7 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
     //class that turns keyboard input data coming from a KeyBoardListener into a time domain signal data
     //the class takes 10 samples every 1000 ms (1 second)
@@ -22,7 +22,7 @@ namespace GamingMusicPlayer
         private float[][] signalDataBySamples; //an array of 10 sample arrays [ [firt 10 samples] , [2nd 10 samples], ..]
         private int targetNumOfSamples;
 
-        public event EventHandler onDataReady;
+        public event EventHandler onDataReady; //called when data is ready
 
         public float[] Data
         {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.SignalProcessing.Mouse
 {
     public class GlobalMouseEventArgs : EventArgs
     {

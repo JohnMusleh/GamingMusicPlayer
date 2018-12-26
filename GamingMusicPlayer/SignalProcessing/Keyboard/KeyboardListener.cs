@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Diagnostics;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
     //this class creates a low level windows hook to scan keyboard keys, each key is grabbed by subscribing to the event OnKeyPressed  
     //this will be used later to create a signal from keyboard data.

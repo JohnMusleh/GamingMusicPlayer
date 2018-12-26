@@ -7,7 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Windows;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.SignalProcessing.Mouse
 {
     public class MouseProcessor
     {

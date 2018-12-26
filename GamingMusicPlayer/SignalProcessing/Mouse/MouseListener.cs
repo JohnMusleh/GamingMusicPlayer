@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Diagnostics;
 using System.Windows;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.SignalProcessing.Mouse
 {
     public static class MouseListener
     {

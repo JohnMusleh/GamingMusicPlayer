@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Diagnostics;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
     public class KeyPressedArgs : EventArgs
     {

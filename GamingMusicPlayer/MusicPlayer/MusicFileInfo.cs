@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.MusicPlayer
 {
     //static class for the purpose of using mci device functions
     public static class MusicFileInfo

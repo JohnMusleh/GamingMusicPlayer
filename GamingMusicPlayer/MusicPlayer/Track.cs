@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.MusicPlayer
 {
     //The track class represents a music track
     public class Track : ICloneable
