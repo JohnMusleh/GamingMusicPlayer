@@ -61,14 +61,14 @@
     <Compile Include="Grapher.Designer.cs">
       <DependentUpon>Grapher.cs</DependentUpon>
     </Compile>
-    <Compile Include="KeyboardProcessor.cs" />
+    <Compile Include="SignalProcessing\Keyboard\KeyboardProcessor.cs" />
     <Compile Include="Logger.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Logger.Designer.cs">
       <DependentUpon>Logger.cs</DependentUpon>
     </Compile>
-    <Compile Include="MouseProcessor.cs" />
+    <Compile Include="SignalProcessing\Mouse\MouseProcessor.cs" />
     <Compile Include="MusicPlayer\FileFormatNotSupported.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -76,10 +76,10 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="KeyboardListener.cs" />
-    <Compile Include="KeyPressedArgs.cs" />
-    <Compile Include="MouseListener.cs" />
-    <Compile Include="GlobalMouseEventArgs.cs" />
+    <Compile Include="SignalProcessing\Keyboard\KeyboardListener.cs" />
+    <Compile Include="SignalProcessing\Keyboard\KeyPressedArgs.cs" />
+    <Compile Include="SignalProcessing\Mouse\MouseListener.cs" />
+    <Compile Include="SignalProcessing\Mouse\GlobalMouseEventArgs.cs" />
     <Compile Include="MusicPlayer\MusicFileInfo.cs" />
     <Compile Include="MusicPlayer\MusicPlayer.cs" />
     <Compile Include="MusicPlayer\Playlist.cs" />
