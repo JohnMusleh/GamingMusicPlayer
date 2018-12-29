@@ -61,6 +61,7 @@
     <Compile Include="Grapher.Designer.cs">
       <DependentUpon>Grapher.cs</DependentUpon>
     </Compile>
+    <Compile Include="SignalProcessing\FloatArraySampleProvider.cs" />
     <Compile Include="SignalProcessing\Keyboard\KeyboardProcessor.cs" />
     <Compile Include="Logger.cs">
       <SubType>Form</SubType>
@@ -86,6 +87,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MusicPlayer\Track.cs" />
+    <Compile Include="SignalProcessing\SignalProcessor.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

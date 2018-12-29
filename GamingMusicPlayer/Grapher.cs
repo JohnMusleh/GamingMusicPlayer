@@ -10,6 +10,11 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows;
 
+using GamingMusicPlayer.MusicPlayer;
+using GamingMusicPlayer.SignalProcessing.Keyboard;
+using GamingMusicPlayer.SignalProcessing.Mouse;
+using GamingMusicPlayer.SignalProcessing;
+
 namespace GamingMusicPlayer
 {
     public partial class Grapher : Form
@@ -17,9 +22,10 @@ namespace GamingMusicPlayer
         private Track t;
         private KeyboardProcessor kp;
         private MouseProcessor mp;
+        SignalProcessor sp;
         public Boolean GrapherVisible { get; private set; }
 
-        private float[] readData = null;
+        private float[] sigData = null;
              
         public Track Track
         {
@@ -38,6 +44,9 @@ namespace GamingMusicPlayer
 
             mp = new MouseProcessor();
             mp.onDataReady+=onMouseDataReady;
+
+            sp = new SignalProcessor();
+            sp.onBPMReady += onBPMReady;
 
             this.hide();
             GrapherVisible = false;
@@ -98,6 +107,7 @@ namespace GamingMusicPlayer
         //invoke all gui controls
         private void onKeyboardDataReady(object sender, EventArgs e)
         {
+            sp.ComputeBPM(kp.Data, 10);
             plot(kp.Data);
             cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
                 cmdRecordKeyboard.Text = "Record Keyboard";
@@ -110,6 +120,7 @@ namespace GamingMusicPlayer
 
         private void onMouseDataReady(object sender, EventArgs e)
         {
+            sp.ComputeBPM(mp.Data, 10);
             plot(mp.Data);
             cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
                 cmdRecordMouse.Text = "Record Mouse";
@@ -119,48 +130,68 @@ namespace GamingMusicPlayer
             }));
         }
 
-        
+        private void onBPMReady(object sender, EventArgs e)
+        {
+            Console.WriteLine("BPM computed:"+sp.BPM);
+        }
 
         private void cmdPlotPlayingSong_Click(object sender, EventArgs e)
         {
+
             if (chart1 != null && t != null)
             {
-                Thread readThread = new Thread(new ThreadStart(readDataFromFile));
-                readThread.Start();
+                float[] trackData = readDataFromFile();
+                //Thread drawThread = new Thread(new ThreadStart(readDataAndDraw));
+                //drawThread.Start();
+                sp.ComputeBPM(trackData, (t.Length / 1000));
             }
-
+            
         }
 
-        private void readDataFromFile()
+        private void readDataAndDraw()
         {
-            NAudio.Wave.WaveChannel32 wave = null;
-            List<float> data = new List<float>();
+            float[] data = null;
+            NAudio.Wave.WaveStream reader = null;
             if (t.Format.Equals("MP3"))
             {
-                wave = new NAudio.Wave.WaveChannel32(new NAudio.Wave.Mp3FileReader(t.Path));
+                reader = new NAudio.Wave.Mp3FileReader(t.Path);
             }
             else if (t.Format.Equals("WAV"))
             {
-                wave = new NAudio.Wave.WaveChannel32(new NAudio.Wave.WaveFileReader(t.Path));
+                reader = new NAudio.Wave.WaveFileReader(t.Path);
 
             }
-            if (wave != null)
+            if (reader != null)
             {
-                Console.WriteLine("Reading file data");
-                byte[] buffer = new byte[16384];
-                int read = 0;
-                while (wave.Position < wave.Length)
-                {
-                    read = wave.Read(buffer, 0, 16384);
-                    for (int i = 0; i < read / 4; i++)
-                    {
-                        data.Add(BitConverter.ToSingle(buffer, i * 4));
-                    }
-                }
-                Console.WriteLine("Done!");
+                byte[] buffer = new byte[reader.Length];
+                int read = reader.Read(buffer, 0, buffer.Length);
+                data = new float[read / sizeof(float)];
+                Buffer.BlockCopy(buffer, 0, data, 0, read);
             }
-            plot(data.ToArray());
-            data.Clear();
+            plot(data);
+        }
+
+        private float[] readDataFromFile()
+        {
+            float[] data = null;
+            NAudio.Wave.WaveStream reader = null;
+            if (t.Format.Equals("MP3"))
+            {
+                reader = new NAudio.Wave.Mp3FileReader(t.Path);
+            }
+            else if (t.Format.Equals("WAV"))
+            {
+                reader = new NAudio.Wave.WaveFileReader(t.Path);
+
+            }
+            if (reader != null)
+            {
+                byte[] buffer = new byte[reader.Length];
+                int read = reader.Read(buffer, 0, buffer.Length);
+                data = new float[read / sizeof(float)];
+                Buffer.BlockCopy(buffer, 0, data, 0, read);
+            }
+            return data;
         }
 
         private void cmdRecordMouse_Click(object sender, EventArgs e)

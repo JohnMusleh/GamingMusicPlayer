@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using GamingMusicPlayer.MusicPlayer;
 
 namespace GamingMusicPlayer
 {
     public partial class MainForm : Form
     {
-        private MusicPlayer mp;
+        private MusicPlayer.MusicPlayer mp;
         private bool loop;
         private bool musicTrackbarScrolling;
         private bool running; //for threads
@@ -27,7 +28,7 @@ namespace GamingMusicPlayer
 
         public MainForm()
         {
-            mp = new MusicPlayer();
+            mp = new MusicPlayer.MusicPlayer();
             this.loop = false;
             this.musicTrackbarScrolling = false;
             this.running = true;
