@@ -25,6 +25,7 @@ namespace GamingMusicPlayer
         SignalProcessor sp;
         public Boolean GrapherVisible { get; private set; }
 
+        private Thread drawThread;
         private float[] sigData = null;
              
         public Track Track
@@ -47,7 +48,7 @@ namespace GamingMusicPlayer
 
             sp = new SignalProcessor();
             sp.onBPMReady += onBPMReady;
-
+            drawThread = null;
             this.hide();
             GrapherVisible = false;
         }
@@ -58,7 +59,7 @@ namespace GamingMusicPlayer
             GrapherVisible = true;
         }
 
-        public void plot(float[] signalData)//signal data in time domain
+        public void plot(short[] signalData)//signal data in time domain
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -107,7 +108,11 @@ namespace GamingMusicPlayer
         //invoke all gui controls
         private void onKeyboardDataReady(object sender, EventArgs e)
         {
-            sp.ComputeBPM(kp.Data, 10);
+            if (drawThread != null)
+            {
+                drawThread.Suspend();
+            }
+            sp.ComputeBPM(kp.Data, 10,true);
             plot(kp.Data);
             cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
                 cmdRecordKeyboard.Text = "Record Keyboard";
@@ -120,7 +125,11 @@ namespace GamingMusicPlayer
 
         private void onMouseDataReady(object sender, EventArgs e)
         {
-            sp.ComputeBPM(mp.Data, 10);
+            sp.ComputeBPM(mp.Data, 10,true);
+            if (drawThread != null)
+            {
+                drawThread.Suspend();
+            }
             plot(mp.Data);
             cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
                 cmdRecordMouse.Text = "Record Mouse";
@@ -140,17 +149,21 @@ namespace GamingMusicPlayer
 
             if (chart1 != null && t != null)
             {
-                float[] trackData = readDataFromFile();
-                //Thread drawThread = new Thread(new ThreadStart(readDataAndDraw));
-                //drawThread.Start();
-                sp.ComputeBPM(trackData, (t.Length / 1000));
+                if (drawThread != null)
+                {
+                    drawThread.Suspend();
+                }
+                short[] trackData = readDataFromFile();
+                drawThread = new Thread(new ThreadStart(readDataAndDraw));
+                drawThread.Start();
+                sp.ComputeBPM(trackData, (t.Length / 1000),false);
             }
             
         }
 
         private void readDataAndDraw()
         {
-            float[] data = null;
+            short[] data = null;
             NAudio.Wave.WaveStream reader = null;
             if (t.Format.Equals("MP3"))
             {
@@ -165,15 +178,23 @@ namespace GamingMusicPlayer
             {
                 byte[] buffer = new byte[reader.Length];
                 int read = reader.Read(buffer, 0, buffer.Length);
-                data = new float[read / sizeof(float)];
+                data = new short[read / sizeof(short)];
                 Buffer.BlockCopy(buffer, 0, data, 0, read);
             }
-            plot(data);
+            List<short> chan1 = new List<short>();
+            List<short> chan2 = new List<short>();
+
+            for (int i = 0; i < data.Length - 1; i += 2)
+            {
+                chan1.Add(data[i]);
+                chan2.Add(data[i + 1]);
+            }
+            plot(chan1.ToArray());
         }
 
-        private float[] readDataFromFile()
+        private short[] readDataFromFile()
         {
-            float[] data = null;
+            short[] data = null;
             NAudio.Wave.WaveStream reader = null;
             if (t.Format.Equals("MP3"))
             {
@@ -184,11 +205,12 @@ namespace GamingMusicPlayer
                 reader = new NAudio.Wave.WaveFileReader(t.Path);
 
             }
+            
             if (reader != null)
             {
                 byte[] buffer = new byte[reader.Length];
                 int read = reader.Read(buffer, 0, buffer.Length);
-                data = new float[read / sizeof(float)];
+                data = new short[read / sizeof(short)];
                 Buffer.BlockCopy(buffer, 0, data, 0, read);
             }
             return data;

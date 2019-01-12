@@ -10,7 +10,6 @@ using System.Windows.Input;
 namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
     //class that turns keyboard input data coming from a KeyBoardListener into a time domain signal data
-    //the class takes 10 samples every 1000 ms (1 second)
     public class KeyboardProcessor
     {
         private Thread mainThread;
@@ -18,24 +17,31 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
 
         private bool queueLock=false;
 
-        private float[] signalData;
-        private float[][] signalDataBySamples; //an array of 10 sample arrays [ [firt 10 samples] , [2nd 10 samples], ..]
+        private short[] signalData;
         private int targetNumOfSamples;
 
         public event EventHandler onDataReady; //called when data is ready
 
-        public float[] Data
+        public short[] Data
         {
             get
             {
-                int s = 0;
-                //transform signalDataBySamples into signalData
-                for(int i=0; i < signalDataBySamples.Length; i++)
+                short y = 0;
+                List<short> finalData = new List<short>();
+                for(int i = 1; i < signalData.Length; i++)
                 {
-                    for(int j = 0; signalDataBySamples[i]!=null && j < signalDataBySamples[i].Length;j++)
+                    if (signalData[i] == 0)
                     {
-                        signalData[s] = signalDataBySamples[i][j];
-                        s++;
+                        if (signalData[i - 1] == 0)
+                        {
+                            y--;
+                        }
+                        finalData.Add(y);
+                    }
+                    else
+                    {
+                        y++;
+                        finalData.Add(y);
                     }
                 }
                 return signalData;
@@ -53,9 +59,8 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
         public void record(int secs)
         {
             keyInputQueue.Clear();
-            targetNumOfSamples = secs * 10;
-            signalData = new float[targetNumOfSamples];
-            signalDataBySamples = new float[secs][];
+            targetNumOfSamples = secs * 20;
+            signalData = new short[targetNumOfSamples];
             KeyboardListener.HookKeyboard();
             
             mainThread = new Thread(new ThreadStart(process));
@@ -65,51 +70,40 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
         private void process()
         {
             int numOfSamples = 0;
-            int sec = 0;
-            int sampleInSec = 0;
+            int sampleRate = 20; //20 samples per second
            
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            //while samples are less than targetNumOfSamples -> create  more samples
-            //when done unhook keyboard and raise dataReady flag
-            //while (sw.Elapsed.TotalMilliseconds < (targetNumOfSamples* 100)) ;
+
+            Stopwatch swPerSample = new Stopwatch();
+            swPerSample.Start();// every (1/sampleRate) seconds , add a zero , if key was detected (up or down) restart this stopwatch
+
             Console.WriteLine("starting proccessing..");
             while (numOfSamples < targetNumOfSamples && sw.Elapsed.TotalMilliseconds < (targetNumOfSamples * 100)) {
-                if (((targetNumOfSamples * 100) - sw.Elapsed.TotalMilliseconds) % 1000 == 0)
+                if(keyInputQueue.Count ==0 && swPerSample.ElapsedMilliseconds >= (1000 / sampleRate))
                 {
-                    Console.WriteLine((targetNumOfSamples * 100) - sw.Elapsed.TotalMilliseconds);
-                   
-                    Console.WriteLine(numOfSamples+"/" +targetNumOfSamples);
-                    
+                    signalData[numOfSamples] = 0;
+                    numOfSamples++;
+                    swPerSample.Restart();
                 }
-                   
-                if (keyInputQueue.Count > 0 && !queueLock)
-                {
+                else if (keyInputQueue.Count > 0 && !queueLock)
+                {   
                     queueLock = true;
-                    if (sampleInSec == 0 && sec < signalDataBySamples.Length)
-                    {
-                        signalDataBySamples[sec] = new float[10];
-                    }
                     KeyPressedArgs k = keyInputQueue.Dequeue();
                     if (k!=null && k.Down)
                     {
-                        if(sec< signalDataBySamples.Length && sampleInSec<signalDataBySamples[sec].Length)
-                            signalDataBySamples[sec][sampleInSec] = 1;
+                        signalData[numOfSamples] = 1;
+                        numOfSamples++;
+                        //key down
                     }
-                    else
+                    else if(k!=null)
                     {
-                        if (sec < signalDataBySamples.Length && sampleInSec<signalDataBySamples[sec].Length)
-                            signalDataBySamples[sec][sampleInSec] = 0;
-
-                    }
-                    numOfSamples++;
-                    sampleInSec++;
-                    if (sampleInSec >= 10)
-                    {
-                        sampleInSec = 0;
-                        sec++;
+                        signalData[numOfSamples] = 0;
+                        numOfSamples++;
+                        //key up
                     }
                     queueLock = false;
+                    swPerSample.Restart();
                 }
             }
             Console.WriteLine("Done processing");
@@ -127,9 +121,5 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
             }
             
         }
-
-        
-
-
     }
 }

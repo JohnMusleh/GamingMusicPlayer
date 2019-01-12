@@ -12,7 +12,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
     public class MouseProcessor
     {
         private bool queueLock = false;
-        private List<float> sigDataList;
+        private List<short> sigDataList;
         private Thread mainThread;
 
         private int secsToProcess;
@@ -24,19 +24,38 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
 
         public event EventHandler onDataReady;
 
-        public float[] Data
+        public short[] Data
         {
             get
             {
-                //normalize to [-1,1] -> for each x -> x = ((x-2)*2/(max-min))-1
-                float max = sigDataList.Max();
-                float min = sigDataList.Min();
-                Console.WriteLine("max:" + max+" min:"+min);
-                for(int i=0; i < sigDataList.Count(); i++)
+                //normalizing - does not work well
+                double average = 0, variance = 0;
+                foreach(short s in sigDataList)
                 {
-                    sigDataList[i] = (((sigDataList[i] - min) * 2) / (max - min)) - 1;
+                    average += (double)s;
                 }
-                return sigDataList.ToArray();
+                average /= sigDataList.Count;
+                foreach(short s in sigDataList)
+                {
+                    variance += Math.Pow(s - average, 2);
+                }
+                variance /= sigDataList.Count;
+                variance = Math.Sqrt(variance);
+
+                Console.WriteLine("avg:" + average + ",variance:" + variance);
+                for (int i=0; i < sigDataList.Count; i++)
+                {
+                    double s = (sigDataList[i] - average) / variance;
+                    //sigDataList[i] = (short)(s);
+                }
+
+                List<short> speedsList = new List<short>();
+                for(int i = sigDataList.Count - 1; i > 0; i--)
+                {
+                    short s = (short)(sigDataList[i] - sigDataList[i - 1]);
+                    speedsList.Add(s);
+                }
+                return speedsList.ToArray();
             }
         }
 
@@ -44,7 +63,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
         {
             mouseInputQueue = new Queue<double>();
             MouseListener.OnMouseMoved  += OnMouseMoved;//this needs to happen only once!
-            sigDataList = new List<float>();
+            sigDataList = new List<short>();
             secsToProcess = -1;
             minDistance = -1;
             center = new Point(0, 0);
@@ -54,7 +73,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
         public void record(int secs,int minDist, Point c)
         {
             secsToProcess = secs;
-            minDistance = minDist;
+            minDistance = 10;
             center = c;
             MouseListener.HookMouse();
             mainThread = new Thread(new ThreadStart(process));
@@ -92,7 +111,8 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
                     {
                         queueLock = true;
                         double d = mouseInputQueue.Dequeue();
-                        sigDataList.Add((float)d);
+                        sigDataList.Add((short)d);
+                        //sigDataList.Add((short)-d);
                         queueLock = false;
                     }
                     
