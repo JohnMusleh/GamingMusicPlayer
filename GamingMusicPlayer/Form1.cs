@@ -24,6 +24,7 @@ namespace GamingMusicPlayer
 
         private Logger loggerForm;
         private Grapher grapherForm;
+        private SongMatcher matcherForm;
         
 
         public MainForm()
@@ -41,6 +42,8 @@ namespace GamingMusicPlayer
 
             loggerForm = new Logger();
             grapherForm = new Grapher();
+            matcherForm = new SongMatcher();
+            
         }
 
         
@@ -133,6 +136,9 @@ namespace GamingMusicPlayer
                 {
                     Track t = new Track(songFileDialog.FileName);
                     mp.addTrack(t);
+                    //[UPDATE TRACKS]
+                    matcherForm.setTracks(mp.PlaylistTracklist);
+
                     nameListBox.Items.Add(t.Name);
                     lengthListBox.Items.Add(msToString(t.Length));
                     nameListBox.SelectedIndex = mp.SelectedTrackIndex;
@@ -178,6 +184,8 @@ namespace GamingMusicPlayer
                             lengthListBox.Items.RemoveAt(mp.SelectedTrackIndex);
                         }
                         mp.removeTrack();
+                        //[UPDATE TRACKS]
+                        matcherForm.setTracks(mp.PlaylistTracklist);
                         return;
                     }
                     musicTrackBar.Maximum = mp.SelectedTrack.Length;
@@ -212,6 +220,8 @@ namespace GamingMusicPlayer
                             lengthListBox.Items.RemoveAt(mp.SelectedTrackIndex);
                         }
                         mp.removeTrack();
+                        //[UPDATE TRACKS]
+                        matcherForm.setTracks(mp.PlaylistTracklist);
                         return;
                     }
                 }
@@ -220,6 +230,8 @@ namespace GamingMusicPlayer
                 {
                     if (mp.removeTrack())
                     {
+                        //[UPDATE TRACKS]
+                        matcherForm.setTracks(mp.PlaylistTracklist);
                         lengthListBox.Items.RemoveAt(nameListBox.SelectedIndex);
                         nameListBox.Items.RemoveAt(nameListBox.SelectedIndex);
                         log("mp after selected index=" + mp.SelectedTrackIndex);
@@ -256,6 +268,8 @@ namespace GamingMusicPlayer
                     nameListBox.Items.RemoveAt(mp.SelectedTrackIndex);
                     nameListBox.Items.RemoveAt(mp.SelectedTrackIndex);
                     mp.removeTrack();
+                    //[UPDATE TRACKS]
+                    matcherForm.setTracks(mp.PlaylistTracklist);
                 }
                 else
                 {
@@ -428,6 +442,20 @@ namespace GamingMusicPlayer
             {
                 grapherForm.show();
                 cmdShowGrapher.Text = "Hide Grapher";
+            }
+        }
+
+        private void cmdToggleMatcher_Click(object sender, EventArgs e)
+        {
+            if (matcherForm.MatcherVisible)
+            {
+                matcherForm.hide();
+                cmdToggleMatcher.Text = "Show Matcher";
+            }
+            else
+            {
+                matcherForm.show();
+                cmdToggleMatcher.Text = "Hide Matcher";
             }
         }
     }

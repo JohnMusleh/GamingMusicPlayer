@@ -23,3 +23,4 @@ C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_projec
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.csproj.CopyComplete
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.Logger.resources
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.Grapher.resources
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.SongMatcher.resources

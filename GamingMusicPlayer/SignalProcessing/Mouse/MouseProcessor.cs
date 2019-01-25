@@ -11,7 +11,8 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
 {
     public class MouseProcessor
     {
-        private bool queueLock = false;
+        private Object queueLock = new Object();
+        //private bool queueLock = false;
         private List<short> sigDataList;
         private Thread mainThread;
 
@@ -20,9 +21,12 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
         private Point center;
         private Point lastPosition;
 
+        private bool working;
         private Queue<double> mouseInputQueue; //queue of distances from the center point
 
         public event EventHandler onDataReady;
+
+        public bool Processing { get { return this.working; } }
 
         public short[] Data
         {
@@ -42,7 +46,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
                 variance /= sigDataList.Count;
                 variance = Math.Sqrt(variance);
 
-                Console.WriteLine("avg:" + average + ",variance:" + variance);
+                //Console.WriteLine("avg:" + average + ",variance:" + variance);
                 for (int i=0; i < sigDataList.Count; i++)
                 {
                     double s = (sigDataList[i] - average) / variance;
@@ -62,66 +66,81 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
         public MouseProcessor()
         {
             mouseInputQueue = new Queue<double>();
+            MouseListener.HookMouse();
             MouseListener.OnMouseMoved  += OnMouseMoved;//this needs to happen only once!
             sigDataList = new List<short>();
             secsToProcess = -1;
             minDistance = -1;
             center = new Point(0, 0);
             lastPosition = new Point(-1, -1);
+            working = false;
+            onDataReady = done;
+        }
+
+        private void done(object sender, EventArgs e)
+        {
+
         }
 
         public void record(int secs,int minDist, Point c)
         {
-            secsToProcess = secs;
-            minDistance = 10;
-            center = c;
-            MouseListener.HookMouse();
-            mainThread = new Thread(new ThreadStart(process));
-            mainThread.Start();
+            if (!working)
+            {
+                secsToProcess = secs;
+                minDistance = 10;
+                center = c;
+                mainThread = new Thread(new ThreadStart(process));
+                mainThread.Start();
+            }
+            else
+            {
+                Console.WriteLine("mouse processor already recording..");
+            }
         }
 
         private void OnMouseMoved(object sender, GlobalMouseEventArgs e)
         {
-            if (!queueLock)
+
+            if (working)
             {
-                queueLock = true;
-                double distance = Point.Subtract(e.Position, lastPosition).Length;
-                if (distance >= minDistance)
+                lock (queueLock)
                 {
-                    mouseInputQueue.Enqueue(Point.Subtract(e.Position, center).Length);
-                    //Console.WriteLine(e.Position.ToString());
-                    lastPosition = e.Position;
+                    double distance = Point.Subtract(e.Position, lastPosition).Length;
+                    if (distance >= minDistance)
+                    {
+                        mouseInputQueue.Enqueue(Point.Subtract(e.Position, center).Length);
+                        //Console.WriteLine(e.Position.ToString());
+                        lastPosition = e.Position;
+                    }
                 }
-                
-                queueLock = false;
             }
 
         }
 
         private void process()
         {
+            working = true;
             sigDataList.Clear();
             Stopwatch sw = new Stopwatch();
             sw.Start();
             while (sw.Elapsed.TotalMilliseconds<secsToProcess*1000)
             {
-                if (!queueLock)
+                lock(queueLock)
                 {
                     if (mouseInputQueue.Count > 0)
                     {
-                        queueLock = true;
                         double d = mouseInputQueue.Dequeue();
                         sigDataList.Add((short)d);
                         //sigDataList.Add((short)-d);
-                        queueLock = false;
                     }
                     
                 }
             }
-            Console.WriteLine("Done processing");
+            //Console.WriteLine("Done processing");
             sw.Stop();
-            MouseListener.UnhookMouse();
+            working = false;
             onDataReady(null, null);
+            
         }
 
     }

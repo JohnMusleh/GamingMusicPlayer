@@ -23,29 +23,45 @@ namespace GamingMusicPlayer.SignalProcessing
         public event EventHandler onBPMReady;
 
         private double bpm;
+        private int beatCount;
         public double BPM { get { return bpm; } private set { bpm = value; } }
+        public int BeatCount { get { return beatCount; } private set { beatCount = value; } }
         private bool artificial_signal;
+        private bool threadSupport;
 
         private Thread mainThread;
-        private bool mainThreadRunning;
+        private bool calculating;
+
+        public bool Processing { get { return calculating; } }
 
         public SignalProcessor() {
-            mainThreadRunning = false;
+            calculating = false;
         }
         private short[] timeDomainData;
         private int lengthInSecs;
 
-        public bool ComputeBPM(short[] timeData,int seconds, bool artificial)
+
+        public bool ComputeBPM(short[] timeData,int seconds, bool artificial,bool thread)
         {
-            if (!mainThreadRunning)
+            if (!calculating)
             {
                 artificial_signal = artificial;
                 lengthInSecs = seconds;
                 timeDomainData = new short[timeData.Length];
                 Array.Copy(timeData, timeDomainData, timeData.Length);
-                mainThread = new Thread(new ThreadStart(process));
-                selectedTask = Task.BPM;
-                mainThread.Start();
+                
+                if (thread)
+                {
+                    threadSupport = true;
+                    mainThread = new Thread(new ThreadStart(process));
+                    selectedTask = Task.BPM;
+                    mainThread.Start();
+                }
+                else
+                {
+                    threadSupport = false;
+                    process();
+                } 
                 return true;
             }
             Console.WriteLine("SignalProccessor: ComputerBPM(), SignalProcessor already in use.");
@@ -54,7 +70,7 @@ namespace GamingMusicPlayer.SignalProcessing
 
         private void process()
         {
-            mainThreadRunning = true;
+            calculating = true;
             if (selectedTask == Task.BPM)
             {
                 /*//converting float to short
@@ -84,15 +100,15 @@ namespace GamingMusicPlayer.SignalProcessing
 
                 if (artificial_signal)
                 {
-                    blockSize = timeDomainData.Length/lengthInSecs;  //[TESTING MOUSE]
+                    blockSize = timeDomainData.Length/(lengthInSecs);  //[TESTING MOUSE]
                     
-                    historyQueueMaxSize = (lengthInSecs*3)/10;//[TESTING MOUSE]
+                    historyQueueMaxSize = 7;//[TESTING MOUSE]
                     
                     leftChn = timeDomainData;  //[TESTING MOUSE]
                 }
-                Console.WriteLine("block size:" + blockSize);
+                /*Console.WriteLine("block size:" + blockSize);
                 Console.WriteLine(historyQueueMaxSize);
-                Console.WriteLine("leftChn.length" + leftChn.Length);
+                Console.WriteLine("leftChn.length" + leftChn.Length);*/
                 for (int i=0; i < leftChn.Length; i+= blockSize)
                 {
                     double instantEnergy = 0;
@@ -100,7 +116,7 @@ namespace GamingMusicPlayer.SignalProcessing
                     {
                         instantEnergy += Math.Pow(leftChn[k], 2);
                     }
-                    Console.Write(" instant_energy:" + instantEnergy+" i:"+i+"/ ");
+                    //Console.Write(" instant_energy:" + instantEnergy+" i:"+i+"/ ");
                     energies.Add(instantEnergy);
                     //adding to historyQueue
                     if (historyQueue.Count < historyQueueMaxSize)
@@ -123,24 +139,28 @@ namespace GamingMusicPlayer.SignalProcessing
                     {
                         if (i < 100000)
                         {
-                            Console.Write("-beat at:" + i + "-");
+                            //Console.Write("-beat at:" + i + "-");
                         }
                         
                         beats++;
                     }
                 }
+                BeatCount = beats;
                 BPM = (beats*60)/lengthInSecs;
                 Console.WriteLine("\nComputeBPM: beats:" + beats + " in " + lengthInSecs + " seconds");
                 Console.WriteLine("ComputeBPM: BPM:" + BPM);
 
                 timeDomainData = null;
-                onBPMReady(null, null);
+                if (threadSupport)
+                {
+                    onBPMReady(null, null);
+                }
             }
             else
             {
                 Console.WriteLine("SignalProcessor: process(), no task set.");
             }
-            mainThreadRunning = false;
+            calculating = false;
         }
     }
 }

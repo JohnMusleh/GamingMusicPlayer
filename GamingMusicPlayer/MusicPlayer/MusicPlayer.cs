@@ -77,6 +77,15 @@ namespace GamingMusicPlayer.MusicPlayer
             }
         }
 
+        public List<Track> PlaylistTracklist
+        {
+            get
+            {
+
+                return loaded_playlist.TrackList;
+            }
+        }
+
         public bool Shuffled
         {
             get

@@ -17,6 +17,12 @@ namespace GamingMusicPlayer.MusicPlayer
 
         private string error_msg;
 
+        public short[] Data
+        {
+            get { return readDataFromFile(); }
+        }
+
+
         public string Path
         {
             get { return path; }
@@ -138,6 +144,30 @@ namespace GamingMusicPlayer.MusicPlayer
                 error_msg = MusicFileInfo.error_msg;
                 throw new FileFormatNotSupported(error_msg);
             }
+        }
+
+        private short[] readDataFromFile()
+        {
+            short[] data = null;
+            NAudio.Wave.WaveStream reader = null;
+            if (this.Format.Equals("MP3"))
+            {
+                reader = new NAudio.Wave.Mp3FileReader(this.Path);
+            }
+            else if (this.Format.Equals("WAV"))
+            {
+                reader = new NAudio.Wave.WaveFileReader(this.Path);
+
+            }
+
+            if (reader != null)
+            {
+                byte[] buffer = new byte[reader.Length];
+                int read = reader.Read(buffer, 0, buffer.Length);
+                data = new short[read / sizeof(short)];
+                Buffer.BlockCopy(buffer, 0, data, 0, read);
+            }
+            return data;
         }
     }
 }

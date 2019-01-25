@@ -32,6 +32,14 @@ namespace GamingMusicPlayer.MusicPlayer
             }
         }
 
+        public List<Track> TrackList
+        {
+            get
+            {
+                return tracklist;
+            }
+        }
+
         public int Count
         {
             get

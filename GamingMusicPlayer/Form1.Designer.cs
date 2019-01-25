@@ -34,12 +34,6 @@
             this.seekLabel = new System.Windows.Forms.Label();
             this.musicTrackBar = new System.Windows.Forms.TrackBar();
             this.txtMusicProgress = new System.Windows.Forms.Label();
-            this.bottomLeftIcon = new GamingMusicPlayer.CMButton();
-            this.cmdPlayPause = new GamingMusicPlayer.CMButton();
-            this.cmdPrev = new GamingMusicPlayer.CMButton();
-            this.cmdNext = new GamingMusicPlayer.CMButton();
-            this.cmdShuffle = new GamingMusicPlayer.CMButton();
-            this.cmdLoop = new GamingMusicPlayer.CMButton();
             this.cmdAddSong = new System.Windows.Forms.Button();
             this.nameListBox = new System.Windows.Forms.ListBox();
             this.nameLabel = new System.Windows.Forms.Label();
@@ -47,6 +41,13 @@
             this.lengthListBox = new System.Windows.Forms.ListBox();
             this.cmdLogger = new System.Windows.Forms.Button();
             this.cmdShowGrapher = new System.Windows.Forms.Button();
+            this.cmdToggleMatcher = new System.Windows.Forms.Button();
+            this.bottomLeftIcon = new GamingMusicPlayer.CMButton();
+            this.cmdPlayPause = new GamingMusicPlayer.CMButton();
+            this.cmdPrev = new GamingMusicPlayer.CMButton();
+            this.cmdNext = new GamingMusicPlayer.CMButton();
+            this.cmdShuffle = new GamingMusicPlayer.CMButton();
+            this.cmdLoop = new GamingMusicPlayer.CMButton();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -108,6 +109,84 @@
             this.txtMusicProgress.Size = new System.Drawing.Size(115, 17);
             this.txtMusicProgress.TabIndex = 14;
             this.txtMusicProgress.Text = "txtMusicProgress";
+            // 
+            // cmdAddSong
+            // 
+            this.cmdAddSong.Location = new System.Drawing.Point(12, 4);
+            this.cmdAddSong.Name = "cmdAddSong";
+            this.cmdAddSong.Size = new System.Drawing.Size(147, 41);
+            this.cmdAddSong.TabIndex = 8;
+            this.cmdAddSong.Text = "Add Song";
+            this.cmdAddSong.UseVisualStyleBackColor = true;
+            this.cmdAddSong.Click += new System.EventHandler(this.cmdAddSong_Click);
+            // 
+            // nameListBox
+            // 
+            this.nameListBox.FormattingEnabled = true;
+            this.nameListBox.ItemHeight = 16;
+            this.nameListBox.Location = new System.Drawing.Point(393, 60);
+            this.nameListBox.Name = "nameListBox";
+            this.nameListBox.Size = new System.Drawing.Size(381, 372);
+            this.nameListBox.TabIndex = 10;
+            this.nameListBox.SelectedIndexChanged += new System.EventHandler(this.nameListBox_SelectedIndexChanged);
+            // 
+            // nameLabel
+            // 
+            this.nameLabel.AutoSize = true;
+            this.nameLabel.Location = new System.Drawing.Point(405, 40);
+            this.nameLabel.Name = "nameLabel";
+            this.nameLabel.Size = new System.Drawing.Size(45, 17);
+            this.nameLabel.TabIndex = 12;
+            this.nameLabel.Text = "Name";
+            // 
+            // lengthLabel
+            // 
+            this.lengthLabel.AutoSize = true;
+            this.lengthLabel.Location = new System.Drawing.Point(792, 40);
+            this.lengthLabel.Name = "lengthLabel";
+            this.lengthLabel.Size = new System.Drawing.Size(52, 17);
+            this.lengthLabel.TabIndex = 13;
+            this.lengthLabel.Text = "Length";
+            // 
+            // lengthListBox
+            // 
+            this.lengthListBox.FormattingEnabled = true;
+            this.lengthListBox.ItemHeight = 16;
+            this.lengthListBox.Location = new System.Drawing.Point(780, 60);
+            this.lengthListBox.Name = "lengthListBox";
+            this.lengthListBox.Size = new System.Drawing.Size(199, 372);
+            this.lengthListBox.TabIndex = 11;
+            this.lengthListBox.SelectedIndexChanged += new System.EventHandler(this.lengthListBox_SelectedIndexChanged);
+            // 
+            // cmdLogger
+            // 
+            this.cmdLogger.Location = new System.Drawing.Point(12, 147);
+            this.cmdLogger.Name = "cmdLogger";
+            this.cmdLogger.Size = new System.Drawing.Size(147, 41);
+            this.cmdLogger.TabIndex = 14;
+            this.cmdLogger.Text = "Show logger";
+            this.cmdLogger.UseVisualStyleBackColor = true;
+            this.cmdLogger.Click += new System.EventHandler(this.cmdLogger_Click);
+            // 
+            // cmdShowGrapher
+            // 
+            this.cmdShowGrapher.Location = new System.Drawing.Point(12, 194);
+            this.cmdShowGrapher.Name = "cmdShowGrapher";
+            this.cmdShowGrapher.Size = new System.Drawing.Size(147, 41);
+            this.cmdShowGrapher.TabIndex = 15;
+            this.cmdShowGrapher.Text = "Show Grapher";
+            this.cmdShowGrapher.UseVisualStyleBackColor = true;
+            this.cmdShowGrapher.Click += new System.EventHandler(this.cmdShowGrapher_Click);
+            // 
+            // cmdToggleMatcher
+            // 
+            this.cmdToggleMatcher.Location = new System.Drawing.Point(12, 241);
+            this.cmdToggleMatcher.Name = "cmdToggleMatcher";
+            this.cmdToggleMatcher.Size = new System.Drawing.Size(147, 41);
+            this.cmdToggleMatcher.TabIndex = 16;
+            this.cmdToggleMatcher.Text = "Show Matcher";
+            this.cmdToggleMatcher.UseVisualStyleBackColor = true;
+            this.cmdToggleMatcher.Click += new System.EventHandler(this.cmdToggleMatcher_Click);
             // 
             // bottomLeftIcon
             // 
@@ -198,80 +277,13 @@
             this.cmdLoop.UseVisualStyleBackColor = false;
             this.cmdLoop.Click += new System.EventHandler(this.cmdLoop_Click);
             // 
-            // cmdAddSong
-            // 
-            this.cmdAddSong.Location = new System.Drawing.Point(12, 4);
-            this.cmdAddSong.Name = "cmdAddSong";
-            this.cmdAddSong.Size = new System.Drawing.Size(147, 41);
-            this.cmdAddSong.TabIndex = 8;
-            this.cmdAddSong.Text = "Add Song";
-            this.cmdAddSong.UseVisualStyleBackColor = true;
-            this.cmdAddSong.Click += new System.EventHandler(this.cmdAddSong_Click);
-            // 
-            // nameListBox
-            // 
-            this.nameListBox.FormattingEnabled = true;
-            this.nameListBox.ItemHeight = 16;
-            this.nameListBox.Location = new System.Drawing.Point(393, 60);
-            this.nameListBox.Name = "nameListBox";
-            this.nameListBox.Size = new System.Drawing.Size(381, 372);
-            this.nameListBox.TabIndex = 10;
-            this.nameListBox.SelectedIndexChanged += new System.EventHandler(this.nameListBox_SelectedIndexChanged);
-            // 
-            // nameLabel
-            // 
-            this.nameLabel.AutoSize = true;
-            this.nameLabel.Location = new System.Drawing.Point(405, 40);
-            this.nameLabel.Name = "nameLabel";
-            this.nameLabel.Size = new System.Drawing.Size(45, 17);
-            this.nameLabel.TabIndex = 12;
-            this.nameLabel.Text = "Name";
-            // 
-            // lengthLabel
-            // 
-            this.lengthLabel.AutoSize = true;
-            this.lengthLabel.Location = new System.Drawing.Point(792, 40);
-            this.lengthLabel.Name = "lengthLabel";
-            this.lengthLabel.Size = new System.Drawing.Size(52, 17);
-            this.lengthLabel.TabIndex = 13;
-            this.lengthLabel.Text = "Length";
-            // 
-            // lengthListBox
-            // 
-            this.lengthListBox.FormattingEnabled = true;
-            this.lengthListBox.ItemHeight = 16;
-            this.lengthListBox.Location = new System.Drawing.Point(780, 60);
-            this.lengthListBox.Name = "lengthListBox";
-            this.lengthListBox.Size = new System.Drawing.Size(199, 372);
-            this.lengthListBox.TabIndex = 11;
-            this.lengthListBox.SelectedIndexChanged += new System.EventHandler(this.lengthListBox_SelectedIndexChanged);
-            // 
-            // cmdLogger
-            // 
-            this.cmdLogger.Location = new System.Drawing.Point(12, 147);
-            this.cmdLogger.Name = "cmdLogger";
-            this.cmdLogger.Size = new System.Drawing.Size(147, 41);
-            this.cmdLogger.TabIndex = 14;
-            this.cmdLogger.Text = "Show logger";
-            this.cmdLogger.UseVisualStyleBackColor = true;
-            this.cmdLogger.Click += new System.EventHandler(this.cmdLogger_Click);
-            // 
-            // cmdShowGrapher
-            // 
-            this.cmdShowGrapher.Location = new System.Drawing.Point(12, 194);
-            this.cmdShowGrapher.Name = "cmdShowGrapher";
-            this.cmdShowGrapher.Size = new System.Drawing.Size(147, 41);
-            this.cmdShowGrapher.TabIndex = 15;
-            this.cmdShowGrapher.Text = "Show Grapher";
-            this.cmdShowGrapher.UseVisualStyleBackColor = true;
-            this.cmdShowGrapher.Click += new System.EventHandler(this.cmdShowGrapher_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1174, 633);
+            this.Controls.Add(this.cmdToggleMatcher);
             this.Controls.Add(this.cmdShowGrapher);
             this.Controls.Add(this.cmdLogger);
             this.Controls.Add(this.lengthLabel);
@@ -313,6 +325,7 @@
         private System.Windows.Forms.Label seekLabel;
         private System.Windows.Forms.Button cmdLogger;
         private System.Windows.Forms.Button cmdShowGrapher;
+        private System.Windows.Forms.Button cmdToggleMatcher;
     }
 }
 
