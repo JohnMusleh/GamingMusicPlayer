@@ -25,7 +25,10 @@ namespace GamingMusicPlayer
         private Logger loggerForm;
         private Grapher grapherForm;
         private SongMatcher matcherForm;
-        
+
+        private VolumeMixer vm;
+        private int prevVolume;
+        private bool loweredVolume;
 
         public MainForm()
         {
@@ -43,11 +46,46 @@ namespace GamingMusicPlayer
             loggerForm = new Logger();
             grapherForm = new Grapher();
             matcherForm = new SongMatcher();
-            
+
+            vm = new VolumeMixer();
+            vm.OnPeakChanged += onPeakChanged;
+            vm.subscribeApp("ts3client_win64");
+            prevVolume = mp.Volume;
+            loweredVolume = false;
+
         }
 
-        
 
+        private void onPeakChanged(object sender, VolumeMixer.PeakChangedArgs e)
+        {
+            if (e.app.name.Equals("ts3client_win64"))
+            {
+                
+                if (e.app.peak > 0.2 && !loweredVolume)
+                {
+                    prevVolume = mp.Volume;
+                    Console.WriteLine("ts3 peak:" + e.app.peak);
+                    Console.WriteLine("prev volume:" + mp.Volume);
+                    this.Invoke((MethodInvoker)delegate ()
+                    {
+                        mp.setVolume(30);
+                    });
+                    Console.WriteLine("new volume:" + mp.Volume);
+                    loweredVolume = true;
+                }
+                else if (e.app.peak == 0)
+                {
+                    Console.WriteLine("ts3 peak:" + e.app.peak);
+                    this.Invoke((MethodInvoker)delegate ()
+                    {
+                        mp.setVolume(prevVolume);
+                    });
+                    Console.WriteLine("new volume:" + mp.Volume);
+                    loweredVolume = false;
+                }
+            }
+            //Console.WriteLine(e.app.name+" -volume peak:"+e.app.peak);
+        }
         private void updateMusicTrackbar()
         {
             while (running) //needs to be while app is still alive!
@@ -457,6 +495,25 @@ namespace GamingMusicPlayer
                 matcherForm.show();
                 cmdToggleMatcher.Text = "Hide Matcher";
             }
+        }
+
+        private void cmdPriorTs3_Click(object sender, EventArgs e)
+        {
+            if (vm.Running)
+            {
+                vm.stopListening();
+                cmdPriorTs3.Text = "Prioritize TS3";
+            }
+            else
+            {
+                vm.startListening();
+                cmdPriorTs3.Text = "Un-Prioritize TS3";
+            }
+        }
+
+        private void cmdTest_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine(mp.Volume);
         }
     }
 }

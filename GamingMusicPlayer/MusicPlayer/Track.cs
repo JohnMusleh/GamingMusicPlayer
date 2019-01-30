@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GamingMusicPlayer.MusicPlayer
 {
-    //The track class represents a music track
+    /*Track represents a music track, only MP3 and WAV is supported */
     public class Track : ICloneable
     {
 

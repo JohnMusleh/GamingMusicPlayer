@@ -42,12 +42,14 @@
             this.cmdLogger = new System.Windows.Forms.Button();
             this.cmdShowGrapher = new System.Windows.Forms.Button();
             this.cmdToggleMatcher = new System.Windows.Forms.Button();
+            this.cmdPriorTs3 = new System.Windows.Forms.Button();
             this.bottomLeftIcon = new GamingMusicPlayer.CMButton();
             this.cmdPlayPause = new GamingMusicPlayer.CMButton();
             this.cmdPrev = new GamingMusicPlayer.CMButton();
             this.cmdNext = new GamingMusicPlayer.CMButton();
             this.cmdShuffle = new GamingMusicPlayer.CMButton();
             this.cmdLoop = new GamingMusicPlayer.CMButton();
+            this.cmdTest = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -188,6 +190,16 @@
             this.cmdToggleMatcher.UseVisualStyleBackColor = true;
             this.cmdToggleMatcher.Click += new System.EventHandler(this.cmdToggleMatcher_Click);
             // 
+            // cmdPriorTs3
+            // 
+            this.cmdPriorTs3.Location = new System.Drawing.Point(988, 164);
+            this.cmdPriorTs3.Name = "cmdPriorTs3";
+            this.cmdPriorTs3.Size = new System.Drawing.Size(174, 45);
+            this.cmdPriorTs3.TabIndex = 17;
+            this.cmdPriorTs3.Text = "Prioritize TS3";
+            this.cmdPriorTs3.UseVisualStyleBackColor = true;
+            this.cmdPriorTs3.Click += new System.EventHandler(this.cmdPriorTs3_Click);
+            // 
             // bottomLeftIcon
             // 
             this.bottomLeftIcon.BackColor = System.Drawing.Color.Transparent;
@@ -277,12 +289,24 @@
             this.cmdLoop.UseVisualStyleBackColor = false;
             this.cmdLoop.Click += new System.EventHandler(this.cmdLoop_Click);
             // 
+            // cmdTest
+            // 
+            this.cmdTest.Location = new System.Drawing.Point(1006, 282);
+            this.cmdTest.Name = "cmdTest";
+            this.cmdTest.Size = new System.Drawing.Size(128, 43);
+            this.cmdTest.TabIndex = 18;
+            this.cmdTest.Text = "Print volume";
+            this.cmdTest.UseVisualStyleBackColor = true;
+            this.cmdTest.Click += new System.EventHandler(this.cmdTest_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1174, 633);
+            this.Controls.Add(this.cmdTest);
+            this.Controls.Add(this.cmdPriorTs3);
             this.Controls.Add(this.cmdToggleMatcher);
             this.Controls.Add(this.cmdShowGrapher);
             this.Controls.Add(this.cmdLogger);
@@ -326,6 +350,8 @@
         private System.Windows.Forms.Button cmdLogger;
         private System.Windows.Forms.Button cmdShowGrapher;
         private System.Windows.Forms.Button cmdToggleMatcher;
+        private System.Windows.Forms.Button cmdPriorTs3;
+        private System.Windows.Forms.Button cmdTest;
     }
 }
 

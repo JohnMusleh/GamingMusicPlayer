@@ -61,6 +61,7 @@
     <Compile Include="Grapher.Designer.cs">
       <DependentUpon>Grapher.cs</DependentUpon>
     </Compile>
+    <Compile Include="MusicPlayer\VolumeMixer.cs" />
     <Compile Include="SignalProcessing\Keyboard\KeyboardProcessor.cs" />
     <Compile Include="Logger.cs">
       <SubType>Form</SubType>

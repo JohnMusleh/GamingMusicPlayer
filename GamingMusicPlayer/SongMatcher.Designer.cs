@@ -34,12 +34,13 @@
             this.cmdClearLogs = new System.Windows.Forms.Button();
             this.mouseLabel = new System.Windows.Forms.Label();
             this.keyboardLabel = new System.Windows.Forms.Label();
+            this.teamspeakPeakLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(355, 38);
+            this.statusLabel.Location = new System.Drawing.Point(236, 103);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(80, 17);
             this.statusLabel.TabIndex = 0;
@@ -47,7 +48,7 @@
             // 
             // cmdToggleMatching
             // 
-            this.cmdToggleMatching.Location = new System.Drawing.Point(334, 382);
+            this.cmdToggleMatching.Location = new System.Drawing.Point(84, 83);
             this.cmdToggleMatching.Name = "cmdToggleMatching";
             this.cmdToggleMatching.Size = new System.Drawing.Size(125, 56);
             this.cmdToggleMatching.TabIndex = 1;
@@ -77,7 +78,7 @@
             // mouseLabel
             // 
             this.mouseLabel.AutoSize = true;
-            this.mouseLabel.Location = new System.Drawing.Point(81, 38);
+            this.mouseLabel.Location = new System.Drawing.Point(81, 9);
             this.mouseLabel.Name = "mouseLabel";
             this.mouseLabel.Size = new System.Drawing.Size(83, 17);
             this.mouseLabel.TabIndex = 4;
@@ -86,17 +87,27 @@
             // keyboardLabel
             // 
             this.keyboardLabel.AutoSize = true;
-            this.keyboardLabel.Location = new System.Drawing.Point(81, 83);
+            this.keyboardLabel.Location = new System.Drawing.Point(81, 38);
             this.keyboardLabel.Name = "keyboardLabel";
             this.keyboardLabel.Size = new System.Drawing.Size(100, 17);
             this.keyboardLabel.TabIndex = 5;
             this.keyboardLabel.Text = "keyboardBPM:";
+            // 
+            // teamspeakPeakLabel
+            // 
+            this.teamspeakPeakLabel.AutoSize = true;
+            this.teamspeakPeakLabel.Location = new System.Drawing.Point(97, 277);
+            this.teamspeakPeakLabel.Name = "teamspeakPeakLabel";
+            this.teamspeakPeakLabel.Size = new System.Drawing.Size(112, 17);
+            this.teamspeakPeakLabel.TabIndex = 6;
+            this.teamspeakPeakLabel.Text = "teamspeak peak";
             // 
             // SongMatcher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.teamspeakPeakLabel);
             this.Controls.Add(this.keyboardLabel);
             this.Controls.Add(this.mouseLabel);
             this.Controls.Add(this.cmdClearLogs);
@@ -118,5 +129,6 @@
         private System.Windows.Forms.Button cmdClearLogs;
         private System.Windows.Forms.Label mouseLabel;
         private System.Windows.Forms.Label keyboardLabel;
+        private System.Windows.Forms.Label teamspeakPeakLabel;
     }
 }

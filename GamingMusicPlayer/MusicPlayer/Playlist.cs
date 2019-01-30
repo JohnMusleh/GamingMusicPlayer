@@ -8,6 +8,7 @@ namespace GamingMusicPlayer.MusicPlayer
 {
     public class Playlist
     {
+        /* Playlist represents a music playlist; as in a list of Track's, it has shuffle and deshuffle features*/
         private List<Track> tracklist;
         private List<int> play_order; //list of index's of the tracklist
         private int selected_index; //index of the play_order index of track being played
@@ -134,7 +135,6 @@ namespace GamingMusicPlayer.MusicPlayer
             if (play_order.Count == 0)
                 return false;
             int track_index = play_order.ElementAt(selected_index);
-            Console.WriteLine("attempting to remove track index:" + track_index);
             selected_index = 0;
             for (int i = 0; i < play_order.Count; i++)
                 play_order[i] = i;
@@ -142,8 +142,6 @@ namespace GamingMusicPlayer.MusicPlayer
             play_order.RemoveAt(track_index);
             for (int i = 0; i < play_order.Count; i++)
                 play_order[i] = i;
-
-
             if (shuffled)
                 shuffle();
             return true;
