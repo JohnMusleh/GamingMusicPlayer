@@ -97,7 +97,7 @@ namespace GamingMusicPlayer
 
         private void cmdDrawTest_Click(object sender, EventArgs e)
         {
-            kp.record(60);
+            kp.record(5);
             cmdRecordKeyboard.Text = "Recording..";
             cmdRecordKeyboard.Enabled = false;
             cmdPlotPlayingSong.Enabled = false;
@@ -112,7 +112,7 @@ namespace GamingMusicPlayer
             {
                 drawThread.Suspend();
             }
-            sp.ComputeBPM(kp.Data, 60,true,true);
+            sp.ComputeBPM(kp.Data, 5,true,true);
             plot(kp.Data);
             cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
                 cmdRecordKeyboard.Text = "Record Keyboard";
@@ -125,7 +125,7 @@ namespace GamingMusicPlayer
 
         private void onMouseDataReady(object sender, EventArgs e)
         {
-            sp.ComputeBPM(mp.Data, 60,true,true);
+            sp.ComputeBPM(mp.Data, 5,true,true);
             if (drawThread != null)
             {
                 drawThread.Suspend();
@@ -220,7 +220,7 @@ namespace GamingMusicPlayer
         {
             double minDistance = 200;
             //1164,364 pos of record mouse button
-            mp.record(60, (int)minDistance,new Point(1164, 364));
+            mp.record(5, (int)minDistance,new Point(1164, 364));
             cmdRecordMouse.Text = "Recording..";
             cmdRecordMouse.Enabled = false;
             cmdRecordKeyboard.Enabled = false;

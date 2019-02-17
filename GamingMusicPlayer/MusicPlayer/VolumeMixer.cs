@@ -75,19 +75,24 @@ namespace GamingMusicPlayer.MusicPlayer
                 updateActiveApps();
                 foreach(Application a in activeApps)
                 {
-                    for(int i = 0; i < subscribedApps.Count; i++)
+                    lock (subscribedAppsLock)
                     {
-                        if (subscribedApps[i].name.Equals(a.name))
+                        for (int i = 0; i < subscribedApps.Count; i++)
                         {
-                            if (subscribedApps[i].peak != a.peak)
+                            if (subscribedApps[i].name.Equals(a.name))
                             {
-                                subscribedApps[i].peak = a.peak;
-                                OnPeakChanged(this, new PeakChangedArgs(a));
+                                if (subscribedApps[i].peak != a.peak)
+                                {
+                                    subscribedApps[i].peak = a.peak;
+                                    OnPeakChanged(this, new PeakChangedArgs(a));
+                                }
                             }
                         }
                     }
+                    //Console.Write(a.name+":"+a.peak+"     ");
+                    
                 }
-
+               //Console.WriteLine("|");
             }
 
         }

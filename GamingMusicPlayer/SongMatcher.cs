@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GamingMusicPlayer.MusicPlayer;
 using GamingMusicPlayer.SignalProcessing;
 using GamingMusicPlayer.SignalProcessing.Keyboard;
 using GamingMusicPlayer.SignalProcessing.Mouse;
-using System.Diagnostics;
 using System.Threading;
-using NAudio.CoreAudioApi;
 
 namespace GamingMusicPlayer
 {
@@ -25,7 +18,7 @@ namespace GamingMusicPlayer
         private List<Track> tracks;
         private List<double> tracksBPM;
 
-        private const int RECORDINGS_MAX_SIZE = 12; //each recording is 5 seconds
+        private const int RECORDINGS_MAX_SIZE = 6; //each recording is 5 seconds
         private Queue<short[]> mouseRecordings; 
         private Queue<short[]> keyboardRecordings;
 
@@ -35,24 +28,26 @@ namespace GamingMusicPlayer
         private MouseProcessor mp;
         private SignalProcessor sp;
 
-        private bool mouseLocked; //to lock match() while reading mouse data
-        private bool keyboardLocked; //to lock match() while reading keyboard data
+        private MainForm playerForm;
+
+        //used for normalization
+        private double maxMouseBPM;
+        private double maxKeyboardBPM;
+
+        private Object mouseLock=new Object(); //to lock match() while reading mouse data
+        private Object keyboardLock=new Object(); //to lock match() while reading keyboard data
         private int currTrackIndex;
 
         private Thread worker;
         private bool workerAlive;
 
-        //ts3client_win64
-        private VolumeMixer vm;
-
-
-        public SongMatcher()
+        public SongMatcher(MainForm main)
         {
             InitializeComponent();
             this.tracksBPM = null;
             this.tracks = null;
             this.matching = false;
-
+            playerForm = main;
             this.currTrackIndex = 0;
             sp = new SignalProcessor();
             sp.onBPMReady += onBPMReady;
@@ -65,18 +60,14 @@ namespace GamingMusicPlayer
 
             mouseRecordings = new Queue<short[]>();
             keyboardRecordings = new Queue<short[]>();
-
-            txtLogs.ReadOnly = true;
             
             this.hide();
             MatcherVisible = false;
             workerAlive = false;
-            this.TopMost = true;
+            this.TopMost = true;;
 
-            mouseLocked = false;
-            keyboardLocked = false;
-
-            
+            maxMouseBPM = 30;
+            maxKeyboardBPM = 30;
         }
 
         public void setTracks(List<Track> tracks)
@@ -92,30 +83,43 @@ namespace GamingMusicPlayer
         {
             if (matching)
             {
-                keyboardLocked = true;
-                short[] pointer = kp.Data;
-                short[] data = new short[pointer.Length];
-                for(int i = 0; i < pointer.Length; i++)
+                lock (keyboardLock)
                 {
-                    data[i] = pointer[i];
+                    short[] pointer = kp.Data;
+                    short[] data = new short[pointer.Length];
+                    for (int i = 0; i < pointer.Length; i++)
+                    {
+                        data[i] = pointer[i];
+                    }
+                    if (keyboardRecordings.Count < RECORDINGS_MAX_SIZE)
+                    {
+                        keyboardRecordings.Enqueue(data);
+                    }
+                    else
+                    {
+                        keyboardRecordings.Dequeue();
+                        keyboardRecordings.Enqueue(data);
+                    }
+                    //Console.WriteLine("computing bpm of keyboard data, duration:" + (5 * keyboardRecordings.Count));
+                    sp.ComputeBPM(getKeyboardData(), 5 * keyboardRecordings.Count, true, false);
                 }
-                keyboardLocked = false;
                 
-                if (keyboardRecordings.Count < RECORDINGS_MAX_SIZE)
+                
+                
+
+                //normalizing bpm
+                if (sp.BPM >=maxKeyboardBPM)
                 {
-                    keyboardRecordings.Enqueue(data);
+                    keyboardBPM = 100;
                 }
                 else
                 {
-                    keyboardRecordings.Dequeue();
-                    keyboardRecordings.Enqueue(data);
+                    keyboardBPM = (int)((sp.BPM / maxKeyboardBPM) * 100);
                 }
-                Console.WriteLine("computijng bpm of keyboard data, duration:" + (5 * keyboardRecordings.Count));
-                sp.ComputeBPM(getKeyboardData(), 5*keyboardRecordings.Count, true, false);
-                keyboardBPM = sp.BPM;
+                
                 
                 keyboardLabel.Invoke(new MethodInvoker(delegate {
-                    keyboardLabel.Text = "keyboardBPM:" + keyboardBPM;
+                    keyboardLabel.Text = "% keyBPM:" + keyboardBPM + "    real:"+sp.BPM+"    max:" + maxKeyboardBPM;
                 }));
                
                 match();
@@ -134,30 +138,41 @@ namespace GamingMusicPlayer
         {
             if (matching)
             {
-                mouseLocked = true;
-                short[] pointer = mp.Data;
-                short[] data = new short[pointer.Length];  
-                for (int i = 0; i < pointer.Length; i++)
+                lock (mouseLock)
                 {
-                    data[i] = pointer[i];
+                    short[] pointer = mp.Data;
+                    short[] data = new short[pointer.Length];
+                    for (int i = 0; i < pointer.Length; i++)
+                    {
+                        data[i] = pointer[i];
+                    }
+                    if (mouseRecordings.Count < RECORDINGS_MAX_SIZE)
+                    {
+                        mouseRecordings.Enqueue(data);
+                    }
+                    else
+                    {
+                        mouseRecordings.Dequeue();
+                        mouseRecordings.Enqueue(data);
+                    }
+                    sp.ComputeBPM(getMouseData(), 5 * mouseRecordings.Count, true, false);
                 }
-                mouseLocked = false;
-                if (mouseRecordings.Count < RECORDINGS_MAX_SIZE)
+                
+                
+                //normalizing bpm
+                if (sp.BPM >= maxMouseBPM)
                 {
-                    mouseRecordings.Enqueue(data);
+                    mouseBPM = 100;
                 }
                 else
                 {
-                    mouseRecordings.Dequeue();
-                    mouseRecordings.Enqueue(data);
+                    mouseBPM = (int)((sp.BPM / maxMouseBPM) * 100);
                 }
-                sp.ComputeBPM(getMouseData(), 5 * mouseRecordings.Count, true, false);
-                mouseBPM = sp.BPM;
-                //log("mouse bpm:" + mouseBPM);
+
+               
                 mouseLabel.Invoke(new MethodInvoker(delegate {
-                    mouseLabel.Text = "mouseBPM:" + mouseBPM;
+                    mouseLabel.Text = "% mouseBPM:" + mouseBPM + "    real:"+sp.BPM+"    max:" + maxMouseBPM;
                 }));
-                
                 match();
             }
             else
@@ -197,18 +212,59 @@ namespace GamingMusicPlayer
             setStatus("Matching Mode:" + matching);
         }
 
-        private void match()
+        private void pickTrack()
         {
-            while (mouseLocked || keyboardLocked);
-            if (!mp.Processing)
+            if (tracksBPM == null)
             {
-                mp.record(5, 200, new System.Windows.Point(1164, 364));
-            }
-            if (!kp.Processing)
-            {
-                kp.record(5);
+                return;
             }
             
+            double minDiff = 100;
+            int trackIndex = 0;
+            for (int i = 0; i < tracksBPM.Count; i++)
+            {
+                double d = (1*mouseBPM+0*keyboardBPM)-normalizeTrackBPM(tracksBPM[i]);
+                if (d < 0)
+                {
+                    d *= -1;
+                }
+                if (d < minDiff)
+                {
+                    minDiff = d;
+                    trackIndex = i;
+                }
+            }
+            mouseTrackLabel.Invoke(new MethodInvoker(delegate {
+                keyboardTrackLabel.Text = tracks[trackIndex].Name;
+                mouseTrackLabel.Text = " with bpm:" + tracksBPM[trackIndex] + "   %:" +(int)normalizeTrackBPM(tracksBPM[trackIndex]);
+            }));
+            if (currTrackIndex != trackIndex)
+            {
+                playerForm.playTrack(trackIndex);
+                currTrackIndex = trackIndex;
+            }
+        }
+
+        private void match()
+        {
+            lock (mouseLock)
+            {
+                if (!mp.Processing)
+                {
+                    mp.record(5, 200, new System.Windows.Point(1164, 364));
+                }
+            }
+            lock (keyboardLock)
+            {
+                if (!kp.Processing)
+                {
+                    kp.record(5);
+                }
+            }
+            lock (playerForm)
+            {
+                pickTrack();
+            }
         }
 
         private void worker_calcTracksBPM()
@@ -253,76 +309,9 @@ namespace GamingMusicPlayer
             
         }
 
-        private void log(String str)
+        private double normalizeTrackBPM(double bpm)
         {
-            if (MatcherVisible)
-            {
-                txtLogs.Invoke(new MethodInvoker(delegate {
-                    txtLogs.Text = txtLogs.Text + "\r\n" + str;
-                }));
-            }
-
-        }
-
-        private void cmdClearLogs_Click(object sender, EventArgs e)
-        {
-            //txtLogs.Text = "";
-            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
-            var device = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Communications);
-            var sessions = device.AudioSessionManager.Sessions;
-            Console.WriteLine("device:"+device+"  sessions:"+sessions.Count);
-            for (int i = 0; i < sessions.Count; i++)
-            {
-                var session = sessions[i];
-                if (ProcessExists(session.GetProcessID))
-                {
-                    try
-                    {
-                        var process = Process.GetProcessById((int)session.GetProcessID);
-                        Console.WriteLine((i + 1) + ":" + process.ProcessName + " peak:" + session.AudioMeterInformation.MasterPeakValue);
-                    }
-                    catch (ArgumentException)
-                    {
-                    }
-                }
-            }
-
-
-            vm = new VolumeMixer();
-            vm.OnPeakChanged += onPeakChanged;
-            vm.subscribeApp("ts3client_win64");
-            vm.subscribeApp("chrome");
-            vm.startListening();
-            
-
-        }
-
-        private void onPeakChanged(object sender, VolumeMixer.PeakChangedArgs e)
-        {
-            if (e.app.name.Equals("ts3client_win64"))
-            {
-                teamspeakPeakLabel.Invoke(new MethodInvoker(delegate {
-                    if(e.app.peak>0.2 || e.app.peak == 0)
-                    {
-                        teamspeakPeakLabel.Text = "ts3 peak:" + e.app.peak;
-                    }
-                    
-                }));
-            }
-            //Console.WriteLine(e.app.name+" -volume peak:"+e.app.peak);
-        }
-
-        bool ProcessExists(uint processId)
-        {
-            try
-            {
-                var process = Process.GetProcessById((int)processId);
-                return true;
-            }
-            catch (ArgumentException)
-            {
-                return false;
-            }
+            return (bpm / tracksBPM.Max())*100;
         }
 
         private short[] getKeyboardData()
@@ -351,6 +340,13 @@ namespace GamingMusicPlayer
             }
 
             return data.ToArray();
+        }
+
+
+        private void cmdPickTrack_Click_1(object sender, EventArgs e)
+        {
+            pickTrack();
+            //playerForm.playTrack(0);
         }
     }
 }

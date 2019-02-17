@@ -43,13 +43,13 @@
             this.cmdShowGrapher = new System.Windows.Forms.Button();
             this.cmdToggleMatcher = new System.Windows.Forms.Button();
             this.cmdPriorTs3 = new System.Windows.Forms.Button();
+            this.featuresLabel = new System.Windows.Forms.Label();
             this.bottomLeftIcon = new GamingMusicPlayer.CMButton();
             this.cmdPlayPause = new GamingMusicPlayer.CMButton();
             this.cmdPrev = new GamingMusicPlayer.CMButton();
             this.cmdNext = new GamingMusicPlayer.CMButton();
             this.cmdShuffle = new GamingMusicPlayer.CMButton();
             this.cmdLoop = new GamingMusicPlayer.CMButton();
-            this.cmdTest = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -57,9 +57,9 @@
             // cmdRemove
             // 
             this.cmdRemove.Enabled = false;
-            this.cmdRemove.Location = new System.Drawing.Point(985, 60);
+            this.cmdRemove.Location = new System.Drawing.Point(34, 101);
             this.cmdRemove.Name = "cmdRemove";
-            this.cmdRemove.Size = new System.Drawing.Size(178, 43);
+            this.cmdRemove.Size = new System.Drawing.Size(147, 41);
             this.cmdRemove.TabIndex = 6;
             this.cmdRemove.Text = "Remove";
             this.cmdRemove.UseVisualStyleBackColor = true;
@@ -114,7 +114,7 @@
             // 
             // cmdAddSong
             // 
-            this.cmdAddSong.Location = new System.Drawing.Point(12, 4);
+            this.cmdAddSong.Location = new System.Drawing.Point(34, 40);
             this.cmdAddSong.Name = "cmdAddSong";
             this.cmdAddSong.Size = new System.Drawing.Size(147, 41);
             this.cmdAddSong.TabIndex = 8;
@@ -126,7 +126,7 @@
             // 
             this.nameListBox.FormattingEnabled = true;
             this.nameListBox.ItemHeight = 16;
-            this.nameListBox.Location = new System.Drawing.Point(393, 60);
+            this.nameListBox.Location = new System.Drawing.Point(216, 40);
             this.nameListBox.Name = "nameListBox";
             this.nameListBox.Size = new System.Drawing.Size(381, 372);
             this.nameListBox.TabIndex = 10;
@@ -135,7 +135,7 @@
             // nameLabel
             // 
             this.nameLabel.AutoSize = true;
-            this.nameLabel.Location = new System.Drawing.Point(405, 40);
+            this.nameLabel.Location = new System.Drawing.Point(213, 9);
             this.nameLabel.Name = "nameLabel";
             this.nameLabel.Size = new System.Drawing.Size(45, 17);
             this.nameLabel.TabIndex = 12;
@@ -144,7 +144,7 @@
             // lengthLabel
             // 
             this.lengthLabel.AutoSize = true;
-            this.lengthLabel.Location = new System.Drawing.Point(792, 40);
+            this.lengthLabel.Location = new System.Drawing.Point(600, 9);
             this.lengthLabel.Name = "lengthLabel";
             this.lengthLabel.Size = new System.Drawing.Size(52, 17);
             this.lengthLabel.TabIndex = 13;
@@ -154,7 +154,7 @@
             // 
             this.lengthListBox.FormattingEnabled = true;
             this.lengthListBox.ItemHeight = 16;
-            this.lengthListBox.Location = new System.Drawing.Point(780, 60);
+            this.lengthListBox.Location = new System.Drawing.Point(603, 40);
             this.lengthListBox.Name = "lengthListBox";
             this.lengthListBox.Size = new System.Drawing.Size(199, 372);
             this.lengthListBox.TabIndex = 11;
@@ -162,7 +162,7 @@
             // 
             // cmdLogger
             // 
-            this.cmdLogger.Location = new System.Drawing.Point(12, 147);
+            this.cmdLogger.Location = new System.Drawing.Point(12, 341);
             this.cmdLogger.Name = "cmdLogger";
             this.cmdLogger.Size = new System.Drawing.Size(147, 41);
             this.cmdLogger.TabIndex = 14;
@@ -172,7 +172,7 @@
             // 
             // cmdShowGrapher
             // 
-            this.cmdShowGrapher.Location = new System.Drawing.Point(12, 194);
+            this.cmdShowGrapher.Location = new System.Drawing.Point(12, 285);
             this.cmdShowGrapher.Name = "cmdShowGrapher";
             this.cmdShowGrapher.Size = new System.Drawing.Size(147, 41);
             this.cmdShowGrapher.TabIndex = 15;
@@ -182,9 +182,9 @@
             // 
             // cmdToggleMatcher
             // 
-            this.cmdToggleMatcher.Location = new System.Drawing.Point(12, 241);
+            this.cmdToggleMatcher.Location = new System.Drawing.Point(941, 174);
             this.cmdToggleMatcher.Name = "cmdToggleMatcher";
-            this.cmdToggleMatcher.Size = new System.Drawing.Size(147, 41);
+            this.cmdToggleMatcher.Size = new System.Drawing.Size(174, 45);
             this.cmdToggleMatcher.TabIndex = 16;
             this.cmdToggleMatcher.Text = "Show Matcher";
             this.cmdToggleMatcher.UseVisualStyleBackColor = true;
@@ -192,13 +192,22 @@
             // 
             // cmdPriorTs3
             // 
-            this.cmdPriorTs3.Location = new System.Drawing.Point(988, 164);
+            this.cmdPriorTs3.Location = new System.Drawing.Point(941, 97);
             this.cmdPriorTs3.Name = "cmdPriorTs3";
             this.cmdPriorTs3.Size = new System.Drawing.Size(174, 45);
             this.cmdPriorTs3.TabIndex = 17;
-            this.cmdPriorTs3.Text = "Prioritize TS3";
+            this.cmdPriorTs3.Text = "Prioritize voice communication:OFF";
             this.cmdPriorTs3.UseVisualStyleBackColor = true;
             this.cmdPriorTs3.Click += new System.EventHandler(this.cmdPriorTs3_Click);
+            // 
+            // featuresLabel
+            // 
+            this.featuresLabel.AutoSize = true;
+            this.featuresLabel.Location = new System.Drawing.Point(998, 64);
+            this.featuresLabel.Name = "featuresLabel";
+            this.featuresLabel.Size = new System.Drawing.Size(64, 17);
+            this.featuresLabel.TabIndex = 18;
+            this.featuresLabel.Text = "Features";
             // 
             // bottomLeftIcon
             // 
@@ -289,23 +298,13 @@
             this.cmdLoop.UseVisualStyleBackColor = false;
             this.cmdLoop.Click += new System.EventHandler(this.cmdLoop_Click);
             // 
-            // cmdTest
-            // 
-            this.cmdTest.Location = new System.Drawing.Point(1006, 282);
-            this.cmdTest.Name = "cmdTest";
-            this.cmdTest.Size = new System.Drawing.Size(128, 43);
-            this.cmdTest.TabIndex = 18;
-            this.cmdTest.Text = "Print volume";
-            this.cmdTest.UseVisualStyleBackColor = true;
-            this.cmdTest.Click += new System.EventHandler(this.cmdTest_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1174, 633);
-            this.Controls.Add(this.cmdTest);
+            this.Controls.Add(this.featuresLabel);
             this.Controls.Add(this.cmdPriorTs3);
             this.Controls.Add(this.cmdToggleMatcher);
             this.Controls.Add(this.cmdShowGrapher);
@@ -351,7 +350,7 @@
         private System.Windows.Forms.Button cmdShowGrapher;
         private System.Windows.Forms.Button cmdToggleMatcher;
         private System.Windows.Forms.Button cmdPriorTs3;
-        private System.Windows.Forms.Button cmdTest;
+        private System.Windows.Forms.Label featuresLabel;
     }
 }
 

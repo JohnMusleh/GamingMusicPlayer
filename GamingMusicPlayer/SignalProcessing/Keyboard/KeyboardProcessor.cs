@@ -15,7 +15,8 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
         private Thread mainThread;
         private Queue<KeyPressedArgs> keyInputQueue;
 
-        private bool queueLock=false;
+        private Object queueLock = new Object();
+
 
         private short[] signalData;
         private int targetNumOfSamples;
@@ -92,24 +93,28 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
                     numOfSamples++;
                     swPerSample.Restart();
                 }
-                else if (keyInputQueue.Count > 0 && !queueLock)
-                {   
-                    queueLock = true;
-                    KeyPressedArgs k = keyInputQueue.Dequeue();
-                    //Console.WriteLine(k.ToString());
-                    if (k!=null && k.Down)
+                else if (keyInputQueue.Count > 0)
+                {
+                    lock (queueLock)
                     {
-                        signalData[numOfSamples] = 1;
-                        numOfSamples++;
-                        //key down
+                        if(keyInputQueue.Count > 0)
+                        {
+                            KeyPressedArgs k = keyInputQueue.Dequeue();
+                            //Console.WriteLine(k.ToString());
+                            if (k != null && k.Down)
+                            {
+                                signalData[numOfSamples] = 1;
+                                numOfSamples++;
+                                //key down
+                            }
+                            else if (k != null)
+                            {
+                                signalData[numOfSamples] = 0;
+                                numOfSamples++;
+                                //key up
+                            }
+                        }
                     }
-                    else if(k!=null)
-                    {
-                        signalData[numOfSamples] = 0;
-                        numOfSamples++;
-                        //key up
-                    }
-                    queueLock = false;
                     swPerSample.Restart();
                 }
             }
@@ -119,11 +124,12 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
         }
 
         private void OnKeyPressed(object sender, KeyPressedArgs e) {
-            if (working && !queueLock)
+            if (working)
             {
-                queueLock = true;
-                keyInputQueue.Enqueue(e);
-                queueLock = false;
+                lock (queueLock)
+                {
+                    keyInputQueue.Enqueue(e);
+                }
             }
             
         }

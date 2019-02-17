@@ -23,9 +23,9 @@ namespace GamingMusicPlayer.SignalProcessing
         public event EventHandler onBPMReady;
 
         private double bpm;
-        private int beatCount;
+        private double beatCount;
         public double BPM { get { return bpm; } private set { bpm = value; } }
-        public int BeatCount { get { return beatCount; } private set { beatCount = value; } }
+        public double BeatCount { get { return beatCount; } private set { beatCount = value; } }
         private bool artificial_signal;
         private bool threadSupport;
 
@@ -82,7 +82,7 @@ namespace GamingMusicPlayer.SignalProcessing
 
                 //http://archive.gamedev.net/archive/reference/programming/features/beatdetection/index.html
                 //Simple sound energy algorithm #3:
-                int beats = 0;
+                double beats = 0;
                 List<short> chan1 = new List<short>();
                 List<short> chan2 = new List<short>();
 
@@ -102,7 +102,7 @@ namespace GamingMusicPlayer.SignalProcessing
                 {
                     blockSize = timeDomainData.Length/(lengthInSecs);  //[TESTING MOUSE]
                     
-                    historyQueueMaxSize = 7;//[TESTING MOUSE]
+                    historyQueueMaxSize = 10;//[TESTING MOUSE]
                     
                     leftChn = timeDomainData;  //[TESTING MOUSE]
                 }
@@ -139,10 +139,29 @@ namespace GamingMusicPlayer.SignalProcessing
                     {
                         if (i < 100000)
                         {
-                            //Console.Write("-beat at:" + i + "-");
+                            Console.Write("-beat at:" + i + "-");
+                        }
+
+                        //testing of weighted beat counts 
+                        //[TESTING] i is in leftChan.length , need to make LAST i's heavier
+                        //divide into 4 segments
+                        if (i <= leftChn.Length * 0.25)
+                        {
+                            beats += 0.25;
+                        }
+                        else if (i <= leftChn.Length * 0.50)
+                        {
+                            beats += 0.5;
+                        }
+                        else if (i <= leftChn.Length * 0.75)
+                        {
+                            beats++;
+                        }
+                        else
+                        {
+                            beats += 2;
                         }
                         
-                        beats++;
                     }
                 }
                 BeatCount = beats;

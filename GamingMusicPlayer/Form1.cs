@@ -45,26 +45,42 @@ namespace GamingMusicPlayer
 
             loggerForm = new Logger();
             grapherForm = new Grapher();
-            matcherForm = new SongMatcher();
+            matcherForm = new SongMatcher(this);
 
             vm = new VolumeMixer();
             vm.OnPeakChanged += onPeakChanged;
             vm.subscribeApp("ts3client_win64");
+            vm.subscribeApp("SkypeHost");
+            vm.subscribeApp("Discord");
             prevVolume = mp.Volume;
             loweredVolume = false;
-
+            cmdShowGrapher.Visible = false;
+            cmdLogger.Visible = false;
         }
 
+        public void playTrack(int trackIndex)
+        {
+            if (mp.selectTrack(trackIndex))
+            {
+                nameListBox.Invoke((MethodInvoker)delegate ()
+                {
+                    nameListBox.SelectedIndex = trackIndex;
+                    cmdPlayPause.PerformClick();
+                });
+                
+                
+            }
+        }
 
         private void onPeakChanged(object sender, VolumeMixer.PeakChangedArgs e)
         {
-            if (e.app.name.Equals("ts3client_win64"))
+            if (e.app.name.Equals("ts3client_win64") || e.app.name.Equals("SkypeHost") || e.app.name.Equals("Discord"))
             {
                 
                 if (e.app.peak > 0.2 && !loweredVolume)
                 {
                     prevVolume = mp.Volume;
-                    Console.WriteLine("ts3 peak:" + e.app.peak);
+                    Console.WriteLine(e.app.name+":peak:" + e.app.peak);
                     Console.WriteLine("prev volume:" + mp.Volume);
                     this.Invoke((MethodInvoker)delegate ()
                     {
@@ -73,9 +89,9 @@ namespace GamingMusicPlayer
                     Console.WriteLine("new volume:" + mp.Volume);
                     loweredVolume = true;
                 }
-                else if (e.app.peak == 0)
+                else if (e.app.peak < 0.05 && loweredVolume)
                 {
-                    Console.WriteLine("ts3 peak:" + e.app.peak);
+                    Console.WriteLine(e.app.name + "peak:" + e.app.peak);
                     this.Invoke((MethodInvoker)delegate ()
                     {
                         mp.setVolume(prevVolume);
@@ -166,7 +182,7 @@ namespace GamingMusicPlayer
         private void cmdAddSong_Click(object sender, EventArgs e)
         {
             OpenFileDialog songFileDialog = new OpenFileDialog();
-            songFileDialog.Filter = "WAV Files|*.wav|MP3 Files|*.mp*|All Files|*.*";
+            songFileDialog.Filter = "All Files|*.*|WAV Files|*.wav|MP3 Files|*.mp*";
             songFileDialog.Title = "Select a Music File";
             if (songFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -402,6 +418,7 @@ namespace GamingMusicPlayer
 
             loggerForm.Dispose();
             grapherForm.Dispose();
+            matcherForm.Dispose();
             Application.Exit();
         }
 
@@ -502,18 +519,13 @@ namespace GamingMusicPlayer
             if (vm.Running)
             {
                 vm.stopListening();
-                cmdPriorTs3.Text = "Prioritize TS3";
+                cmdPriorTs3.Text = "Prioritize voice communication:OFF";
             }
             else
             {
                 vm.startListening();
-                cmdPriorTs3.Text = "Un-Prioritize TS3";
+                cmdPriorTs3.Text = "Prioritize voice communication:ON";
             }
-        }
-
-        private void cmdTest_Click(object sender, EventArgs e)
-        {
-            Console.WriteLine(mp.Volume);
         }
     }
 }
