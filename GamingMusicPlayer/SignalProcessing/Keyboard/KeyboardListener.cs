@@ -10,7 +10,7 @@ using System.Diagnostics;
 namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
     //this class creates a low level windows hook to scan keyboard keys, each key is grabbed by subscribing to the event OnKeyPressed  
-    //this will be used later to create a signal from keyboard data.
+    //this will be used later to create a signal from keyboard data. [read KeyboardProcessor]
     public static class KeyboardListener
     {
         private const int WH_KEYBOARD_LL = 13;

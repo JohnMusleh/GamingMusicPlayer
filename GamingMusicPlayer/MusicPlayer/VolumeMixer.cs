@@ -9,6 +9,9 @@ using NAudio.CoreAudioApi;
 
 namespace GamingMusicPlayer.MusicPlayer
 {
+    /* VolumeMixer represents the volume mixer application in windows
+     *      subscribing an app to this class will notify peak changes through the event OnPeakChanged
+     *       this class is used to establish the voice prioritizing feature*/
     class VolumeMixer
     {
         public class Application

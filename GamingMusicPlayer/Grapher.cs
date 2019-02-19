@@ -17,6 +17,7 @@ using GamingMusicPlayer.SignalProcessing;
 
 namespace GamingMusicPlayer
 {
+    /*This class is used to test signal processing algorithms, it has the ability to draw a signal on the screen. */
     public partial class Grapher : Form
     {
         private Track t;

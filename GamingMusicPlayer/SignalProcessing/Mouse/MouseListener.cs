@@ -10,6 +10,8 @@ using System.Windows;
 
 namespace GamingMusicPlayer.SignalProcessing.Mouse
 {
+    //this class creates a low level windows hook to scan mouse movements
+    //this will be used later to create a signal from mouse data. [read MouseProcessor]
     public static class MouseListener
     {
         private const int WM_MOUSEMOVE = 0x0200;

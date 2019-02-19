@@ -9,6 +9,7 @@ using System.Windows;
 
 namespace GamingMusicPlayer.SignalProcessing.Mouse
 {
+    //class that turns mouse input data coming from a MouseListener into a time domain signal data in order to compute relevant values on it.
     public class MouseProcessor
     {
         private Object queueLock = new Object();

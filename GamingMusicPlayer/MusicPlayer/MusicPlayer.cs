@@ -4,10 +4,10 @@ using System.Text;
 
 namespace GamingMusicPlayer.MusicPlayer
 {
+    /* MusicPlayer is an implementation of a music player, the music player can load only one playlist at a time
+         *      MusicPlayer uses mci commands to communication with mci device and play music files, it only supports MP3 and WAV files.*/
     public class MusicPlayer
     {
-        /* MusicPlayer is an implementation of a music player, the music player can load only one playlist at a time
-         *      MusicPlayer uses mci commands to communication with mci device and play music files, it only supports MP3 and WAV files.*/
         private string mciCommand;
         private StringBuilder mciReturn;
         private int rflag;//return flag for the mci methods

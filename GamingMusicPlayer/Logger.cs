@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace GamingMusicPlayer
 {
+    //A logger for developer mode
     public partial class Logger : Form
     {
         private string txt;

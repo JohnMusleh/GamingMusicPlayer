@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
-    //class that turns keyboard input data coming from a KeyBoardListener into a time domain signal data
+    //class that turns keyboard input data coming from a KeyBoardListener into a time domain signal data in order to compute relevant values on it.
     public class KeyboardProcessor
     {
         private Thread mainThread;

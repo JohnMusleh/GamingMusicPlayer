@@ -73,13 +73,6 @@ namespace GamingMusicPlayer.SignalProcessing
             calculating = true;
             if (selectedTask == Task.BPM)
             {
-                /*//converting float to short
-                byte[] bytes = new byte[timeDomainData.Length * sizeof(float)];
-                Buffer.BlockCopy(timeDomainData, 0, bytes, 0, bytes.Length); //floats to bytes
-
-                short[] shortSampleBuffer = new short[bytes.Length / sizeof(short)];
-                Buffer.BlockCopy(bytes, 0, shortSampleBuffer, 0, bytes.Length); //bytes to shorts*/
-
                 //http://archive.gamedev.net/archive/reference/programming/features/beatdetection/index.html
                 //Simple sound energy algorithm #3:
                 double beats = 0;

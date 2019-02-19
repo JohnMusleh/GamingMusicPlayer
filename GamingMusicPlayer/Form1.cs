@@ -12,6 +12,7 @@ using GamingMusicPlayer.MusicPlayer;
 
 namespace GamingMusicPlayer
 {
+    /* This class is the main GUI class of the application, the user is able to use all the features from this Form.*/
     public partial class MainForm : Form
     {
         private MusicPlayer.MusicPlayer mp;

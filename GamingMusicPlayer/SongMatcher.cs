@@ -10,6 +10,7 @@ using System.Threading;
 
 namespace GamingMusicPlayer
 {
+    /*SongMatcher is an always-on-top GUI that automatically picks songs according to mouse+keyboard inputs */
     public partial class SongMatcher : Form
     {
         public Boolean MatcherVisible { get; private set; }
