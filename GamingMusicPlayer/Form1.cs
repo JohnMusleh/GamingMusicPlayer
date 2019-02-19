@@ -55,8 +55,9 @@ namespace GamingMusicPlayer
             vm.subscribeApp("Discord");
             prevVolume = mp.Volume;
             loweredVolume = false;
-            cmdShowGrapher.Visible = false;
-            cmdLogger.Visible = false;
+            //for developer mode
+            //cmdShowGrapher.Visible = false;
+            //cmdLogger.Visible = false;
         }
 
         public void playTrack(int trackIndex)
@@ -85,7 +86,7 @@ namespace GamingMusicPlayer
                     Console.WriteLine("prev volume:" + mp.Volume);
                     this.Invoke((MethodInvoker)delegate ()
                     {
-                        mp.setVolume(30);
+                        mp.setVolume(130);
                     });
                     Console.WriteLine("new volume:" + mp.Volume);
                     loweredVolume = true;

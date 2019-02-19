@@ -94,14 +94,17 @@ namespace GamingMusicPlayer.SignalProcessing
                 if (artificial_signal)
                 {
                     blockSize = timeDomainData.Length/(lengthInSecs);  //[TESTING MOUSE]
-                    
+                    if (blockSize < 20)
+                    {
+                        blockSize = 20;
+                    }
                     historyQueueMaxSize = 10;//[TESTING MOUSE]
                     
                     leftChn = timeDomainData;  //[TESTING MOUSE]
                 }
-                /*Console.WriteLine("block size:" + blockSize);
+                Console.WriteLine("block size:" + blockSize);
                 Console.WriteLine(historyQueueMaxSize);
-                Console.WriteLine("leftChn.length" + leftChn.Length);*/
+                Console.WriteLine("leftChn.length" + leftChn.Length);
                 for (int i=0; i < leftChn.Length; i+= blockSize)
                 {
                     double instantEnergy = 0;
@@ -132,29 +135,41 @@ namespace GamingMusicPlayer.SignalProcessing
                     {
                         if (i < 100000)
                         {
-                            Console.Write("-beat at:" + i + "-");
+                            Console.WriteLine("-beat at:" + i + "-");
                         }
 
-                        //testing of weighted beat counts 
-                        //[TESTING] i is in leftChan.length , need to make LAST i's heavier
-                        //divide into 4 segments
-                        if (i <= leftChn.Length * 0.25)
+                        
+                        if (artificial_signal)
                         {
-                            beats += 0.25;
-                        }
-                        else if (i <= leftChn.Length * 0.50)
-                        {
-                            beats += 0.5;
-                        }
-                        else if (i <= leftChn.Length * 0.75)
-                        {
-                            beats++;
+                            //testing of weighted beat counts 
+                            //[TESTING] i is in leftChan.length , need to make LAST i's 'heavier'
+                            //divide into 5 segments
+                            if (i <= leftChn.Length * 0.2)
+                            {
+                                beats += 0.25;
+                            }
+                            else if (i <= leftChn.Length * 0.4)
+                            {
+                                beats += 0.5;
+                            }
+                            else if (i <= leftChn.Length * 0.6)
+                            {
+                                beats++;
+                            }
+                            else if (i <= leftChn.Length * 0.8)
+                            {
+                                beats += 2;
+                            }
+                            else
+                            {
+                                beats += 4;
+                            }
+                            //beats++;
                         }
                         else
                         {
-                            beats += 2;
+                            beats++;
                         }
-                        
                     }
                 }
                 BeatCount = beats;
