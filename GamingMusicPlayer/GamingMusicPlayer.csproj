@@ -12,6 +12,21 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -38,6 +53,7 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
@@ -55,6 +71,14 @@
     <Compile Include="CMButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DatabaseAdapter.cs" />
+    <Compile Include="DBViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DBViewer.Designer.cs">
+      <DependentUpon>DBViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DriveScanner.cs" />
     <Compile Include="Grapher.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,6 +86,9 @@
       <DependentUpon>Grapher.cs</DependentUpon>
     </Compile>
     <Compile Include="MusicPlayer\VolumeMixer.cs" />
+    <Compile Include="SelectableMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="SignalProcessing\Keyboard\KeyboardProcessor.cs" />
     <Compile Include="Logger.cs">
       <SubType>Form</SubType>
@@ -94,6 +121,14 @@
     <Compile Include="SongMatcher.Designer.cs">
       <DependentUpon>SongMatcher.cs</DependentUpon>
     </Compile>
+    <Compile Include="SongsDBDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SongsDBDataSet.xsd</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="DBViewer.resx">
+      <DependentUpon>DBViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -113,6 +148,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SelectableMessageBox.resx">
+      <DependentUpon>SelectableMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SongMatcher.resx">
       <DependentUpon>SongMatcher.cs</DependentUpon>
     </EmbeddedResource>
@@ -126,9 +164,22 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="SongsDBDataSet.xsc">
+      <DependentUpon>SongsDBDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="SongsDBDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>SongsDBDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="SongsDBDataSet.xss">
+      <DependentUpon>SongsDBDataSet.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\controller.ico" />
@@ -171,6 +222,27 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\loop_white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SongsDB.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SongsDB_log.ldf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>SongsDB.mdf</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

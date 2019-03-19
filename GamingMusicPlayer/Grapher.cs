@@ -113,7 +113,8 @@ namespace GamingMusicPlayer
             {
                 drawThread.Suspend();
             }
-            sp.ComputeBPM(kp.Data, 30,true,true);
+            sp.computeTimbre(kp.Data, 30, true);
+            //sp.ComputeBPM(kp.Data, 30,true,true);
             plot(kp.Data);
             cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
                 cmdRecordKeyboard.Text = "Record Keyboard";
@@ -126,7 +127,8 @@ namespace GamingMusicPlayer
 
         private void onMouseDataReady(object sender, EventArgs e)
         {
-            sp.ComputeBPM(mp.Data, 30,true,true);
+            //sp.ComputeBPM(mp.Data, 30,true,true);
+            sp.computeTimbre(mp.Data, 30, true);
             if (drawThread != null)
             {
                 drawThread.Suspend();
@@ -157,7 +159,8 @@ namespace GamingMusicPlayer
                 short[] trackData = readDataFromFile();
                 drawThread = new Thread(new ThreadStart(readDataAndDraw));
                 drawThread.Start();
-                sp.ComputeBPM(trackData, (t.Length / 1000),false,true);
+                sp.computeTimbre(trackData, t.Length / 1000, true);
+                //sp.ComputeBPM(trackData, (t.Length / 1000),false,true);
             }
             
         }

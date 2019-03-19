@@ -8,7 +8,9 @@ namespace GamingMusicPlayer.MusicPlayer
 
         private string path;
         private string artist; //can be null
-        private string genre; //can be null
+        private double bpm; //can be null
+        private double zcr; //can be null
+        private double spectrIrr; //can be null
         private int length; //in ms
 
         private string error_msg;
@@ -18,6 +20,32 @@ namespace GamingMusicPlayer.MusicPlayer
             get { return readDataFromFile(); }
         }
 
+        public double ZCR
+        {
+            get { return zcr; }
+            set
+            {
+                this.zcr = value;
+            }
+        }
+
+        public double SpectralIrregularity
+        {
+            get { return spectrIrr; }
+            set
+            {
+                this.spectrIrr = value;
+            }
+        }
+
+        public double BPM
+        {
+            get { return bpm; }
+            set
+            {
+                this.bpm = value;
+            }
+        }
 
         public string Path
         {
@@ -39,11 +67,6 @@ namespace GamingMusicPlayer.MusicPlayer
             set { this.artist = value; }
         }
 
-        public string Genre
-        {
-            get { return genre; }
-            set { this.genre = value; }
-        }
 
         public string Name
         {
@@ -93,7 +116,9 @@ namespace GamingMusicPlayer.MusicPlayer
             Random rng = new Random();
             this.path = path;
             this.artist = null;
-            this.genre = null;
+            this.bpm = -1;
+            this.zcr = -1;
+            this.spectrIrr = -1;
             this.error_msg = "no error";
             if (!fixLength())
             {
@@ -108,10 +133,9 @@ namespace GamingMusicPlayer.MusicPlayer
                 this.artist = null;
             else
                 this.artist = (string)t.artist.Clone();
-            if (t.genre == null)
-                this.genre = null;
-            else
-                this.genre = (string)t.genre.Clone();
+            this.bpm = t.bpm;
+            this.zcr = t.zcr;
+            this.spectrIrr = t.spectrIrr;
             this.path = (string)t.path.Clone();
 
             this.length = t.length;

@@ -40,6 +40,31 @@ namespace GamingMusicPlayer.SignalProcessing
         private short[] timeDomainData;
         private int lengthInSecs;
 
+        public bool computeTimbre(short[] timeData, int seconds, bool thread)
+        {
+            if (!calculating)
+            {
+                lengthInSecs = seconds;
+                timeDomainData = new short[timeData.Length];
+                Array.Copy(timeData, timeDomainData, timeData.Length);
+                selectedTask = Task.Timbre;
+
+                if (thread)
+                {
+                    threadSupport = true;
+                    mainThread = new Thread(new ThreadStart(process));
+                    mainThread.Start();
+                }
+                else
+                {
+                    threadSupport = false;
+                    process();
+                }
+                return true;
+            }
+            Console.WriteLine("SignalProccessor: ComputerTimbre(), SignalProcessor already in use.");
+            return false;
+        }
 
         public bool ComputeBPM(short[] timeData,int seconds, bool artificial,bool thread)
         {
@@ -49,12 +74,11 @@ namespace GamingMusicPlayer.SignalProcessing
                 lengthInSecs = seconds;
                 timeDomainData = new short[timeData.Length];
                 Array.Copy(timeData, timeDomainData, timeData.Length);
-                
+                selectedTask = Task.BPM;
                 if (thread)
                 {
                     threadSupport = true;
                     mainThread = new Thread(new ThreadStart(process));
-                    selectedTask = Task.BPM;
                     mainThread.Start();
                 }
                 else
@@ -182,6 +206,68 @@ namespace GamingMusicPlayer.SignalProcessing
                 {
                     onBPMReady(null, null);
                 }
+            }
+            else if (selectedTask == Task.Timbre)
+            {
+                bool positive = true;
+                if (timeDomainData[0] <= 0)
+                {
+                    positive = false;
+                }
+                
+                int zcCount = 0;
+                int localMax = 0; //amplitude peak (can be a positive or a negative peak)
+                List<int> peaks = new List<int>();
+                for(int i=0; i<timeDomainData.Length; i++)
+                {
+                    if (timeDomainData[i]>0 )
+                    {
+                        if(positive == false)
+                        {
+                            //add peak , add zero-cross count
+                            peaks.Add(Math.Abs(localMax));
+                            localMax = 0;
+                            zcCount++;
+                            positive = true;
+                        }
+                        else
+                        {
+                            if (timeDomainData[i] > localMax) //positive peak
+                            {
+                                localMax = timeDomainData[i];
+                            }
+                        }
+                    }
+                    else if (timeDomainData[i] <= 0)
+                    {
+                        if (positive == false)
+                        {
+                            if(timeDomainData[i] < localMax) //negative peak
+                            {
+                                localMax = timeDomainData[i];
+                            }
+                        }
+                        else
+                        {
+                            //add peak
+                            peaks.Add(Math.Abs(localMax));
+                            localMax = 0;
+                            positive = false;
+                        }
+                        
+                    }
+                }
+                double spectralIrregularity = 0;
+                for (int i = 0; i < peaks.Count - 1; i++)
+                {
+                    spectralIrregularity += (Math.Pow((peaks[i + 1] - peaks[i]), 2));
+                }
+                //for future optimzation-> zcCount = peaks.Count/2
+                Console.WriteLine("\n# of peaks:" + peaks.Count+"  spectralIrreg:"+spectralIrregularity+ "  fixed:" + (spectralIrregularity/(double)timeDomainData.Length));
+                double zcRate = (double)zcCount / (double)timeDomainData.Length;
+                Console.WriteLine("zcr:" + zcCount+"  length:"+timeDomainData.Length+"  ratio:"+zcRate);
+
+                
             }
             else
             {

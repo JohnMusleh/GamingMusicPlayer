@@ -8,7 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.IO;
+
+using System.Configuration;
+using System.Data.SqlClient;
+
 using GamingMusicPlayer.MusicPlayer;
+
 
 namespace GamingMusicPlayer
 {
@@ -30,6 +36,9 @@ namespace GamingMusicPlayer
         private VolumeMixer vm;
         private int prevVolume;
         private bool loweredVolume;
+
+        private DatabaseAdapter dbAdapter;
+        private DriveScanner driveScanner;
 
         public MainForm()
         {
@@ -58,6 +67,9 @@ namespace GamingMusicPlayer
             //for developer mode
             //cmdShowGrapher.Visible = false;
             //cmdLogger.Visible = false;
+            //ConfigurationManager.ConnectionStrings["GamingMusicPlayer.Properties.Settings.SongsDBConnectionString"].ConnectionString
+            dbAdapter = new DatabaseAdapter(ConfigurationManager.ConnectionStrings["GamingMusicPlayer.Properties.Settings.SongsDBConnectionString"].ConnectionString);
+            driveScanner = null;
         }
 
         public void playTrack(int trackIndex)
@@ -528,6 +540,89 @@ namespace GamingMusicPlayer
                 vm.startListening();
                 cmdPriorTs3.Text = "Prioritize voice communication:ON";
             }
+        }
+
+        private void cmdScan_Click(object sender, EventArgs e)
+        {
+            if (driveScanner == null || !driveScanner.Scanning)
+            {
+                string dir = "";
+                using (var fbd = new FolderBrowserDialog())
+                {
+                    DialogResult result = fbd.ShowDialog();
+
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        dir = fbd.SelectedPath;
+                    }
+                }
+                driveScanner = new DriveScanner(dir);
+                driveScanner.onPercChanged += onScanPercChanged;
+                driveScanner.onScanComplete += onScanComplete;
+                driveScanner.scan(true);
+                cmdScan.Text = "Scanning.. \r\n(" + Math.Round(driveScanner.CompletePercentage, 2) + "%)\r\nClick to Cancel";
+            }
+            else
+            {
+                driveScanner.cancelScan();
+                cmdScan.Text = "Scan Computer";
+            }
+
+
+            /*DialogResult dupFilesRes = MessageBox.Show("After scanning 10 duplicate files were found, would you like for them to get deleted?", "Duplicate Music Files", MessageBoxButtons.YesNo,MessageBoxIcon.Question);
+            if (dupFilesRes == System.Windows.Forms.DialogResult.Yes)
+            {
+                Console.WriteLine("to delete");
+            }
+            else
+            {
+                Console.WriteLine("not to delete");
+            }*/
+        }
+
+        private void onScanPercChanged(object sender, EventArgs e)
+        {
+            cmdScan.Invoke((MethodInvoker)delegate ()
+            {
+                cmdScan.Text = "Scanning.. \r\n(" + Math.Round(driveScanner.CompletePercentage,2) + "%)\r\nClick to Cancel";
+            });
+        }
+        private void onScanComplete(object sender, EventArgs e)
+        {
+
+            cmdScan.Invoke((MethodInvoker)delegate ()
+            {
+                cmdScan.Enabled = false;
+            });
+            List<Track> tracks = driveScanner.Tracks;
+            if (tracks != null)
+            {
+                Console.WriteLine(" MAIN FORM --- : scan complete-- #ofTracks:" + driveScanner.Tracks.Count);
+                foreach (Track t in tracks)
+                {
+                    if (dbAdapter.getTrack(t.Path) == null)
+                    {
+                        SignalProcessing.SignalProcessor sp = new SignalProcessing.SignalProcessor();
+                        sp.ComputeBPM(t.Data, t.Length / 1000, false, false);
+                        t.BPM = sp.BPM;
+                        //sp.computeTimbre(t.Data, t.Length / 1000, false);
+                        //t.ZCR = sp.ZCR
+                    }
+                    Console.WriteLine("adding tack: " + t.Path);
+                    dbAdapter.addTrack(t);
+                }
+            }
+            cmdScan.Invoke((MethodInvoker)delegate ()
+            {
+                cmdScan.Enabled = true;
+                cmdScan.Text = "Scan Computer";
+            });
+
+        }
+
+        private void cmdViewDB_Click(object sender, EventArgs e)
+        {
+            new DBViewer().Show();
         }
     }
 }

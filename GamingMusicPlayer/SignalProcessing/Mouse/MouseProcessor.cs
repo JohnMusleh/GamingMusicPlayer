@@ -120,6 +120,8 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
                     {
                         mouseInputQueue.Enqueue(Point.Subtract(e.Position, center).Length);
                         //Console.WriteLine(e.Position.ToString());
+                        //x y coordinates each seperate pov
+                        // mean value of each x /y and substract, 2 seperate signals x and y
                         lastPosition = e.Position;
                     }
                 }

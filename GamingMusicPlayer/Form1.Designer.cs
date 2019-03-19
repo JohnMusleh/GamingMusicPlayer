@@ -44,6 +44,8 @@
             this.cmdToggleMatcher = new System.Windows.Forms.Button();
             this.cmdPriorTs3 = new System.Windows.Forms.Button();
             this.featuresLabel = new System.Windows.Forms.Label();
+            this.cmdScan = new System.Windows.Forms.Button();
+            this.cmdViewDB = new System.Windows.Forms.Button();
             this.bottomLeftIcon = new GamingMusicPlayer.CMButton();
             this.cmdPlayPause = new GamingMusicPlayer.CMButton();
             this.cmdPrev = new GamingMusicPlayer.CMButton();
@@ -57,7 +59,7 @@
             // cmdRemove
             // 
             this.cmdRemove.Enabled = false;
-            this.cmdRemove.Location = new System.Drawing.Point(34, 101);
+            this.cmdRemove.Location = new System.Drawing.Point(34, 78);
             this.cmdRemove.Name = "cmdRemove";
             this.cmdRemove.Size = new System.Drawing.Size(147, 41);
             this.cmdRemove.TabIndex = 6;
@@ -114,7 +116,7 @@
             // 
             // cmdAddSong
             // 
-            this.cmdAddSong.Location = new System.Drawing.Point(34, 40);
+            this.cmdAddSong.Location = new System.Drawing.Point(34, 31);
             this.cmdAddSong.Name = "cmdAddSong";
             this.cmdAddSong.Size = new System.Drawing.Size(147, 41);
             this.cmdAddSong.TabIndex = 8;
@@ -208,6 +210,26 @@
             this.featuresLabel.Size = new System.Drawing.Size(64, 17);
             this.featuresLabel.TabIndex = 18;
             this.featuresLabel.Text = "Features";
+            // 
+            // cmdScan
+            // 
+            this.cmdScan.Location = new System.Drawing.Point(34, 125);
+            this.cmdScan.Name = "cmdScan";
+            this.cmdScan.Size = new System.Drawing.Size(147, 65);
+            this.cmdScan.TabIndex = 19;
+            this.cmdScan.Text = "Scan Computer";
+            this.cmdScan.UseVisualStyleBackColor = true;
+            this.cmdScan.Click += new System.EventHandler(this.cmdScan_Click);
+            // 
+            // cmdViewDB
+            // 
+            this.cmdViewDB.Location = new System.Drawing.Point(12, 226);
+            this.cmdViewDB.Name = "cmdViewDB";
+            this.cmdViewDB.Size = new System.Drawing.Size(147, 41);
+            this.cmdViewDB.TabIndex = 20;
+            this.cmdViewDB.Text = "View DB";
+            this.cmdViewDB.UseVisualStyleBackColor = true;
+            this.cmdViewDB.Click += new System.EventHandler(this.cmdViewDB_Click);
             // 
             // bottomLeftIcon
             // 
@@ -304,6 +326,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1174, 633);
+            this.Controls.Add(this.cmdViewDB);
+            this.Controls.Add(this.cmdScan);
             this.Controls.Add(this.featuresLabel);
             this.Controls.Add(this.cmdPriorTs3);
             this.Controls.Add(this.cmdToggleMatcher);
@@ -351,6 +375,8 @@
         private System.Windows.Forms.Button cmdToggleMatcher;
         private System.Windows.Forms.Button cmdPriorTs3;
         private System.Windows.Forms.Label featuresLabel;
+        private System.Windows.Forms.Button cmdScan;
+        private System.Windows.Forms.Button cmdViewDB;
     }
 }
 

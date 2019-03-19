@@ -24,3 +24,7 @@ C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_projec
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.Logger.resources
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.Grapher.resources
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.SongMatcher.resources
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Debug\SongsDB.mdf
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Debug\SongsDB_log.ldf
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.SelectableMessageBox.resources
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Debug\GamingMusicPlayer.DBViewer.resources
