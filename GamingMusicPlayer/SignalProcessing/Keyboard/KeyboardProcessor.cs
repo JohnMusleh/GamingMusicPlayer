@@ -12,11 +12,11 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
     //class that turns keyboard input data coming from a KeyBoardListener into a time domain signal data in order to compute relevant values on it.
     public class KeyboardProcessor
     {
+        private List<Key> keysDown;
+        private object keysDownLock = new Object();
+
         private Thread mainThread;
-        private Queue<KeyPressedArgs> keyInputQueue;
-
-        private Object queueLock = new Object();
-
+        private short sampleValue;
 
         private short[] signalData;
         private int targetNumOfSamples;
@@ -31,90 +31,58 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
         {
             get
             {
-                short y = 0;
-                List<short> finalData = new List<short>();
-                for(int i = 1; i < signalData.Length; i++)
-                {
-                    if (signalData[i] == 0)
-                    {
-                        if (signalData[i - 1] == 0)
-                        {
-                            y--;
-                        }
-                        finalData.Add(y);
-                    }
-                    else
-                    {
-                        y++;
-                        finalData.Add(y);
-                    }
-                }
                 return signalData;
             }
         }
 
         public KeyboardProcessor()
         {
-            keyInputQueue = new Queue<KeyPressedArgs>();
-            KeyboardListener.HookKeyboard();
-            KeyboardListener.OnKeyPressed += OnKeyPressed;//this needs to happen only once!
+            keysDown = new List<Key>(); ;
             signalData = null;
             working = false;
+            KeyboardListener.HookKeyboard();
+            KeyboardListener.OnKeyPressed += OnKeyPressed;//this needs to happen only once!
         }
 
         //record keyboard data for secs amount of seconds and convert it into signal data
         public void record(int secs)
         {
-            keyInputQueue.Clear();
-            targetNumOfSamples = secs * 20;
-            signalData = new short[targetNumOfSamples];
+            if (!working)
+            {
+                targetNumOfSamples = secs * 20;
+                signalData = new short[targetNumOfSamples];
+
+                mainThread = new Thread(new ThreadStart(process));
+                mainThread.Start();
+            }
+            else
+            {
+                Console.WriteLine("keyboard processor already recording..");
+            }
             
-            
-            mainThread = new Thread(new ThreadStart(process));
-            mainThread.Start();
         }
 
         private void process()
         {
-            working = true;
+            
             int numOfSamples = 0;
             int sampleRate = 20; //20 samples per second
-           
+            lock (keysDownLock)
+            {
+                keysDown.Clear();
+            }
             Stopwatch sw = new Stopwatch();
-            sw.Start();
-
+            sampleValue = 0;
             Stopwatch swPerSample = new Stopwatch();
-            swPerSample.Start();// every (1/sampleRate) seconds , add a zero , if key was detected (up or down) restart this stopwatch
+            working = true;           
+            sw.Start();
+            swPerSample.Start();// every (1/sampleRate) seconds , add a sample
 
             while (numOfSamples < targetNumOfSamples && sw.Elapsed.TotalMilliseconds < (targetNumOfSamples * 100)) {
-                if(keyInputQueue.Count ==0 && swPerSample.ElapsedMilliseconds >= (1000 / sampleRate))
+                if(swPerSample.ElapsedMilliseconds >= (1000 / sampleRate))
                 {
-                    signalData[numOfSamples] = 0;
+                    signalData[numOfSamples] = sampleValue;
                     numOfSamples++;
-                    swPerSample.Restart();
-                }
-                else if (keyInputQueue.Count > 0)
-                {
-                    lock (queueLock)
-                    {
-                        if(keyInputQueue.Count > 0)
-                        {
-                            KeyPressedArgs k = keyInputQueue.Dequeue();
-                            //Console.WriteLine(k.ToString());
-                            if (k != null && k.Down)
-                            {
-                                signalData[numOfSamples] = 1;
-                                numOfSamples++;
-                                //key down
-                            }
-                            else if (k != null)
-                            {
-                                signalData[numOfSamples] = 0;
-                                numOfSamples++;
-                                //key up
-                            }
-                        }
-                    }
                     swPerSample.Restart();
                 }
             }
@@ -126,12 +94,57 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
         private void OnKeyPressed(object sender, KeyPressedArgs e) {
             if (working)
             {
-                lock (queueLock)
+                bool tick = true;
+                if (e.Down)
                 {
-                    keyInputQueue.Enqueue(e);
+                    //key down , check if its in list, if it is in the list do not tick
+                    lock (keysDownLock)
+                    {
+                        foreach (Key k in keysDown)
+                        {
+                            if (k.Equals(e.KeyPressed))
+                            {
+                                tick = false;
+                            }
+                        }
+                    }
                 }
+                else
+                {
+                    //key up, remove from list
+                    lock (keysDownLock)
+                    {
+                        for (int i = 0; i < keysDown.Count; i++)
+                        {
+                            if (keysDown[i].Equals(e.KeyPressed))
+                            {
+                                keysDown.RemoveAt(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (tick)
+                {
+                    if (e.Down)
+                    { //add the key to the keysdown list
+                        lock (keysDownLock)
+                        {
+                            keysDown.Add(e.KeyPressed);
+                        }
+                    }
+                    if (sampleValue == 0)
+                    {
+                        //Console.WriteLine("ticked to 1"); //[TEST]
+                        sampleValue = 1;
+                    }
+                    else {
+                        //Console.WriteLine("ticked to 0"); //[TEST]
+                        sampleValue = 0;
+                    }
+                }
+                
             }
-            
         }
     }
 }

@@ -141,7 +141,7 @@ namespace GamingMusicPlayer
             {
                 lock (mouseLock)
                 {
-                    short[] pointer = mp.Data;
+                    short[] pointer = mp.DataX;
                     short[] data = new short[pointer.Length];
                     for (int i = 0; i < pointer.Length; i++)
                     {
@@ -252,7 +252,7 @@ namespace GamingMusicPlayer
             {
                 if (!mp.Processing)
                 {
-                    mp.record(5, 200, new System.Windows.Point(1164, 364));
+                    mp.record(5);
                 }
             }
             lock (keyboardLock)

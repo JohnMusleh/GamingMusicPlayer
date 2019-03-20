@@ -603,10 +603,11 @@ namespace GamingMusicPlayer
                     if (dbAdapter.getTrack(t.Path) == null)
                     {
                         SignalProcessing.SignalProcessor sp = new SignalProcessing.SignalProcessor();
-                        sp.ComputeBPM(t.Data, t.Length / 1000, false, false);
+                        sp.ComputeBPM(t.Data, (t.Length / 1000), false, false);
                         t.BPM = sp.BPM;
                         //sp.computeTimbre(t.Data, t.Length / 1000, false);
-                        //t.ZCR = sp.ZCR
+                        //t.ZCR = sp.ZCR;
+                        //t.SpectralIrregularity = sp.SpectralIrregularity;
                     }
                     Console.WriteLine("adding tack: " + t.Path);
                     dbAdapter.addTrack(t);

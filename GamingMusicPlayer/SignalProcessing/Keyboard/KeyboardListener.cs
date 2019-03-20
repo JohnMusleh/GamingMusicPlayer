@@ -13,6 +13,7 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
     //this will be used later to create a signal from keyboard data. [read KeyboardProcessor]
     public static class KeyboardListener
     {
+        public static bool hooked = false;
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
         private const int WM_KEYUP = 0x0101;
@@ -36,18 +37,27 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
 
         public static event EventHandler<KeyPressedArgs> OnKeyPressed;
 
-        private static LowLevelKeyboardProc proc=hookCallback;
+        private static LowLevelKeyboardProc proc = hookCallback;
         private static IntPtr hookid = IntPtr.Zero;
 
 
         public static void HookKeyboard()
         {
-            hookid = SetHook(proc);
+            if (!hooked)
+            {
+                hookid = SetHook(proc);
+                hooked = true;
+            }
+            
         }
-        
+
         public static void UnHookKeyboard()
         {
-            UnhookWindowsHookEx(hookid);
+            if (hooked)
+            {
+                UnhookWindowsHookEx(hookid);
+                hooked = false;
+            }
         }
 
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
@@ -66,8 +76,9 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
                 int vkCode = Marshal.ReadInt32(lparam);
                 if (OnKeyPressed != null)
                 {
-                    OnKeyPressed(null, new KeyPressedArgs(KeyInterop.KeyFromVirtualKey(vkCode),true));
+                    OnKeyPressed(null, new KeyPressedArgs(KeyInterop.KeyFromVirtualKey(vkCode), true));
                 }
+                //onKeyPressed(null, new KeyPressedArgs(KeyInterop.KeyFromVirtualKey(vkCode), true)); //[TEST]
             }
             else if (ncode >= 0 && wparam == (IntPtr)WM_KEYUP)
             {
@@ -76,8 +87,17 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
                 {
                     OnKeyPressed(null, new KeyPressedArgs(KeyInterop.KeyFromVirtualKey(vkCode), false));
                 }
+                //onKeyPressed(null, new KeyPressedArgs(KeyInterop.KeyFromVirtualKey(vkCode), false)); //[TEST]
             }
             return CallNextHookEx(hookid, ncode, wparam, lparam);
         }
+
+        //[TEST]
+        public static void onKeyPressed(object sender, KeyPressedArgs e)
+        {
+            Console.WriteLine(e.KeyPressed+" down:"+e.Down);
+        }
     }
+
+        
 }

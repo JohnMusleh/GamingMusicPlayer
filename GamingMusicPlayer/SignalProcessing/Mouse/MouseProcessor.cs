@@ -12,77 +12,63 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
     //class that turns mouse input data coming from a MouseListener into a time domain signal data in order to compute relevant values on it.
     public class MouseProcessor
     {
-        private Object queueLock = new Object();
+        private Point currPosition;
+
         private Object sigDataLock = new Object();
-        //private bool queueLock = false;
-        private List<short> sigDataList;
+        private List<int> sigDataListX;
+        private List<int> sigDataListY;
+        private int targetNumOfSamples;
+
         private Thread mainThread;
 
-        private int secsToProcess;
-        private int minDistance;//minimum distance between last pos and current pos to capture mouse position
-        private Point center;
-        private Point lastPosition;
-
         private bool working;
-        private Queue<double> mouseInputQueue; //queue of distances from the center point
 
         public event EventHandler onDataReady;
 
         public bool Processing { get { return this.working; } }
 
-        public short[] Data
+        public short[] DataX
         {
             get
             {
-                lock (sigDataLock)
+                lock (sigDataListX)
                 {
-                    //normalizing - does not work well
-                    double average = 0, variance = 0;
-                    foreach (short s in sigDataList)
+                    short[] data = new short[sigDataListX.Count];
+                    double avg = sigDataListX.Average();
+                    for (int i=0; i<sigDataListX.Count; i++)
                     {
-                        average += (double)s;
+                        data[i] = (short)(sigDataListX[i] - avg);
                     }
-                    average /= sigDataList.Count;
-                    foreach (short s in sigDataList)
-                    {
-                        variance += Math.Pow(s - average, 2);
-                    }
-                    variance /= sigDataList.Count;
-                    variance = Math.Sqrt(variance);
-
-                    //Console.WriteLine("avg:" + average + ",variance:" + variance);
-                    for (int i = 0; i < sigDataList.Count; i++)
-                    {
-                        double s = (sigDataList[i] - average) / variance;
-                        //sigDataList[i] = (short)(s);
-                    }
-
-                    List<short> speedsList = new List<short>();
-                    for (int i = sigDataList.Count - 1; i > 0; i--)
-                    {
-                        short s = (short)(sigDataList[i] - sigDataList[i - 1]);
-                        speedsList.Add(s);
-                    }
-                    return speedsList.ToArray();
+                    return data;
                 }
-                
+            }
+        }
+
+        public short[] DataY
+        {
+            get
+            {
+                lock (sigDataListY)
+                {
+                    short[] data = new short[sigDataListY.Count];
+                    double avg = sigDataListY.Average();
+                    for (int i = 0; i < sigDataListY.Count; i++)
+                    {
+                        data[i] = (short)(sigDataListY[i] - avg);
+                    }
+                    return data;
+                }
             }
         }
 
         public MouseProcessor()
         {
-            mouseInputQueue = new Queue<double>();
             MouseListener.HookMouse();
             MouseListener.OnMouseMoved  += OnMouseMoved;//this needs to happen only once!
-            lock (sigDataLock)
-            {
-                sigDataList = new List<short>();
-            }
+
+            sigDataListX = new List<int>();
+            sigDataListY = new List<int>();
             
-            secsToProcess = -1;
-            minDistance = -1;
-            center = new Point(0, 0);
-            lastPosition = new Point(-1, -1);
             working = false;
             onDataReady = done;
         }
@@ -92,13 +78,11 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
 
         }
 
-        public void record(int secs,int minDist, Point c)
+        public void record(int secs)
         {
             if (!working)
             {
-                secsToProcess = secs;
-                minDistance = 10;
-                center = c;
+                targetNumOfSamples = secs * 20;
                 mainThread = new Thread(new ThreadStart(process));
                 mainThread.Start();
             }
@@ -113,53 +97,46 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
 
             if (working)
             {
-                lock (queueLock)
-                {
-                    double distance = Point.Subtract(e.Position, lastPosition).Length;
-                    if (distance >= minDistance)
-                    {
-                        mouseInputQueue.Enqueue(Point.Subtract(e.Position, center).Length);
-                        //Console.WriteLine(e.Position.ToString());
-                        //x y coordinates each seperate pov
-                        // mean value of each x /y and substract, 2 seperate signals x and y
-                        lastPosition = e.Position;
-                    }
-                }
+                currPosition = e.Position;
             }
 
         }
 
         private void process()
         {
-            working = true;
+            int numOfSamples = 0;
+            int sampleRate = 20; //20 samples per second
+
             lock (sigDataLock)
             {
-                sigDataList.Clear();
+                sigDataListX.Clear();
+                sigDataListY.Clear();
             }
             
+
             Stopwatch sw = new Stopwatch();
+            Stopwatch swPerSample = new Stopwatch();
+            working = true;
             sw.Start();
-            while (sw.Elapsed.TotalMilliseconds<secsToProcess*1000)
+            swPerSample.Start();// every (1/sampleRate) seconds , add a sample
+
+            while (numOfSamples < targetNumOfSamples && sw.Elapsed.TotalMilliseconds < (targetNumOfSamples * 100))
             {
-                lock(queueLock)
+                if (swPerSample.ElapsedMilliseconds >= (1000 / sampleRate))
                 {
-                    if (mouseInputQueue.Count > 0)
+                    lock (sigDataLock)
                     {
-                        double d = mouseInputQueue.Dequeue();
-                        lock (sigDataLock)
-                        {
-                            sigDataList.Add((short)d);
-                        }
-                        //sigDataList.Add((short)-d);
+                        sigDataListX.Add((short)currPosition.X);
+                        sigDataListY.Add((short)currPosition.Y);
                     }
-                    
+                    numOfSamples++;
+                    swPerSample.Restart();
                 }
             }
-            //Console.WriteLine("Done processing");
             sw.Stop();
             working = false;
             onDataReady(null, null);
-            
+
         }
 
     }

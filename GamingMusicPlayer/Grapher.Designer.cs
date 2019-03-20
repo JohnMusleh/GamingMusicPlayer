@@ -33,6 +33,7 @@
             this.cmdRecordKeyboard = new System.Windows.Forms.Button();
             this.cmdPlotPlayingSong = new System.Windows.Forms.Button();
             this.cmdRecordMouse = new System.Windows.Forms.Button();
+            this.mouseXYComboBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,11 +77,21 @@
             this.cmdRecordMouse.UseVisualStyleBackColor = true;
             this.cmdRecordMouse.Click += new System.EventHandler(this.cmdRecordMouse_Click);
             // 
+            // mouseXYComboBox
+            // 
+            this.mouseXYComboBox.FormattingEnabled = true;
+            this.mouseXYComboBox.Location = new System.Drawing.Point(860, 108);
+            this.mouseXYComboBox.Name = "mouseXYComboBox";
+            this.mouseXYComboBox.Size = new System.Drawing.Size(65, 24);
+            this.mouseXYComboBox.TabIndex = 5;
+            this.mouseXYComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
             // Grapher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1127, 344);
+            this.Controls.Add(this.mouseXYComboBox);
             this.Controls.Add(this.cmdRecordMouse);
             this.Controls.Add(this.cmdPlotPlayingSong);
             this.Controls.Add(this.cmdRecordKeyboard);
@@ -100,5 +111,6 @@
         private System.Windows.Forms.Button cmdRecordKeyboard;
         private System.Windows.Forms.Button cmdPlotPlayingSong;
         private System.Windows.Forms.Button cmdRecordMouse;
+        private System.Windows.Forms.ComboBox mouseXYComboBox;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using NAudio;
 
 namespace GamingMusicPlayer.MusicPlayer
 {
@@ -151,8 +152,21 @@ namespace GamingMusicPlayer.MusicPlayer
             this.length = MusicFileInfo.getLength(path);
             if (length < 0)
             {
-                error_msg = MusicFileInfo.error_msg;
-                return false;
+                if (this.Format.Equals("MP3"))
+                {
+                    this.length = (int)new NAudio.Wave.Mp3FileReader(path).TotalTime.TotalMilliseconds;
+                   
+                }
+                else if (this.Format.Equals("WAV"))
+                {
+                    this.length = (int)new NAudio.Wave.WaveFileReader(path).TotalTime.TotalMilliseconds;
+                }
+                
+                if (this.length < 0)
+                {
+                    error_msg = MusicFileInfo.error_msg;
+                    return false;
+                }
             }
             return true;
         }

@@ -26,6 +26,8 @@ namespace GamingMusicPlayer
         SignalProcessor sp;
         public Boolean GrapherVisible { get; private set; }
 
+        private bool testOn = false;
+
         private Thread drawThread;
         private float[] sigData = null;
              
@@ -49,9 +51,15 @@ namespace GamingMusicPlayer
 
             sp = new SignalProcessor();
             sp.onBPMReady += onBPMReady;
+
+            mouseXYComboBox.Items.Add("X");
+            mouseXYComboBox.Items.Add("Y");
+
             drawThread = null;
             this.hide();
             GrapherVisible = false;
+
+              
         }
 
         public void show()
@@ -98,6 +106,16 @@ namespace GamingMusicPlayer
 
         private void cmdDrawTest_Click(object sender, EventArgs e)
         {
+            /*if (testOn)
+            {
+                KeyboardListener.UnHookKeyboard();
+                testOn = false;
+            }
+            else
+            {
+                KeyboardListener.HookKeyboard();
+                testOn = true;
+            }*/
             kp.record(30);
             cmdRecordKeyboard.Text = "Recording..";
             cmdRecordKeyboard.Enabled = false;
@@ -128,12 +146,25 @@ namespace GamingMusicPlayer
         private void onMouseDataReady(object sender, EventArgs e)
         {
             //sp.ComputeBPM(mp.Data, 30,true,true);
-            sp.computeTimbre(mp.Data, 30, true);
+            sp.computeTimbre(mp.DataX, 30, true);
             if (drawThread != null)
             {
                 drawThread.Suspend();
             }
-            plot(mp.Data);
+            string selectedCoordinate = "";
+            mouseXYComboBox.Invoke(new MethodInvoker(delegate {
+                selectedCoordinate = (string)mouseXYComboBox.SelectedItem;
+            }));
+            if (selectedCoordinate == "X")
+            {
+                Console.WriteLine("selected coordinate X!");
+                plot(mp.DataX);
+            }
+            else
+            {
+                Console.WriteLine("selected coordinate NOT X!");
+                plot(mp.DataY);
+            }
             cmdRecordKeyboard.Invoke(new MethodInvoker(delegate {
                 cmdRecordMouse.Text = "Record Mouse";
                 cmdRecordKeyboard.Enabled = true;
@@ -159,8 +190,8 @@ namespace GamingMusicPlayer
                 short[] trackData = readDataFromFile();
                 drawThread = new Thread(new ThreadStart(readDataAndDraw));
                 drawThread.Start();
-                sp.computeTimbre(trackData, t.Length / 1000, true);
-                //sp.ComputeBPM(trackData, (t.Length / 1000),false,true);
+                //sp.computeTimbre(trackData, t.Length / 1000, true);
+                sp.ComputeBPM(trackData, (t.Length / 1000),false,true);
             }
             
         }
@@ -222,13 +253,17 @@ namespace GamingMusicPlayer
 
         private void cmdRecordMouse_Click(object sender, EventArgs e)
         {
-            double minDistance = 200;
             //1164,364 pos of record mouse button
-            mp.record(30, (int)minDistance,new Point(1164, 364));
+            mp.record(30);
             cmdRecordMouse.Text = "Recording..";
             cmdRecordMouse.Enabled = false;
             cmdRecordKeyboard.Enabled = false;
             cmdPlotPlayingSong.Enabled = false;
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

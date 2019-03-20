@@ -14,6 +14,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
     //this will be used later to create a signal from mouse data. [read MouseProcessor]
     public static class MouseListener
     {
+        public static bool hooked = false;
         private const int WM_MOUSEMOVE = 0x0200;
         private const int WM_LBUTTONDOWN = 0x0201;
         private const int WH_MOUSE_LL = 14;
@@ -43,12 +44,20 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
 
         public static void HookMouse()
         {
-            hookid = SetHook(proc);
+            if (!hooked)
+            {
+                hookid = SetHook(proc);
+                hooked = true;
+            }
         }
 
         public static void UnhookMouse()
         {
-            UnhookWindowsHookEx(hookid);
+            if (hooked)
+            {
+                UnhookWindowsHookEx(hookid);
+                hooked = false;
+            }
         }
 
         private static IntPtr hookCallback(int ncode, IntPtr wparam, IntPtr lparam)

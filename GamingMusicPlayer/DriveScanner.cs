@@ -123,7 +123,9 @@ namespace GamingMusicPlayer
                     break;
                 try
                 {
+                    Console.WriteLine("scanning dir:" + dir + "..");
                     string[] files = Directory.GetFiles(dir);
+                    Console.WriteLine("# of files found:" + files.Length);
                     foreach (string file in files)
                     {
                         try
@@ -139,7 +141,8 @@ namespace GamingMusicPlayer
                 }
                 catch(Exception e)
                 {
-
+                    Console.WriteLine("scanning failed dir:"+dir);
+                    Console.WriteLine(e.Message);
                 }
                 dirScannedCount++;
                 completePerc = (double)(((double)dirScannedCount / (double)allDirs.Count) * 100);
