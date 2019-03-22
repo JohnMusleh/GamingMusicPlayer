@@ -3,4 +3,5 @@ Gaming Music Player is a windows application that plays local music files while 
 
 This application is for my Software Engineering B.Sc. graduation project  
 <img src="https://i.imgur.com/brXAnK3.png" width="100"/>  
+## Links
 [Project Diary](https://github.com/alkerr/GamingMusicPlayer/wiki/Project-Diary)
