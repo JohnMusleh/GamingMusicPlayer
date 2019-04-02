@@ -12,34 +12,24 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
     //class that turns keyboard input data coming from a KeyBoardListener into a time domain signal data in order to compute relevant values on it.
     public class KeyboardProcessor
     {
+        public const int SAMPLE_RATE = 20;
         private List<Key> keysDown;
-        private object keysDownLock = new Object();
 
         private Thread mainThread;
         private short sampleValue;
-
-        private short[] signalData;
         private int targetNumOfSamples;
-
-        private bool working;
 
         public event EventHandler onDataReady; //called when data is ready
 
-        public bool Processing { get { return this.working; } }
+        public bool Processing { get; private set; }
 
-        public short[] Data
-        {
-            get
-            {
-                return signalData;
-            }
-        }
+        public short[] Data { get; private set; }
 
         public KeyboardProcessor()
         {
             keysDown = new List<Key>(); ;
-            signalData = null;
-            working = false;
+            Data = null;
+            Processing = false;
             KeyboardListener.HookKeyboard();
             KeyboardListener.OnKeyPressed += OnKeyPressed;//this needs to happen only once!
         }
@@ -47,10 +37,10 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
         //record keyboard data for secs amount of seconds and convert it into signal data
         public void record(int secs)
         {
-            if (!working)
+            if (!Processing)
             {
-                targetNumOfSamples = secs * 20;
-                signalData = new short[targetNumOfSamples];
+                targetNumOfSamples = secs * SAMPLE_RATE;
+                Data = new short[targetNumOfSamples];
 
                 mainThread = new Thread(new ThreadStart(process));
                 mainThread.Start();
@@ -66,39 +56,43 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
         {
             
             int numOfSamples = 0;
-            int sampleRate = 20; //20 samples per second
-            lock (keysDownLock)
+            lock (keysDown)
             {
                 keysDown.Clear();
             }
             Stopwatch sw = new Stopwatch();
             sampleValue = 0;
             Stopwatch swPerSample = new Stopwatch();
-            working = true;           
+            Processing = true;           
             sw.Start();
             swPerSample.Start();// every (1/sampleRate) seconds , add a sample
 
             while (numOfSamples < targetNumOfSamples && sw.Elapsed.TotalMilliseconds < (targetNumOfSamples * 100)) {
-                if(swPerSample.ElapsedMilliseconds >= (1000 / sampleRate))
+                if(swPerSample.ElapsedMilliseconds >= (1000 / SAMPLE_RATE))
                 {
-                    signalData[numOfSamples] = sampleValue;
+                    Data[numOfSamples] = sampleValue;
                     numOfSamples++;
                     swPerSample.Restart();
                 }
+                else
+                {
+                    //avoid busy waiting
+                    Thread.Sleep(TimeSpan.FromMilliseconds(1000 / SAMPLE_RATE));
+                }
             }
             sw.Stop();
-            working = false;
+            Processing = false;
             onDataReady(null,null);
         }
 
         private void OnKeyPressed(object sender, KeyPressedArgs e) {
-            if (working)
+            if (Processing)
             {
                 bool tick = true;
                 if (e.Down)
                 {
                     //key down , check if its in list, if it is in the list do not tick
-                    lock (keysDownLock)
+                    lock (keysDown)
                     {
                         foreach (Key k in keysDown)
                         {
@@ -112,7 +106,7 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
                 else
                 {
                     //key up, remove from list
-                    lock (keysDownLock)
+                    lock (keysDown)
                     {
                         for (int i = 0; i < keysDown.Count; i++)
                         {
@@ -128,7 +122,7 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
                 {
                     if (e.Down)
                     { //add the key to the keysdown list
-                        lock (keysDownLock)
+                        lock (keysDown)
                         {
                             keysDown.Add(e.KeyPressed);
                         }

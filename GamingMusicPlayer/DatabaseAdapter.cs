@@ -10,7 +10,7 @@ using System.IO;
 
 using GamingMusicPlayer.MusicPlayer;
 
-namespace GamingMusicPlayer
+namespace GamingMusicPlayer.Database
 {
     public class DatabaseAdapter
     {

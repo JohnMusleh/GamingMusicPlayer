@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace GamingMusicPlayer
 {
+    //class to view and edit the database during runtime, for development and testing purposes only.
     public partial class DBViewer : Form
     {
         public DBViewer()

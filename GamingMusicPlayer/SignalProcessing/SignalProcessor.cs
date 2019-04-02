@@ -19,30 +19,29 @@ namespace GamingMusicPlayer.SignalProcessing
         private enum Task { BPM, Timbre, Pitch }
         private Task selectedTask;
 
-        private Track track;
-        public event EventHandler onBPMReady;
+        public event EventHandler onBPMReady; //invoked when computeBPM is done and it was called with thread=true
+        public event EventHandler onTimbreReady;//invoked when computeTimbre is done and it was called with thread=true
 
-        private double bpm;
-        private double beatCount;
-        public double BPM { get { return bpm; } private set { bpm = value; } }
-        public double BeatCount { get { return beatCount; } private set { beatCount = value; } }
+        public double BPM { get; private set; }
+        public double BeatCount { get; private set; }
+        public double ZCR { get; private set; }
+        public double SpectralIrregularity { get; private set; }
         private bool artificial_signal;
         private bool threadSupport;
 
         private Thread mainThread;
-        private bool calculating;
 
-        public bool Processing { get { return calculating; } }
+        public bool Processing { get; private set; }
 
         public SignalProcessor() {
-            calculating = false;
+            Processing = false;
         }
         private short[] timeDomainData;
         private int lengthInSecs;
 
         public bool computeTimbre(short[] timeData, int seconds, bool thread)
         {
-            if (!calculating)
+            if (!Processing)
             {
                 lengthInSecs = seconds;
                 timeDomainData = new short[timeData.Length];
@@ -68,7 +67,7 @@ namespace GamingMusicPlayer.SignalProcessing
 
         public bool ComputeBPM(short[] timeData,int seconds, bool artificial,bool thread)
         {
-            if (!calculating)
+            if (!Processing)
             {
                 artificial_signal = artificial;
                 lengthInSecs = seconds;
@@ -94,7 +93,7 @@ namespace GamingMusicPlayer.SignalProcessing
 
         private void process()
         {
-            calculating = true;
+            Processing = true;
             if (selectedTask == Task.BPM)
             {
                 //http://archive.gamedev.net/archive/reference/programming/features/beatdetection/index.html
@@ -108,7 +107,7 @@ namespace GamingMusicPlayer.SignalProcessing
                     chan1.Add(timeDomainData[i]);
                     chan2.Add(timeDomainData[i + 1]);
                 }
-                int blockSize = 3600;     
+                int blockSize = 3600;  //3600   
 
                 short[] leftChn = chan1.ToArray();
                 List<double> energies = new List<double>();
@@ -126,9 +125,10 @@ namespace GamingMusicPlayer.SignalProcessing
                     
                     leftChn = timeDomainData;  //[TESTING MOUSE]
                 }
-                Console.WriteLine("block size:" + blockSize);
+                //[DEBUG]
+                /*Console.WriteLine("block size:" + blockSize);
                 Console.WriteLine(historyQueueMaxSize);
-                Console.WriteLine("leftChn.length" + leftChn.Length);
+                Console.WriteLine("leftChn.length" + leftChn.Length);*/
                 for (int i=0; i < leftChn.Length; i+= blockSize)
                 {
                     double instantEnergy = 0;
@@ -157,10 +157,11 @@ namespace GamingMusicPlayer.SignalProcessing
                     double constnt = ((-0.0025714 * variance)) + 1.5142857;
                     if (instantEnergy > (constnt * localAverage))
                     {
+                        /* [DEBUG]
                         if (i < 100000)
                         {
                             Console.WriteLine("-beat at:" + i + "-");
-                        }
+                        }*/
 
                         
                         if (artificial_signal)
@@ -168,7 +169,8 @@ namespace GamingMusicPlayer.SignalProcessing
                             //testing of weighted beat counts 
                             //[TESTING] i is in leftChan.length , need to make LAST i's 'heavier'
                             //divide into 5 segments
-                            if (i <= leftChn.Length * 0.2)
+                            beats++;
+                            /*if (i <= leftChn.Length * 0.2)
                             {
                                 beats += 0.25;
                             }
@@ -187,7 +189,7 @@ namespace GamingMusicPlayer.SignalProcessing
                             else
                             {
                                 beats += 4;
-                            }
+                            }*/
                             //beats++;
                         }
                         else
@@ -198,13 +200,14 @@ namespace GamingMusicPlayer.SignalProcessing
                 }
                 BeatCount = beats;
                 BPM = (beats*60)/lengthInSecs;
-                Console.WriteLine("\nComputeBPM: beats:" + beats + " in " + lengthInSecs + " seconds");
-                Console.WriteLine("ComputeBPM: BPM:" + BPM);
+                //[DEBUG]
+                //Console.WriteLine("\nComputeBPM: beats:" + beats + " in " + lengthInSecs + " seconds");
+                //Console.WriteLine("ComputeBPM: BPM:" + BPM);
 
                 timeDomainData = null;
                 if (threadSupport)
                 {
-                    onBPMReady(null, null);
+                    onBPMReady?.Invoke(null, null);
                 }
             }
             else if (selectedTask == Task.Timbre)
@@ -263,17 +266,24 @@ namespace GamingMusicPlayer.SignalProcessing
                     spectralIrregularity += (Math.Pow((peaks[i + 1] - peaks[i]), 2));
                 }
                 //for future optimzation-> zcCount = peaks.Count/2
-                Console.WriteLine("\n# of peaks:" + peaks.Count+"  spectralIrreg:"+spectralIrregularity+ "  fixed:" + (spectralIrregularity/(double)timeDomainData.Length));
+                //[DEBUG]
+                //Console.WriteLine("\n# of peaks:" + peaks.Count+"  spectralIrreg:"+spectralIrregularity+ "  fixed:" + (spectralIrregularity/(double)timeDomainData.Length));
                 double zcRate = (double)zcCount / (double)timeDomainData.Length;
-                Console.WriteLine("zcr:" + zcCount+"  length:"+timeDomainData.Length+"  ratio:"+zcRate);
+                //Console.WriteLine("zcr:" + zcCount+"  length:"+timeDomainData.Length+"  ratio:"+zcRate);
+                ZCR = zcRate;
+                SpectralIrregularity = (spectralIrregularity / (double)timeDomainData.Length);
 
-                
+                timeDomainData = null;
+                if (threadSupport)
+                {
+                    onTimbreReady?.Invoke(null, null);
+                }
             }
             else
             {
                 Console.WriteLine("SignalProcessor: process(), no task set.");
             }
-            calculating = false;
+            Processing = false;
         }
     }
 }

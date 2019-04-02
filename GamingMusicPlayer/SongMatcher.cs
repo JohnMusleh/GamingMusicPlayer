@@ -14,77 +14,315 @@ namespace GamingMusicPlayer
     public partial class SongMatcher : Form
     {
         public Boolean MatcherVisible { get; private set; }
-
-        private bool matching;
+        public Boolean Matching { get; private set; }
         private List<Track> tracks;
-        private List<double> tracksBPM;
 
         private const int RECORDINGS_MAX_SIZE = 6; //each recording is 5 seconds
-        private Queue<short[]> mouseRecordings; 
+        //following queues are updated every 5 seconds when matching
+        private Queue<short[]> mouseXRecordings; 
+        private Queue<short[]> mouseYRecordings; 
         private Queue<short[]> keyboardRecordings;
 
-        private double keyboardBPM;
-        private double mouseBPM;
+        private const double MAX_ABPM = 30;
+        private const double MAX_ASPECTIRR = 100000;
+
+        private double keyboardBPM, mouseBPM;
+        private double keyboardZCR, mouseZCR;
+        private double keyboardSpectIrr, mouseSpectIrr;
+
         private KeyboardProcessor kp;
         private MouseProcessor mp;
         private SignalProcessor sp;
 
         private MainForm playerForm;
+        private Database.DatabaseAdapter dbAdapter;
 
-        //used for normalization
-        private double maxMouseBPM;
-        private double maxKeyboardBPM;
 
-        private Object mouseLock=new Object(); //to lock match() while reading mouse data
-        private Object keyboardLock=new Object(); //to lock match() while reading keyboard data
         private int currTrackIndex;
 
-        private Thread worker;
-        private bool workerAlive;
-
-        public SongMatcher(MainForm main)
+        public SongMatcher(MainForm main, Database.DatabaseAdapter adapter)
         {
             InitializeComponent();
-            this.tracksBPM = null;
             this.tracks = null;
-            this.matching = false;
-            playerForm = main;
+            Matching = false;
+            this.playerForm = main;
+            this.dbAdapter = adapter;
             this.currTrackIndex = 0;
             sp = new SignalProcessor();
-            sp.onBPMReady += onBPMReady;
 
             kp = new KeyboardProcessor();
             kp.onDataReady += onKeyboardDataReady;
 
             mp = new MouseProcessor();
             mp.onDataReady += onMouseDataReady;
+            //to get raw x/y points set mean values to 0
+            mp.MeanValueX = 0;
+            mp.MeanValueY = 0;
 
-            mouseRecordings = new Queue<short[]>();
+            mouseXRecordings = new Queue<short[]>();
+            mouseYRecordings = new Queue<short[]>();
             keyboardRecordings = new Queue<short[]>();
             
             this.hide();
             MatcherVisible = false;
-            workerAlive = false;
-            this.TopMost = true;;
-
-            maxMouseBPM = 30;
-            maxKeyboardBPM = 30;
+            this.TopMost = true;
         }
 
-        public void setTracks(List<Track> tracks)
+        /* Public Control Methods*/
+        public void updateTrackList(List<Track> tracks)
         {
             this.tracks = new List<Track>();
             foreach (Track t in tracks)
             {
-                this.tracks.Add(t);
+                Track nt = null;
+                lock (dbAdapter)
+                {
+                    nt = dbAdapter.getTrack(t.Path);
+                }
+                if (nt != null)
+                {
+                    t.BPM = nt.BPM;
+                    t.ZCR = nt.ZCR;
+                    t.SpectralIrregularity = nt.SpectralIrregularity;
+                    lock (tracks)
+                    {
+                        this.tracks.Add(t);
+                    }
+                }
+                else
+                {
+                    new Thread(delegate () {
+                        lock (dbAdapter)
+                        {
+                            playerForm.addSong(t, false, false);
+                            Track at = dbAdapter.getTrack(t.Path);
+                            t.BPM = at.BPM;
+                            t.ZCR = at.ZCR;
+                            t.SpectralIrregularity = at.SpectralIrregularity;
+                            lock (tracks)
+                            {
+                                this.tracks.Add(t);
+                            }
+                        }
+                    }).Start(); 
+                }
+                
+            }
+        }
+        public void hide()
+        {
+            this.Hide();
+            MatcherVisible = false;
+        }
+        public void show()
+        {
+            this.Show();
+            MatcherVisible = true;
+            setStatus("Matching Mode:" + Matching);
+        }
+        public bool startMatching()
+        {
+            if (!Matching)
+            {
+                Matching = true;
+                match();
+                cmdToggleMatching.Invoke(new MethodInvoker(delegate {
+                    cmdToggleMatching.Text = "Stop Matching";
+                }));
+            }
+            setStatus("Matching Mode:" + Matching);
+            return Matching;
+        }
+        public bool stopMatching()
+        {
+            if (Matching)
+            {
+                Matching = false;
+                cmdToggleMatching.Invoke(new MethodInvoker(delegate {
+                    cmdToggleMatching.Text = "Start Matching";
+                }));
+            }
+            setStatus("Matching Mode:" + Matching);
+            return Matching;
+        }
+
+        /* Private internal methods */
+        //calculate different between track values and mouse+keyboard values (bpm/zcr/spectirr)
+        private double calculateDifference(Track t)
+        {
+            double nMouseBPM = (mouseBPM/MAX_ABPM) * 100;
+            if (mouseBPM > MAX_ABPM)
+                nMouseBPM = 100;
+            double nMouseSpectIrr = (mouseSpectIrr / MAX_ASPECTIRR) * 100;
+            if (mouseSpectIrr > MAX_ASPECTIRR)
+                nMouseSpectIrr = 100;
+
+            double nKeyboardBPM = (keyboardBPM / MAX_ABPM) * 100;
+            if (keyboardBPM > MAX_ABPM)
+                nKeyboardBPM = 100;
+            double nKeyboardSpectIrr = (keyboardSpectIrr / MAX_ASPECTIRR) * 100;
+            if (keyboardSpectIrr > MAX_ASPECTIRR)
+                nKeyboardSpectIrr = 100;
+
+            double bpmDiff = ((0.5 * nMouseBPM) + (0.5 * nKeyboardBPM)) - normalizeTrackBPM(t.BPM);
+            bpmDiff = Math.Abs(bpmDiff);
+
+            double zcrDiff = ((0.5 * mouseZCR) + (0.5 * keyboardZCR)) - t.ZCR;
+            zcrDiff = Math.Abs(zcrDiff);
+            zcrDiff*=100;
+
+            double spectIrrDiff = ((1 * nMouseSpectIrr) + (0 * nKeyboardSpectIrr)) - normalizeTrackSpectIrr(t.SpectralIrregularity);
+            spectIrrDiff = Math.Abs(spectIrrDiff);
+            return (bpmDiff/3) + (zcrDiff/3) + (spectIrrDiff/3);
+        }
+        private void pickTrack()
+        {
+            if (tracks != null)
+            {
+                double minDiff = Double.MaxValue;
+                int minIndex = 0;
+                for(int i=0; i<tracks.Count; i++)
+                {
+                    double d = calculateDifference(tracks[i]);
+                    Console.WriteLine("track:" + tracks[i].Name + " D:" + d);
+                    if (d < minDiff)
+                    {
+                        minDiff = d;
+                        minIndex = i;
+                    }
+                }
+
+                playerForm.playTrack(minIndex);
+                
+            }
+        } 
+        private void match()
+        {
+            lock (mp)
+            {
+                if (!mp.Processing)
+                {
+                    mp.record(5);
+                }
+            }
+            lock (kp)
+            {
+                if (!kp.Processing)
+                {
+                    kp.record(5);
+                }
+            }
+            /*lock (playerForm)
+            {
+                pickTrack();
+            }*/
+        }
+        private void setStatus(String str)
+        {
+            if (MatcherVisible)
+            {
+                statusLabel.Invoke(new MethodInvoker(delegate {
+                    statusLabel.Text = str;
+                }));
+            }
+            
+        }
+        private double normalizeTrackBPM(double bpm)
+        {
+            List<double> tracksBPM = new List<double>();
+            foreach(Track t in tracks)
+            {
+                tracksBPM.Add(t.BPM);
+            }
+            return (bpm / tracksBPM.Max())*100;
+        }
+        private double normalizeTrackSpectIrr(double bpm)
+        {
+            List<double> tracksSpectIrr = new List<double>();
+            foreach (Track t in tracks)
+            {
+                tracksSpectIrr.Add(t.SpectralIrregularity);
+            }
+            return (bpm / tracksSpectIrr.Max()) * 100;
+        }
+        private short[] getKeyboardData()
+        {
+            lock (kp)
+            {
+                List<short> data = new List<short>();
+                for (int i = 0; i < keyboardRecordings.Count; i++)
+                {
+                    for (int r = 0; r < keyboardRecordings.ElementAt(i).Length; r++)
+                    {
+                        data.Add(keyboardRecordings.ElementAt(i).ElementAt(r));
+                    }
+                }
+                return data.ToArray();
+            }
+        }
+        private short[] getMouseData(int xy) //xy = 0 if x , !=0 if y
+        {
+            lock (mp)
+            {
+                double avg = 0;
+                List<short> data = new List<short>();
+                if (xy == 0)
+                {
+                    for (int i = 0; i < mouseXRecordings.Count; i++)
+                    {
+                        for (int r = 0; r < mouseXRecordings.ElementAt(i).Length; r++)
+                        {
+                            data.Add(mouseXRecordings.ElementAt(i).ElementAt(r));
+                            avg += mouseXRecordings.ElementAt(i).ElementAt(r);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < mouseYRecordings.Count; i++)
+                    {
+                        for (int r = 0; r < mouseYRecordings.ElementAt(i).Length; r++)
+                        {
+                            data.Add(mouseYRecordings.ElementAt(i).ElementAt(r));
+                            avg += mouseYRecordings.ElementAt(i).ElementAt(r);
+                        }
+                    }
+                }
+                //substract mean value of all the data
+                avg /= data.Count;
+                for(int i=0; i<data.Count; i++)
+                {
+                    data[i] = (short)(data[i] - avg);
+                }
+                return data.ToArray();
             }
         }
 
+        /* Events */
+        // GUI and button events
+        private void cmdPickTrack_Click_1(object sender, EventArgs e)
+        {
+            pickTrack();
+            //playerForm.playTrack(0);
+        }
+        private void cmdToggleMatching_Click(object sender, EventArgs e)
+        {
+            if (Matching)
+            {
+                stopMatching();
+            }
+            else
+            {
+                startMatching();
+            }
+        }
+        
+        //Other events from different components/forms
         private void onKeyboardDataReady(object sender, EventArgs e)
         {
-            if (matching)
+            if (Matching)
             {
-                lock (keyboardLock)
+                lock (kp)
                 {
                     short[] pointer = kp.Data;
                     short[] data = new short[pointer.Length];
@@ -102,252 +340,153 @@ namespace GamingMusicPlayer
                         keyboardRecordings.Enqueue(data);
                     }
                     //Console.WriteLine("computing bpm of keyboard data, duration:" + (5 * keyboardRecordings.Count));
-                    sp.ComputeBPM(getKeyboardData(), 5 * keyboardRecordings.Count, true, false);
+
                 }
-                
-                
-                
+
+                lock (sp)
+                {
+                    //Console.WriteLine("computing values for keyboard data..");
+                    sp.ComputeBPM(getKeyboardData(), 5 * keyboardRecordings.Count, true, false);
+                    sp.computeTimbre(getKeyboardData(), 5 * keyboardRecordings.Count, false);
+                   //Console.WriteLine("done");
+                }
 
                 //normalizing bpm
-                if (sp.BPM >=maxKeyboardBPM)
+                if (sp.BPM >= MAX_ABPM)
                 {
                     keyboardBPM = 100;
                 }
                 else
                 {
-                    keyboardBPM = (int)((sp.BPM / maxKeyboardBPM) * 100);
+                    keyboardBPM = (int)((sp.BPM / MAX_ABPM) * 100);
                 }
-                
-                
+
+
                 keyboardLabel.Invoke(new MethodInvoker(delegate {
-                    keyboardLabel.Text = "% keyBPM:" + keyboardBPM + "    real:"+sp.BPM+"    max:" + maxKeyboardBPM;
+                    keyboardLabel.Text = "keyboard BPM:" + sp.BPM;
                 }));
-               
+
+                keyboardZCRLabel.Invoke(new MethodInvoker(delegate {
+                    keyboardZCRLabel.Text = "keyboard zcr:" + sp.ZCR;
+                }));
+
+                keyboardSpectIrrLabel.Invoke(new MethodInvoker(delegate {
+                    keyboardSpectIrrLabel.Text = "keyboard spect irr:" + sp.SpectralIrregularity;
+                }));
+
+                //Console.WriteLine("keyboard data added");
                 match();
             }
             else
             {
                 Console.WriteLine("recording stopped.");
             }
-        }
-
-        private void onBPMReady(object sender, EventArgs e)
-        {
-            
         }
         private void onMouseDataReady(object sender, EventArgs e)
         {
-            if (matching)
+            if (Matching)
             {
-                lock (mouseLock)
+                lock (mp)
                 {
-                    short[] pointer = mp.DataX;
-                    short[] data = new short[pointer.Length];
-                    for (int i = 0; i < pointer.Length; i++)
+                    short[] pointerX = mp.DataX;
+                    short[] dataX = new short[pointerX.Length];
+                    for (int i = 0; i < pointerX.Length; i++)
                     {
-                        data[i] = pointer[i];
+                        dataX[i] = pointerX[i];
                     }
-                    if (mouseRecordings.Count < RECORDINGS_MAX_SIZE)
+
+                    short[] pointerY = mp.DataY;
+                    short[] dataY = new short[pointerY.Length];
+                    for (int i = 0; i < pointerY.Length; i++)
                     {
-                        mouseRecordings.Enqueue(data);
+                        dataY[i] = pointerY[i];
+                    }
+
+                    if (mouseXRecordings.Count < RECORDINGS_MAX_SIZE)
+                    {
+                        mouseXRecordings.Enqueue(dataX);
                     }
                     else
                     {
-                        mouseRecordings.Dequeue();
-                        mouseRecordings.Enqueue(data);
+                        mouseXRecordings.Dequeue();
+                        mouseXRecordings.Enqueue(dataX);
                     }
-                    sp.ComputeBPM(getMouseData(), 5 * mouseRecordings.Count, true, false);
-                }
-                
-                
-                //normalizing bpm
-                if (sp.BPM >= maxMouseBPM)
-                {
-                    mouseBPM = 100;
-                }
-                else
-                {
-                    mouseBPM = (int)((sp.BPM / maxMouseBPM) * 100);
+
+                    if (mouseYRecordings.Count < RECORDINGS_MAX_SIZE)
+                    {
+                        mouseYRecordings.Enqueue(dataY);
+                    }
+                    else
+                    {
+                        mouseYRecordings.Dequeue();
+                        mouseYRecordings.Enqueue(dataY);
+                    }
                 }
 
-               
-                mouseLabel.Invoke(new MethodInvoker(delegate {
-                    mouseLabel.Text = "% mouseBPM:" + mouseBPM + "    real:"+sp.BPM+"    max:" + maxMouseBPM;
+                lock (sp)
+                {
+                    //Console.WriteLine("computing values for mouse X data..");
+                    sp.ComputeBPM(getMouseData(0), 5 * mouseXRecordings.Count, true, false);
+                    sp.computeTimbre(getMouseData(0), 5 * mouseXRecordings.Count, false);
+                   //Console.WriteLine("done");
+                }
+
+                mouseBPM = sp.BPM;
+                mouseZCR = sp.ZCR;
+                mouseSpectIrr = sp.SpectralIrregularity;
+                
+                mouseXLabel.Invoke(new MethodInvoker(delegate {
+                    //mouseXLabel.Text = "% mouseX-BPM:" + mouseBPM + "    real:"+sp.BPM+"    max:" + maxMouseBPM;
+                    mouseXLabel.Text = "mouse-X BPM:" + mouseBPM;
                 }));
+
+                mouseXZCRLabel.Invoke(new MethodInvoker(delegate {
+                    mouseXZCRLabel.Text = "mouse X zcr:" + mouseZCR;
+                }));
+
+                mouseXSpectIrrLabel.Invoke(new MethodInvoker(delegate {
+                    mouseXSpectIrrLabel.Text = "mouse X spect Irr:" + mouseSpectIrr;
+                }));
+
+                lock (sp)
+                {
+                    //Console.WriteLine("computing values for mouse Y data..");
+                    sp.ComputeBPM(getMouseData(1), 5 * mouseXRecordings.Count, true, false);
+                    sp.computeTimbre(getMouseData(1), 5 * mouseXRecordings.Count, false);
+                    //Console.WriteLine("done");
+                }
+
+                double mouseYBPM = sp.BPM;
+                double mouseYZCR = sp.ZCR;
+                double mouseYSpectIrr = sp.SpectralIrregularity;
+                if(mouseYBPM > mouseBPM)
+                    mouseBPM = mouseYBPM;
+
+                if (mouseYZCR > mouseZCR)
+                    mouseZCR = mouseYZCR;
+                if (mouseYSpectIrr > mouseSpectIrr)
+                    mouseSpectIrr = mouseYSpectIrr;
+                mouseYLabel.Invoke(new MethodInvoker(delegate {
+                    //mouseYLabel.Text = "% mouseY-BPM:" + mouseBPM + "    real:" + sp.BPM + "    max:" + maxMouseBPM;
+                    mouseYLabel.Text = "mouse-Y BPM:" + mouseYBPM;
+                }));
+
+                
+                mouseYZCRLabel.Invoke(new MethodInvoker(delegate {
+                    mouseYZCRLabel.Text = "mouse Y zcr:" + mouseYZCR;
+                }));
+
+                mouseYSpectIrrLabel.Invoke(new MethodInvoker(delegate {
+                    mouseYSpectIrrLabel.Text = "mouse Y spect Irr:" + mouseYSpectIrr;
+                }));
+
+                //Console.WriteLine("mouse data added");
                 match();
             }
             else
             {
                 Console.WriteLine("recording stopped.");
             }
-        }
-
-        public void hide()
-        {
-            this.Hide();
-            MatcherVisible = false;
-        }
-
-        public void show()
-        {
-            this.Show();
-            MatcherVisible = true;
-            worker = new Thread(new ThreadStart(worker_calcTracksBPM));
-            worker.Start();
-        }
-
-
-        private void cmdToggleMatching_Click(object sender, EventArgs e)
-        {
-            if (matching)
-            {
-                matching = false;
-                cmdToggleMatching.Text = "Start Matching";
-            }
-            else
-            {
-                matching = true;
-                match();
-                cmdToggleMatching.Text = "Stop Matching";
-            }
-            setStatus("Matching Mode:" + matching);
-        }
-
-        private void pickTrack()
-        {
-            if (tracksBPM == null)
-            {
-                return;
-            }
-            
-            double minDiff = 100;
-            int trackIndex = 0;
-            for (int i = 0; i < tracksBPM.Count; i++)
-            {
-                double d = (1*mouseBPM+0*keyboardBPM)-normalizeTrackBPM(tracksBPM[i]);
-                if (d < 0)
-                {
-                    d *= -1;
-                }
-                if (d < minDiff)
-                {
-                    minDiff = d;
-                    trackIndex = i;
-                }
-            }
-            mouseTrackLabel.Invoke(new MethodInvoker(delegate {
-                keyboardTrackLabel.Text = tracks[trackIndex].Name;
-                mouseTrackLabel.Text = " with bpm:" + tracksBPM[trackIndex] + "   %:" +(int)normalizeTrackBPM(tracksBPM[trackIndex]);
-            }));
-            if (currTrackIndex != trackIndex)
-            {
-                playerForm.playTrack(trackIndex);
-                currTrackIndex = trackIndex;
-            }
-        }
-
-        private void match()
-        {
-            lock (mouseLock)
-            {
-                if (!mp.Processing)
-                {
-                    mp.record(5);
-                }
-            }
-            lock (keyboardLock)
-            {
-                if (!kp.Processing)
-                {
-                    kp.record(5);
-                }
-            }
-            lock (playerForm)
-            {
-                pickTrack();
-            }
-        }
-
-        private void worker_calcTracksBPM()
-        {
-            if (tracks == null)
-                return;
-            if (!workerAlive)
-            {
-                workerAlive = true;
-                cmdToggleMatching.Invoke(new MethodInvoker(delegate {
-                    cmdToggleMatching.Enabled = false;
-                }));
-                setStatus("Calculating BPM for every track..");
-                this.tracksBPM = new List<double>();
-                currTrackIndex = 0;
-                foreach (Track t in tracks)
-                {
-                    sp.ComputeBPM(t.Data, t.Length / 1000, false, false);
-                    tracksBPM.Add(sp.BPM);
-                }
-                setStatus("Matching Mode:" + matching);
-                cmdToggleMatching.Invoke(new MethodInvoker(delegate {
-                    cmdToggleMatching.Enabled = true;
-                }));
-                workerAlive = false;
-            }
-            else
-            {
-                Console.WriteLine("worker_calcTracksBPM failed: signal processor already in use.");
-            }
-            
-        }
-
-        private void setStatus(String str)
-        {
-            if (MatcherVisible)
-            {
-                statusLabel.Invoke(new MethodInvoker(delegate {
-                    statusLabel.Text = str;
-                }));
-            }
-            
-        }
-
-        private double normalizeTrackBPM(double bpm)
-        {
-            return (bpm / tracksBPM.Max())*100;
-        }
-
-        private short[] getKeyboardData()
-        {
-            List<short> data = new List<short>();
-            for(int i = 0; i < keyboardRecordings.Count; i++)
-            {
-                for(int r = 0; r < keyboardRecordings.ElementAt(i).Length; r++)
-                {
-                    data.Add(keyboardRecordings.ElementAt(i).ElementAt(r));
-                }
-            }
-
-            return data.ToArray();
-        }
-
-        private short[] getMouseData()
-        {
-            List<short> data = new List<short>();
-            for (int i = 0; i < mouseRecordings.Count; i++)
-            {
-                for (int r = 0; r < mouseRecordings.ElementAt(i).Length; r++)
-                {
-                    data.Add(mouseRecordings.ElementAt(i).ElementAt(r));
-                }
-            }
-
-            return data.ToArray();
-        }
-
-
-        private void cmdPickTrack_Click_1(object sender, EventArgs e)
-        {
-            pickTrack();
-            //playerForm.playTrack(0);
         }
     }
 }
