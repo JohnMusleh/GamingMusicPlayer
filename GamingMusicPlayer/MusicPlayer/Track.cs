@@ -10,7 +10,6 @@ namespace GamingMusicPlayer.MusicPlayer
         private string path;
         private string artist; //can be null
         private double bpm; //can be null
-        private double zcr; //can be null
         private double spectrIrr; //can be null
         private int length; //in ms
 
@@ -21,14 +20,7 @@ namespace GamingMusicPlayer.MusicPlayer
             get { return readDataFromFile(); }
         }
 
-        public double ZCR
-        {
-            get { return zcr; }
-            set
-            {
-                this.zcr = value;
-            }
-        }
+        public double ZCR { get; set; }
 
         public double SpectralIrregularity
         {
@@ -118,7 +110,7 @@ namespace GamingMusicPlayer.MusicPlayer
             this.path = path;
             this.artist = null;
             this.bpm = -1;
-            this.zcr = -1;
+            this.ZCR = -1;
             this.spectrIrr = -1;
             this.error_msg = "no error";
             if (!fixLength())
@@ -135,7 +127,7 @@ namespace GamingMusicPlayer.MusicPlayer
             else
                 this.artist = (string)t.artist.Clone();
             this.bpm = t.bpm;
-            this.zcr = t.zcr;
+            this.ZCR = t.ZCR;
             this.spectrIrr = t.spectrIrr;
             this.path = (string)t.path.Clone();
 

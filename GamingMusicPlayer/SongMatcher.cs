@@ -16,6 +16,10 @@ namespace GamingMusicPlayer
         public Boolean MatcherVisible { get; private set; }
         public Boolean Matching { get; private set; }
         private List<Track> tracks;
+        private Queue<int> historyQueue; //a queue to hold all the track indeces picked from song matching
+        private bool[] historyMap; //historyMap[i] = true if track i is inside history queue
+        private const int HISTORY_MAX_SIZE = 10;
+        private const int MIN_DIFF = 5;
 
         private const int RECORDINGS_MAX_SIZE = 6; //each recording is 5 seconds
         //following queues are updated every 5 seconds when matching
@@ -30,6 +34,10 @@ namespace GamingMusicPlayer
         private double keyboardZCR, mouseZCR;
         private double keyboardSpectIrr, mouseSpectIrr;
 
+        private double mouseBpmWeight, keyboardBpmWeight;
+        private double mouseZcrWeight, keyboardZcrWeight;
+        private double mouseSpectIrrWeight, keyboardSpectIrrWeight;
+
         private KeyboardProcessor kp;
         private MouseProcessor mp;
         private SignalProcessor sp;
@@ -37,17 +45,20 @@ namespace GamingMusicPlayer
         private MainForm playerForm;
         private Database.DatabaseAdapter dbAdapter;
 
-
+        private double prevD;
         private int currTrackIndex;
+
 
         public SongMatcher(MainForm main, Database.DatabaseAdapter adapter)
         {
             InitializeComponent();
             this.tracks = null;
+            historyMap = null;
+            historyQueue = new Queue<int>();
             Matching = false;
             this.playerForm = main;
             this.dbAdapter = adapter;
-            this.currTrackIndex = 0;
+            this.currTrackIndex = -1;
             sp = new SignalProcessor();
 
             kp = new KeyboardProcessor();
@@ -62,10 +73,16 @@ namespace GamingMusicPlayer
             mouseXRecordings = new Queue<short[]>();
             mouseYRecordings = new Queue<short[]>();
             keyboardRecordings = new Queue<short[]>();
-            
+
+            bpmTrackBar.ValueChanged += trackBarValuesChanged;
+            zcrTrackBar.ValueChanged += trackBarValuesChanged;
             this.hide();
             MatcherVisible = false;
             this.TopMost = true;
+
+            prevD = Double.MaxValue;
+
+            main.onSongComplete += onSongComplete;
         }
 
         /* Public Control Methods*/
@@ -106,7 +123,11 @@ namespace GamingMusicPlayer
                         }
                     }).Start(); 
                 }
-                
+            }
+            this.historyMap = new bool[tracks.Count];
+            for(int i=0; i<historyMap.Length; i++)
+            {
+                historyMap[i] = false;
             }
         }
         public void hide()
@@ -131,6 +152,7 @@ namespace GamingMusicPlayer
                 }));
             }
             setStatus("Matching Mode:" + Matching);
+            playerForm.AutoPick = false;
             return Matching;
         }
         public bool stopMatching()
@@ -143,6 +165,7 @@ namespace GamingMusicPlayer
                 }));
             }
             setStatus("Matching Mode:" + Matching);
+            playerForm.AutoPick = true;
             return Matching;
         }
 
@@ -163,36 +186,87 @@ namespace GamingMusicPlayer
             double nKeyboardSpectIrr = (keyboardSpectIrr / MAX_ASPECTIRR) * 100;
             if (keyboardSpectIrr > MAX_ASPECTIRR)
                 nKeyboardSpectIrr = 100;
-
-            double bpmDiff = ((0.5 * nMouseBPM) + (0.5 * nKeyboardBPM)) - normalizeTrackBPM(t.BPM);
+            double bpmDiff = ((mouseBpmWeight * nMouseBPM) + (keyboardBpmWeight * nKeyboardBPM)) - normalizeTrackBPM(t.BPM);
             bpmDiff = Math.Abs(bpmDiff);
 
-            double zcrDiff = ((0.5 * mouseZCR) + (0.5 * keyboardZCR)) - t.ZCR;
+            double zcrDiff = ((mouseZcrWeight * mouseZCR) + (keyboardZcrWeight * keyboardZCR)) - t.ZCR;
             zcrDiff = Math.Abs(zcrDiff);
             zcrDiff*=100;
 
             double spectIrrDiff = ((1 * nMouseSpectIrr) + (0 * nKeyboardSpectIrr)) - normalizeTrackSpectIrr(t.SpectralIrregularity);
             spectIrrDiff = Math.Abs(spectIrrDiff);
-            return (bpmDiff/3) + (zcrDiff/3) + (spectIrrDiff/3);
+            return (bpmDiff*0.4) + (zcrDiff*0.4) + (spectIrrDiff*0.2);
         }
-        private void pickTrack()
+        private void pickTrack(bool force)
         {
             if (tracks != null)
             {
+                if (force)
+                {
+                    Console.WriteLine("\n--FORCE PICKING NEXT SONG--");
+                }
+                currTrackIndex = playerForm.CurrentlySelectedTrackIndex;
                 double minDiff = Double.MaxValue;
-                int minIndex = 0;
+                int minIndex = -1;
                 for(int i=0; i<tracks.Count; i++)
                 {
-                    double d = calculateDifference(tracks[i]);
-                    Console.WriteLine("track:" + tracks[i].Name + " D:" + d);
-                    if (d < minDiff)
-                    {
-                        minDiff = d;
-                        minIndex = i;
+                    if (!historyMap[i] || i==currTrackIndex) {
+                        double d = calculateDifference(tracks[i]);
+                        if (i == currTrackIndex)
+                        {
+                            prevD = d;
+                            continue;
+                        }
+                        Console.WriteLine("track:" + tracks[i].Name + " D:" + d);
+                        if (d < minDiff)
+                        {
+                            minDiff = d;
+                            minIndex = i;
+                        }
                     }
                 }
 
-                playerForm.playTrack(minIndex);
+                if (minIndex < 0)
+                {
+                    Console.WriteLine("no song found");
+                    return;
+                }
+
+                Console.WriteLine("minD:" + minDiff + "  prevD:" + prevD);
+                if((prevD - minDiff >= MIN_DIFF) || force)
+                {
+                    if (force)
+                    {
+                        Console.WriteLine("-- forced --minIndex: "+minIndex+" currTrackI:"+currTrackIndex);
+                    }
+                    if (minIndex != currTrackIndex && (playerForm.Playing || force) && mouseXRecordings.Count>= RECORDINGS_MAX_SIZE)
+                    {
+                        if (force)
+                        {
+                            Console.WriteLine("--should pick..--");
+                        }
+                        playerForm.playTrack(minIndex);
+                        currTrackIndex = minIndex;
+                        if (historyQueue.Count >= HISTORY_MAX_SIZE || historyQueue.Count >= tracks.Count-1)
+                        {
+                            Console.WriteLine("h queue full , clear it then add");
+                            historyQueue.Clear();
+                            for(int i=0; i<historyMap.Length; i++)
+                            {
+                                historyMap[i] = false;
+                            }
+                            historyQueue.Enqueue(currTrackIndex);
+                            historyMap[currTrackIndex] = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("h queue not full , just add");
+                            historyQueue.Enqueue(currTrackIndex);
+                            historyMap[currTrackIndex] = true;
+                        }
+                    }
+                }
+                
                 
             }
         } 
@@ -212,10 +286,10 @@ namespace GamingMusicPlayer
                     kp.record(5);
                 }
             }
-            /*lock (playerForm)
+            lock (playerForm)
             {
-                pickTrack();
-            }*/
+                pickTrack(false);
+            }
         }
         private void setStatus(String str)
         {
@@ -260,6 +334,7 @@ namespace GamingMusicPlayer
                 return data.ToArray();
             }
         }
+
         private short[] getMouseData(int xy) //xy = 0 if x , !=0 if y
         {
             lock (mp)
@@ -302,9 +377,11 @@ namespace GamingMusicPlayer
         // GUI and button events
         private void cmdPickTrack_Click_1(object sender, EventArgs e)
         {
-            pickTrack();
+            pickTrack(false);
             //playerForm.playTrack(0);
         }
+
+
         private void cmdToggleMatching_Click(object sender, EventArgs e)
         {
             if (Matching)
@@ -313,10 +390,55 @@ namespace GamingMusicPlayer
             }
             else
             {
+                for (int i = 0; i < historyMap.Length; i++)
+                    historyMap[i] = false;
+                historyQueue.Clear();
                 startMatching();
             }
         }
-        
+
+        private void trackBarValuesChanged(object sender, EventArgs e)
+        {
+            mouseBpmWeight = (double)bpmTrackBar.Value / (double)bpmTrackBar.Maximum;
+            keyboardBpmWeight = 1 - mouseBpmWeight;
+
+            mouseZcrWeight = (double)zcrTrackBar.Value / (double)zcrTrackBar.Maximum;
+            keyboardZcrWeight = 1 - mouseZcrWeight;
+
+            this.Invoke(new MethodInvoker(delegate {
+                mouseBpmWeightLabel.Text = "mouse:" + mouseBpmWeight;
+                keyboardBpmWeightLabel.Text = "keyboard:" + keyboardBpmWeight;
+
+                mouseZcrWeightLabel.Text = "mouse:" + mouseZcrWeight;
+                keyboardZcrWeightLabel.Text = "keyboard:" + keyboardZcrWeight;
+            }));
+
+            
+
+        }
+
+        private void onSongComplete(object sender, EventArgs e)
+        {
+            if (Matching)
+            {
+                Console.WriteLine("song is done");
+                if (historyQueue.Count >= tracks.Count - 1 || historyQueue.Count >= HISTORY_MAX_SIZE)
+                {
+                    Console.WriteLine("clearing history");
+                    historyQueue.Clear();
+                    for (int i = 0; i < historyMap.Length; i++)
+                        historyMap[i] = false;
+                }
+                lock (playerForm)
+                {
+                    Console.WriteLine("calling force pick..");
+                    pickTrack(true);
+                }
+            }
+            
+            
+        }
+
         //Other events from different components/forms
         private void onKeyboardDataReady(object sender, EventArgs e)
         {
@@ -340,7 +462,6 @@ namespace GamingMusicPlayer
                         keyboardRecordings.Enqueue(data);
                     }
                     //Console.WriteLine("computing bpm of keyboard data, duration:" + (5 * keyboardRecordings.Count));
-
                 }
 
                 lock (sp)
@@ -348,7 +469,7 @@ namespace GamingMusicPlayer
                     //Console.WriteLine("computing values for keyboard data..");
                     sp.ComputeBPM(getKeyboardData(), 5 * keyboardRecordings.Count, true, false);
                     sp.computeTimbre(getKeyboardData(), 5 * keyboardRecordings.Count, false);
-                   //Console.WriteLine("done");
+                    //Console.WriteLine("done");
                 }
 
                 //normalizing bpm
@@ -360,7 +481,6 @@ namespace GamingMusicPlayer
                 {
                     keyboardBPM = (int)((sp.BPM / MAX_ABPM) * 100);
                 }
-
 
                 keyboardLabel.Invoke(new MethodInvoker(delegate {
                     keyboardLabel.Text = "keyboard BPM:" + sp.BPM;

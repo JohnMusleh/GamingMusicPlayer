@@ -85,7 +85,8 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
             onDataReady(null,null);
         }
 
-        private void OnKeyPressed(object sender, KeyPressedArgs e) {
+        private void OnKeyPressed(object sender, KeyPressedArgs e)
+        {
             if (Processing)
             {
                 bool tick = true;

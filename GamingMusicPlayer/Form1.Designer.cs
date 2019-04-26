@@ -42,26 +42,29 @@
             this.cmdLogger = new System.Windows.Forms.Button();
             this.cmdShowGrapher = new System.Windows.Forms.Button();
             this.cmdToggleMatcher = new System.Windows.Forms.Button();
-            this.cmdPriorTs3 = new System.Windows.Forms.Button();
             this.featuresLabel = new System.Windows.Forms.Label();
             this.cmdScan = new System.Windows.Forms.Button();
             this.cmdViewDB = new System.Windows.Forms.Button();
+            this.cmdSettings = new System.Windows.Forms.Button();
+            this.volumeTrackBar = new System.Windows.Forms.TrackBar();
             this.bottomLeftIcon = new GamingMusicPlayer.CMButton();
             this.cmdPlayPause = new GamingMusicPlayer.CMButton();
             this.cmdPrev = new GamingMusicPlayer.CMButton();
             this.cmdNext = new GamingMusicPlayer.CMButton();
             this.cmdShuffle = new GamingMusicPlayer.CMButton();
             this.cmdLoop = new GamingMusicPlayer.CMButton();
+            this.volumeLabel = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.volumeTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // cmdRemove
             // 
             this.cmdRemove.Enabled = false;
-            this.cmdRemove.Location = new System.Drawing.Point(34, 78);
+            this.cmdRemove.Location = new System.Drawing.Point(998, 81);
             this.cmdRemove.Name = "cmdRemove";
-            this.cmdRemove.Size = new System.Drawing.Size(147, 41);
+            this.cmdRemove.Size = new System.Drawing.Size(125, 35);
             this.cmdRemove.TabIndex = 6;
             this.cmdRemove.Text = "Remove";
             this.cmdRemove.UseVisualStyleBackColor = true;
@@ -70,7 +73,9 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.DimGray;
+            this.panel1.Controls.Add(this.volumeLabel);
             this.panel1.Controls.Add(this.seekLabel);
+            this.panel1.Controls.Add(this.volumeTrackBar);
             this.panel1.Controls.Add(this.musicTrackBar);
             this.panel1.Controls.Add(this.txtMusicProgress);
             this.panel1.Controls.Add(this.bottomLeftIcon);
@@ -87,7 +92,7 @@
             // seekLabel
             // 
             this.seekLabel.AutoSize = true;
-            this.seekLabel.Location = new System.Drawing.Point(274, 3);
+            this.seekLabel.Location = new System.Drawing.Point(211, 6);
             this.seekLabel.Name = "seekLabel";
             this.seekLabel.Size = new System.Drawing.Size(73, 17);
             this.seekLabel.TabIndex = 15;
@@ -96,7 +101,7 @@
             // musicTrackBar
             // 
             this.musicTrackBar.BackColor = System.Drawing.Color.DimGray;
-            this.musicTrackBar.Location = new System.Drawing.Point(393, 3);
+            this.musicTrackBar.Location = new System.Drawing.Point(316, 3);
             this.musicTrackBar.Name = "musicTrackBar";
             this.musicTrackBar.Size = new System.Drawing.Size(586, 56);
             this.musicTrackBar.TabIndex = 1;
@@ -108,7 +113,7 @@
             // txtMusicProgress
             // 
             this.txtMusicProgress.AutoSize = true;
-            this.txtMusicProgress.Location = new System.Drawing.Point(985, 3);
+            this.txtMusicProgress.Location = new System.Drawing.Point(900, 6);
             this.txtMusicProgress.Name = "txtMusicProgress";
             this.txtMusicProgress.Size = new System.Drawing.Size(115, 17);
             this.txtMusicProgress.TabIndex = 14;
@@ -116,9 +121,9 @@
             // 
             // cmdAddSong
             // 
-            this.cmdAddSong.Location = new System.Drawing.Point(34, 31);
+            this.cmdAddSong.Location = new System.Drawing.Point(998, 40);
             this.cmdAddSong.Name = "cmdAddSong";
-            this.cmdAddSong.Size = new System.Drawing.Size(147, 41);
+            this.cmdAddSong.Size = new System.Drawing.Size(125, 35);
             this.cmdAddSong.TabIndex = 8;
             this.cmdAddSong.Text = "Add Song";
             this.cmdAddSong.UseVisualStyleBackColor = true;
@@ -128,7 +133,7 @@
             // 
             this.nameListBox.FormattingEnabled = true;
             this.nameListBox.ItemHeight = 16;
-            this.nameListBox.Location = new System.Drawing.Point(216, 40);
+            this.nameListBox.Location = new System.Drawing.Point(393, 40);
             this.nameListBox.Name = "nameListBox";
             this.nameListBox.Size = new System.Drawing.Size(381, 372);
             this.nameListBox.TabIndex = 10;
@@ -137,7 +142,7 @@
             // nameLabel
             // 
             this.nameLabel.AutoSize = true;
-            this.nameLabel.Location = new System.Drawing.Point(213, 9);
+            this.nameLabel.Location = new System.Drawing.Point(403, 9);
             this.nameLabel.Name = "nameLabel";
             this.nameLabel.Size = new System.Drawing.Size(45, 17);
             this.nameLabel.TabIndex = 12;
@@ -146,7 +151,7 @@
             // lengthLabel
             // 
             this.lengthLabel.AutoSize = true;
-            this.lengthLabel.Location = new System.Drawing.Point(600, 9);
+            this.lengthLabel.Location = new System.Drawing.Point(787, 9);
             this.lengthLabel.Name = "lengthLabel";
             this.lengthLabel.Size = new System.Drawing.Size(52, 17);
             this.lengthLabel.TabIndex = 13;
@@ -156,7 +161,7 @@
             // 
             this.lengthListBox.FormattingEnabled = true;
             this.lengthListBox.ItemHeight = 16;
-            this.lengthListBox.Location = new System.Drawing.Point(603, 40);
+            this.lengthListBox.Location = new System.Drawing.Point(780, 40);
             this.lengthListBox.Name = "lengthListBox";
             this.lengthListBox.Size = new System.Drawing.Size(199, 372);
             this.lengthListBox.TabIndex = 11;
@@ -184,28 +189,18 @@
             // 
             // cmdToggleMatcher
             // 
-            this.cmdToggleMatcher.Location = new System.Drawing.Point(941, 174);
+            this.cmdToggleMatcher.Location = new System.Drawing.Point(998, 327);
             this.cmdToggleMatcher.Name = "cmdToggleMatcher";
-            this.cmdToggleMatcher.Size = new System.Drawing.Size(174, 45);
+            this.cmdToggleMatcher.Size = new System.Drawing.Size(125, 35);
             this.cmdToggleMatcher.TabIndex = 16;
             this.cmdToggleMatcher.Text = "Show Matcher";
             this.cmdToggleMatcher.UseVisualStyleBackColor = true;
             this.cmdToggleMatcher.Click += new System.EventHandler(this.cmdToggleMatcher_Click);
             // 
-            // cmdPriorTs3
-            // 
-            this.cmdPriorTs3.Location = new System.Drawing.Point(941, 97);
-            this.cmdPriorTs3.Name = "cmdPriorTs3";
-            this.cmdPriorTs3.Size = new System.Drawing.Size(174, 45);
-            this.cmdPriorTs3.TabIndex = 17;
-            this.cmdPriorTs3.Text = "Prioritize voice communication:OFF";
-            this.cmdPriorTs3.UseVisualStyleBackColor = true;
-            this.cmdPriorTs3.Click += new System.EventHandler(this.cmdPriorTs3_Click);
-            // 
             // featuresLabel
             // 
             this.featuresLabel.AutoSize = true;
-            this.featuresLabel.Location = new System.Drawing.Point(998, 64);
+            this.featuresLabel.Location = new System.Drawing.Point(1034, 297);
             this.featuresLabel.Name = "featuresLabel";
             this.featuresLabel.Size = new System.Drawing.Size(64, 17);
             this.featuresLabel.TabIndex = 18;
@@ -213,11 +208,11 @@
             // 
             // cmdScan
             // 
-            this.cmdScan.Location = new System.Drawing.Point(34, 125);
+            this.cmdScan.Location = new System.Drawing.Point(12, 22);
             this.cmdScan.Name = "cmdScan";
-            this.cmdScan.Size = new System.Drawing.Size(147, 65);
+            this.cmdScan.Size = new System.Drawing.Size(147, 44);
             this.cmdScan.TabIndex = 19;
-            this.cmdScan.Text = "Scan Computer";
+            this.cmdScan.Text = "Scan";
             this.cmdScan.UseVisualStyleBackColor = true;
             this.cmdScan.Click += new System.EventHandler(this.cmdScan_Click);
             // 
@@ -230,6 +225,28 @@
             this.cmdViewDB.Text = "View DB";
             this.cmdViewDB.UseVisualStyleBackColor = true;
             this.cmdViewDB.Click += new System.EventHandler(this.cmdViewDB_Click);
+            // 
+            // cmdSettings
+            // 
+            this.cmdSettings.Location = new System.Drawing.Point(998, 377);
+            this.cmdSettings.Name = "cmdSettings";
+            this.cmdSettings.Size = new System.Drawing.Size(125, 35);
+            this.cmdSettings.TabIndex = 21;
+            this.cmdSettings.Text = "Settings";
+            this.cmdSettings.UseVisualStyleBackColor = true;
+            this.cmdSettings.Click += new System.EventHandler(this.cmdSettings_Click);
+            // 
+            // volumeTrackBar
+            // 
+            this.volumeTrackBar.LargeChange = 10;
+            this.volumeTrackBar.Location = new System.Drawing.Point(1021, 33);
+            this.volumeTrackBar.Maximum = 1000;
+            this.volumeTrackBar.Name = "volumeTrackBar";
+            this.volumeTrackBar.Size = new System.Drawing.Size(111, 56);
+            this.volumeTrackBar.TabIndex = 1;
+            this.volumeTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.volumeTrackBar.Value = 1000;
+            this.volumeTrackBar.Scroll += new System.EventHandler(this.volumeTrackBar_Scroll);
             // 
             // bottomLeftIcon
             // 
@@ -320,16 +337,26 @@
             this.cmdLoop.UseVisualStyleBackColor = false;
             this.cmdLoop.Click += new System.EventHandler(this.cmdLoop_Click);
             // 
+            // volumeLabel
+            // 
+            this.volumeLabel.AutoSize = true;
+            this.volumeLabel.BackColor = System.Drawing.Color.Transparent;
+            this.volumeLabel.Location = new System.Drawing.Point(975, 33);
+            this.volumeLabel.Name = "volumeLabel";
+            this.volumeLabel.Size = new System.Drawing.Size(40, 17);
+            this.volumeLabel.TabIndex = 22;
+            this.volumeLabel.Text = "Vol%";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1174, 633);
+            this.Controls.Add(this.cmdSettings);
             this.Controls.Add(this.cmdViewDB);
             this.Controls.Add(this.cmdScan);
             this.Controls.Add(this.featuresLabel);
-            this.Controls.Add(this.cmdPriorTs3);
             this.Controls.Add(this.cmdToggleMatcher);
             this.Controls.Add(this.cmdShowGrapher);
             this.Controls.Add(this.cmdLogger);
@@ -347,6 +374,7 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.volumeTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -373,10 +401,12 @@
         private System.Windows.Forms.Button cmdLogger;
         private System.Windows.Forms.Button cmdShowGrapher;
         private System.Windows.Forms.Button cmdToggleMatcher;
-        private System.Windows.Forms.Button cmdPriorTs3;
         private System.Windows.Forms.Label featuresLabel;
         private System.Windows.Forms.Button cmdScan;
         private System.Windows.Forms.Button cmdViewDB;
+        private System.Windows.Forms.Button cmdSettings;
+        private System.Windows.Forms.TrackBar volumeTrackBar;
+        private System.Windows.Forms.Label volumeLabel;
     }
 }
 
