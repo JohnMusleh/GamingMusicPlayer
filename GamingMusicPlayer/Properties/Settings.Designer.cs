@@ -33,5 +33,148 @@ namespace GamingMusicPlayer.Properties {
                 return ((string)(this["SongsDBConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int volume {
+            get {
+                return ((int)(this["volume"]));
+            }
+            set {
+                this["volume"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int overlayX {
+            get {
+                return ((int)(this["overlayX"]));
+            }
+            set {
+                this["overlayX"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int overlayY {
+            get {
+                return ((int)(this["overlayY"]));
+            }
+            set {
+                this["overlayY"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool vpTs3 {
+            get {
+                return ((bool)(this["vpTs3"]));
+            }
+            set {
+                this["vpTs3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool vpSkype {
+            get {
+                return ((bool)(this["vpSkype"]));
+            }
+            set {
+                this["vpSkype"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool vpDiscord {
+            get {
+                return ((bool)(this["vpDiscord"]));
+            }
+            set {
+                this["vpDiscord"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool vpOn {
+            get {
+                return ((bool)(this["vpOn"]));
+            }
+            set {
+                this["vpOn"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overlayOn {
+            get {
+                return ((bool)(this["overlayOn"]));
+            }
+            set {
+                this["overlayOn"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overlayClickable {
+            get {
+                return ((bool)(this["overlayClickable"]));
+            }
+            set {
+                this["overlayClickable"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection playlist {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["playlist"]));
+            }
+            set {
+                this["playlist"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int selectedTrackIndex {
+            get {
+                return ((int)(this["selectedTrackIndex"]));
+            }
+            set {
+                this["selectedTrackIndex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int musicTrackBarValue {
+            get {
+                return ((int)(this["musicTrackBarValue"]));
+            }
+            set {
+                this["musicTrackBarValue"] = value;
+            }
+        }
     }
 }

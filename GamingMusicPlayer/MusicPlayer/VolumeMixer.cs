@@ -30,10 +30,9 @@ namespace GamingMusicPlayer.MusicPlayer
 
         public event PeakChangedHandler OnPeakChanged;
 
-        public bool Running { get { return running; } }
+        public bool Running { get; private set; }
 
         private Thread listener;
-        private bool running;
         private List<Application> activeApps;
         private Object activeAppsLock = new Object();
 
@@ -47,13 +46,13 @@ namespace GamingMusicPlayer.MusicPlayer
             activeApps = new List<Application>();
             subscribedApps = new List<Application>();
             listener = null;
-            running = false;
+            Running = false;
             OnPeakChanged = tick;
         }
 
         public void startListening()
         {
-            if (!running)
+            if (!Running)
             {
                 listener = new Thread(new ThreadStart(run));
                 listener.Start();
@@ -62,7 +61,7 @@ namespace GamingMusicPlayer.MusicPlayer
 
         public void stopListening()
         {
-            running = false;
+            Running = false;
         }
 
         private void tick(object sender, PeakChangedArgs e)
@@ -72,8 +71,8 @@ namespace GamingMusicPlayer.MusicPlayer
 
         private void run()
         {
-            running = true;
-            while (running)
+            Running = true;
+            while (Running)
             {
                 updateActiveApps();
                 foreach(Application a in activeApps)
@@ -93,8 +92,8 @@ namespace GamingMusicPlayer.MusicPlayer
                         }
                     }
                     //Console.Write(a.name+":"+a.peak+"     ");
-                    
                 }
+                Thread.Sleep(200);
                //Console.WriteLine("|");
             }
 

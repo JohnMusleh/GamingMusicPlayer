@@ -173,6 +173,16 @@ namespace GamingMusicPlayer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap play_white_tiny {
+            get {
+                object obj = ResourceManager.GetObject("play_white_tiny", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap shuffle_red {
             get {
                 object obj = ResourceManager.GetObject("shuffle_red", resourceCulture);

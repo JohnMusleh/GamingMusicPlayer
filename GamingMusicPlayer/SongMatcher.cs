@@ -83,6 +83,22 @@ namespace GamingMusicPlayer
             prevD = Double.MaxValue;
 
             main.onSongComplete += onSongComplete;
+
+            this.Activated += windowsActivated;
+            this.Deactivate += windowsDeactivated;
+        }
+
+        private void windowsActivated(object sender, EventArgs e)
+        {
+            Console.WriteLine("ACTIVATED");
+            //this.TopMost = true;
+        }
+
+        private void windowsDeactivated(object sender, EventArgs e)
+        {
+            Console.WriteLine("DEACTIVATED");
+            //this.TopMost = true;
+            this.Activate();
         }
 
         /* Public Control Methods*/
@@ -371,6 +387,12 @@ namespace GamingMusicPlayer
                 }
                 return data.ToArray();
             }
+        }
+
+        private void SongMatcher_Paint(object sender, PaintEventArgs e)
+        {
+            System.Drawing.Pen p = new System.Drawing.Pen(System.Drawing.Color.Red);
+            e.Graphics.DrawRectangle(p, 100, 100, 200, 200);
         }
 
         /* Events */

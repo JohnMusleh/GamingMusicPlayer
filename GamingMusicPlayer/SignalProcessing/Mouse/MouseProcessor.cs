@@ -45,7 +45,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
                     if (avg == 0)
                         return sigDataListX.ToArray();
                     short[] data = new short[sigDataListX.Count];
-                    for (int i=0; i<sigDataListX.Count; i++)
+                    for (int i = 0; i < sigDataListX.Count; i++)
                     {
                         data[i] = (short)(sigDataListX[i] - avg);
                     }
@@ -83,11 +83,11 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
         public MouseProcessor()
         {
             MouseListener.HookMouse();
-            MouseListener.OnMouseMoved  += OnMouseMoved;//this needs to happen only once!
+            MouseListener.OnMouseMoved += OnMouseMoved;//this needs to happen only once!
 
             sigDataListX = new List<short>();
             sigDataListY = new List<short>();
-            
+
             Processing = false;
             onDataReady = done;
 
@@ -135,7 +135,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
             {
                 sigDataListY.Clear();
             }
-            
+
 
             Stopwatch sw = new Stopwatch();
             Stopwatch swPerSample = new Stopwatch();
@@ -150,7 +150,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
                     lock (sigDataListX)
                     {
                         sigDataListX.Add((short)currPosition.X);
-                        
+
                     }
                     lock (sigDataListY)
                     {
@@ -162,7 +162,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
                 else
                 {
                     //avoid busy waiting
-                    System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(1000/SAMPLE_RATE));
+                    Thread.Sleep(TimeSpan.FromMilliseconds(1000 / SAMPLE_RATE));
                 }
             }
             sw.Stop();

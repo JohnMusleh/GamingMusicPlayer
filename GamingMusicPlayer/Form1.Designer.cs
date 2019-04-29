@@ -31,9 +31,17 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.cmdRemove = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.volumeLabel = new System.Windows.Forms.Label();
             this.seekLabel = new System.Windows.Forms.Label();
+            this.volumeTrackBar = new System.Windows.Forms.TrackBar();
             this.musicTrackBar = new System.Windows.Forms.TrackBar();
             this.txtMusicProgress = new System.Windows.Forms.Label();
+            this.bottomLeftIcon = new GamingMusicPlayer.CMButton();
+            this.cmdPlayPause = new GamingMusicPlayer.CMButton();
+            this.cmdPrev = new GamingMusicPlayer.CMButton();
+            this.cmdNext = new GamingMusicPlayer.CMButton();
+            this.cmdShuffle = new GamingMusicPlayer.CMButton();
+            this.cmdLoop = new GamingMusicPlayer.CMButton();
             this.cmdAddSong = new System.Windows.Forms.Button();
             this.nameListBox = new System.Windows.Forms.ListBox();
             this.nameLabel = new System.Windows.Forms.Label();
@@ -46,17 +54,9 @@
             this.cmdScan = new System.Windows.Forms.Button();
             this.cmdViewDB = new System.Windows.Forms.Button();
             this.cmdSettings = new System.Windows.Forms.Button();
-            this.volumeTrackBar = new System.Windows.Forms.TrackBar();
-            this.bottomLeftIcon = new GamingMusicPlayer.CMButton();
-            this.cmdPlayPause = new GamingMusicPlayer.CMButton();
-            this.cmdPrev = new GamingMusicPlayer.CMButton();
-            this.cmdNext = new GamingMusicPlayer.CMButton();
-            this.cmdShuffle = new GamingMusicPlayer.CMButton();
-            this.cmdLoop = new GamingMusicPlayer.CMButton();
-            this.volumeLabel = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.volumeTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // cmdRemove
@@ -89,6 +89,16 @@
             this.panel1.Size = new System.Drawing.Size(1179, 192);
             this.panel1.TabIndex = 7;
             // 
+            // volumeLabel
+            // 
+            this.volumeLabel.AutoSize = true;
+            this.volumeLabel.BackColor = System.Drawing.Color.Transparent;
+            this.volumeLabel.Location = new System.Drawing.Point(975, 33);
+            this.volumeLabel.Name = "volumeLabel";
+            this.volumeLabel.Size = new System.Drawing.Size(40, 17);
+            this.volumeLabel.TabIndex = 22;
+            this.volumeLabel.Text = "Vol%";
+            // 
             // seekLabel
             // 
             this.seekLabel.AutoSize = true;
@@ -97,6 +107,18 @@
             this.seekLabel.Size = new System.Drawing.Size(73, 17);
             this.seekLabel.TabIndex = 15;
             this.seekLabel.Text = "seekLabel";
+            // 
+            // volumeTrackBar
+            // 
+            this.volumeTrackBar.LargeChange = 10;
+            this.volumeTrackBar.Location = new System.Drawing.Point(1021, 33);
+            this.volumeTrackBar.Maximum = 1000;
+            this.volumeTrackBar.Name = "volumeTrackBar";
+            this.volumeTrackBar.Size = new System.Drawing.Size(111, 56);
+            this.volumeTrackBar.TabIndex = 1;
+            this.volumeTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.volumeTrackBar.Value = 1000;
+            this.volumeTrackBar.Scroll += new System.EventHandler(this.volumeTrackBar_Scroll);
             // 
             // musicTrackBar
             // 
@@ -118,6 +140,95 @@
             this.txtMusicProgress.Size = new System.Drawing.Size(115, 17);
             this.txtMusicProgress.TabIndex = 14;
             this.txtMusicProgress.Text = "txtMusicProgress";
+            // 
+            // bottomLeftIcon
+            // 
+            this.bottomLeftIcon.BackColor = System.Drawing.Color.Transparent;
+            this.bottomLeftIcon.FlatAppearance.BorderSize = 0;
+            this.bottomLeftIcon.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.bottomLeftIcon.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.bottomLeftIcon.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bottomLeftIcon.Image = global::GamingMusicPlayer.Properties.Resources.controllericon2;
+            this.bottomLeftIcon.Location = new System.Drawing.Point(-32, 3);
+            this.bottomLeftIcon.Name = "bottomLeftIcon";
+            this.bottomLeftIcon.Size = new System.Drawing.Size(360, 189);
+            this.bottomLeftIcon.TabIndex = 5;
+            this.bottomLeftIcon.UseVisualStyleBackColor = false;
+            // 
+            // cmdPlayPause
+            // 
+            this.cmdPlayPause.BackColor = System.Drawing.Color.Transparent;
+            this.cmdPlayPause.FlatAppearance.BorderSize = 0;
+            this.cmdPlayPause.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.cmdPlayPause.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.cmdPlayPause.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmdPlayPause.Image = global::GamingMusicPlayer.Properties.Resources.play_white;
+            this.cmdPlayPause.Location = new System.Drawing.Point(512, 42);
+            this.cmdPlayPause.Name = "cmdPlayPause";
+            this.cmdPlayPause.Size = new System.Drawing.Size(200, 147);
+            this.cmdPlayPause.TabIndex = 0;
+            this.cmdPlayPause.UseVisualStyleBackColor = false;
+            this.cmdPlayPause.Click += new System.EventHandler(this.cmdPlayPause_Click);
+            // 
+            // cmdPrev
+            // 
+            this.cmdPrev.BackColor = System.Drawing.Color.Transparent;
+            this.cmdPrev.FlatAppearance.BorderSize = 0;
+            this.cmdPrev.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.cmdPrev.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.cmdPrev.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmdPrev.Image = global::GamingMusicPlayer.Properties.Resources.back_white;
+            this.cmdPrev.Location = new System.Drawing.Point(344, 57);
+            this.cmdPrev.Name = "cmdPrev";
+            this.cmdPrev.Size = new System.Drawing.Size(146, 132);
+            this.cmdPrev.TabIndex = 2;
+            this.cmdPrev.UseVisualStyleBackColor = false;
+            this.cmdPrev.Click += new System.EventHandler(this.cmdPrev_Click);
+            // 
+            // cmdNext
+            // 
+            this.cmdNext.BackColor = System.Drawing.Color.Transparent;
+            this.cmdNext.FlatAppearance.BorderSize = 0;
+            this.cmdNext.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.cmdNext.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.cmdNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmdNext.Image = global::GamingMusicPlayer.Properties.Resources.next_white;
+            this.cmdNext.Location = new System.Drawing.Point(740, 57);
+            this.cmdNext.Name = "cmdNext";
+            this.cmdNext.Size = new System.Drawing.Size(146, 132);
+            this.cmdNext.TabIndex = 1;
+            this.cmdNext.UseVisualStyleBackColor = false;
+            this.cmdNext.Click += new System.EventHandler(this.cmdNext_Click);
+            // 
+            // cmdShuffle
+            // 
+            this.cmdShuffle.BackColor = System.Drawing.Color.Transparent;
+            this.cmdShuffle.FlatAppearance.BorderSize = 0;
+            this.cmdShuffle.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.cmdShuffle.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.cmdShuffle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmdShuffle.Image = global::GamingMusicPlayer.Properties.Resources.shuffle_white;
+            this.cmdShuffle.Location = new System.Drawing.Point(959, 77);
+            this.cmdShuffle.Name = "cmdShuffle";
+            this.cmdShuffle.Size = new System.Drawing.Size(91, 92);
+            this.cmdShuffle.TabIndex = 4;
+            this.cmdShuffle.UseVisualStyleBackColor = false;
+            this.cmdShuffle.Click += new System.EventHandler(this.cmdShuffle_Click);
+            // 
+            // cmdLoop
+            // 
+            this.cmdLoop.BackColor = System.Drawing.Color.Transparent;
+            this.cmdLoop.FlatAppearance.BorderSize = 0;
+            this.cmdLoop.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.cmdLoop.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.cmdLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmdLoop.Image = global::GamingMusicPlayer.Properties.Resources.loop_white;
+            this.cmdLoop.Location = new System.Drawing.Point(1072, 77);
+            this.cmdLoop.Name = "cmdLoop";
+            this.cmdLoop.Size = new System.Drawing.Size(91, 92);
+            this.cmdLoop.TabIndex = 3;
+            this.cmdLoop.UseVisualStyleBackColor = false;
+            this.cmdLoop.Click += new System.EventHandler(this.cmdLoop_Click);
             // 
             // cmdAddSong
             // 
@@ -236,117 +347,6 @@
             this.cmdSettings.UseVisualStyleBackColor = true;
             this.cmdSettings.Click += new System.EventHandler(this.cmdSettings_Click);
             // 
-            // volumeTrackBar
-            // 
-            this.volumeTrackBar.LargeChange = 10;
-            this.volumeTrackBar.Location = new System.Drawing.Point(1021, 33);
-            this.volumeTrackBar.Maximum = 1000;
-            this.volumeTrackBar.Name = "volumeTrackBar";
-            this.volumeTrackBar.Size = new System.Drawing.Size(111, 56);
-            this.volumeTrackBar.TabIndex = 1;
-            this.volumeTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.volumeTrackBar.Value = 1000;
-            this.volumeTrackBar.Scroll += new System.EventHandler(this.volumeTrackBar_Scroll);
-            // 
-            // bottomLeftIcon
-            // 
-            this.bottomLeftIcon.BackColor = System.Drawing.Color.Transparent;
-            this.bottomLeftIcon.FlatAppearance.BorderSize = 0;
-            this.bottomLeftIcon.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
-            this.bottomLeftIcon.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.bottomLeftIcon.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bottomLeftIcon.Image = global::GamingMusicPlayer.Properties.Resources.controllericon2;
-            this.bottomLeftIcon.Location = new System.Drawing.Point(-32, 3);
-            this.bottomLeftIcon.Name = "bottomLeftIcon";
-            this.bottomLeftIcon.Size = new System.Drawing.Size(360, 189);
-            this.bottomLeftIcon.TabIndex = 5;
-            this.bottomLeftIcon.UseVisualStyleBackColor = false;
-            // 
-            // cmdPlayPause
-            // 
-            this.cmdPlayPause.BackColor = System.Drawing.Color.Transparent;
-            this.cmdPlayPause.FlatAppearance.BorderSize = 0;
-            this.cmdPlayPause.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
-            this.cmdPlayPause.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.cmdPlayPause.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdPlayPause.Image = global::GamingMusicPlayer.Properties.Resources.play_white;
-            this.cmdPlayPause.Location = new System.Drawing.Point(512, 42);
-            this.cmdPlayPause.Name = "cmdPlayPause";
-            this.cmdPlayPause.Size = new System.Drawing.Size(200, 147);
-            this.cmdPlayPause.TabIndex = 0;
-            this.cmdPlayPause.UseVisualStyleBackColor = false;
-            this.cmdPlayPause.Click += new System.EventHandler(this.cmdPlayPause_Click);
-            // 
-            // cmdPrev
-            // 
-            this.cmdPrev.BackColor = System.Drawing.Color.Transparent;
-            this.cmdPrev.FlatAppearance.BorderSize = 0;
-            this.cmdPrev.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
-            this.cmdPrev.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.cmdPrev.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdPrev.Image = global::GamingMusicPlayer.Properties.Resources.back_white;
-            this.cmdPrev.Location = new System.Drawing.Point(344, 57);
-            this.cmdPrev.Name = "cmdPrev";
-            this.cmdPrev.Size = new System.Drawing.Size(146, 132);
-            this.cmdPrev.TabIndex = 2;
-            this.cmdPrev.UseVisualStyleBackColor = false;
-            this.cmdPrev.Click += new System.EventHandler(this.cmdPrev_Click);
-            // 
-            // cmdNext
-            // 
-            this.cmdNext.BackColor = System.Drawing.Color.Transparent;
-            this.cmdNext.FlatAppearance.BorderSize = 0;
-            this.cmdNext.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
-            this.cmdNext.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.cmdNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdNext.Image = global::GamingMusicPlayer.Properties.Resources.next_white;
-            this.cmdNext.Location = new System.Drawing.Point(740, 57);
-            this.cmdNext.Name = "cmdNext";
-            this.cmdNext.Size = new System.Drawing.Size(146, 132);
-            this.cmdNext.TabIndex = 1;
-            this.cmdNext.UseVisualStyleBackColor = false;
-            this.cmdNext.Click += new System.EventHandler(this.cmdNext_Click);
-            // 
-            // cmdShuffle
-            // 
-            this.cmdShuffle.BackColor = System.Drawing.Color.Transparent;
-            this.cmdShuffle.FlatAppearance.BorderSize = 0;
-            this.cmdShuffle.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
-            this.cmdShuffle.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.cmdShuffle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdShuffle.Image = global::GamingMusicPlayer.Properties.Resources.shuffle_white;
-            this.cmdShuffle.Location = new System.Drawing.Point(959, 77);
-            this.cmdShuffle.Name = "cmdShuffle";
-            this.cmdShuffle.Size = new System.Drawing.Size(91, 92);
-            this.cmdShuffle.TabIndex = 4;
-            this.cmdShuffle.UseVisualStyleBackColor = false;
-            this.cmdShuffle.Click += new System.EventHandler(this.cmdShuffle_Click);
-            // 
-            // cmdLoop
-            // 
-            this.cmdLoop.BackColor = System.Drawing.Color.Transparent;
-            this.cmdLoop.FlatAppearance.BorderSize = 0;
-            this.cmdLoop.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
-            this.cmdLoop.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.cmdLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdLoop.Image = global::GamingMusicPlayer.Properties.Resources.loop_white;
-            this.cmdLoop.Location = new System.Drawing.Point(1072, 77);
-            this.cmdLoop.Name = "cmdLoop";
-            this.cmdLoop.Size = new System.Drawing.Size(91, 92);
-            this.cmdLoop.TabIndex = 3;
-            this.cmdLoop.UseVisualStyleBackColor = false;
-            this.cmdLoop.Click += new System.EventHandler(this.cmdLoop_Click);
-            // 
-            // volumeLabel
-            // 
-            this.volumeLabel.AutoSize = true;
-            this.volumeLabel.BackColor = System.Drawing.Color.Transparent;
-            this.volumeLabel.Location = new System.Drawing.Point(975, 33);
-            this.volumeLabel.Name = "volumeLabel";
-            this.volumeLabel.Size = new System.Drawing.Size(40, 17);
-            this.volumeLabel.TabIndex = 22;
-            this.volumeLabel.Text = "Vol%";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -371,10 +371,11 @@
             this.Name = "MainForm";
             this.Text = "GamingMusicPlayer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.volumeTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.musicTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

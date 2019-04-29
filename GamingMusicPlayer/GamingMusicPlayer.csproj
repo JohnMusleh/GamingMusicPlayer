@@ -86,6 +86,12 @@
       <DependentUpon>Grapher.cs</DependentUpon>
     </Compile>
     <Compile Include="MusicPlayer\VolumeMixer.cs" />
+    <Compile Include="OverlayForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OverlayForm.Designer.cs">
+      <DependentUpon>OverlayForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -131,6 +137,9 @@
     </Compile>
     <EmbeddedResource Include="DBViewer.resx">
       <DependentUpon>DBViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OverlayForm.resx">
+      <DependentUpon>OverlayForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -227,6 +236,8 @@
     <None Include="Resources\loop_white.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\play_white_tiny.bmp" />
+    <None Include="Resources\play_white_tiny.png" />
     <Content Include="SongsDB.mdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

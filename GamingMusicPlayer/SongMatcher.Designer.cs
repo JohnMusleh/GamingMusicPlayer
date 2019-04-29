@@ -281,6 +281,7 @@
             this.Controls.Add(this.statusLabel);
             this.Name = "SongMatcher";
             this.Text = "SongMatcher";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.SongMatcher_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.bpmTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zcrTrackBar)).EndInit();
             this.ResumeLayout(false);
