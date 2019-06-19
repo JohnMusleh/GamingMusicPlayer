@@ -31,6 +31,9 @@
             this.txtLabel = new System.Windows.Forms.Label();
             this.cmdPlayPause = new System.Windows.Forms.Button();
             this.dragPanel = new System.Windows.Forms.Panel();
+            this.botPanel = new System.Windows.Forms.Panel();
+            this.txtCancelLbl = new System.Windows.Forms.Label();
+            this.botPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtLabel
@@ -47,7 +50,7 @@
             // 
             // cmdPlayPause
             // 
-            this.cmdPlayPause.Location = new System.Drawing.Point(68, 32);
+            this.cmdPlayPause.Location = new System.Drawing.Point(53, 3);
             this.cmdPlayPause.Name = "cmdPlayPause";
             this.cmdPlayPause.Size = new System.Drawing.Size(58, 26);
             this.cmdPlayPause.TabIndex = 1;
@@ -58,7 +61,7 @@
             // dragPanel
             // 
             this.dragPanel.Cursor = System.Windows.Forms.Cursors.SizeAll;
-            this.dragPanel.Location = new System.Drawing.Point(132, 32);
+            this.dragPanel.Location = new System.Drawing.Point(117, 3);
             this.dragPanel.Name = "dragPanel";
             this.dragPanel.Size = new System.Drawing.Size(42, 26);
             this.dragPanel.TabIndex = 2;
@@ -66,19 +69,43 @@
             this.dragPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dragPanel_MouseMove);
             this.dragPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dragPanel_MouseUp);
             // 
+            // botPanel
+            // 
+            this.botPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.botPanel.Controls.Add(this.txtCancelLbl);
+            this.botPanel.Controls.Add(this.cmdPlayPause);
+            this.botPanel.Controls.Add(this.dragPanel);
+            this.botPanel.Location = new System.Drawing.Point(-2, 32);
+            this.botPanel.Name = "botPanel";
+            this.botPanel.Size = new System.Drawing.Size(185, 26);
+            this.botPanel.TabIndex = 3;
+            // 
+            // txtCancelLbl
+            // 
+            this.txtCancelLbl.AutoSize = true;
+            this.txtCancelLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCancelLbl.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.txtCancelLbl.Location = new System.Drawing.Point(48, -3);
+            this.txtCancelLbl.Name = "txtCancelLbl";
+            this.txtCancelLbl.Size = new System.Drawing.Size(79, 29);
+            this.txtCancelLbl.TabIndex = 4;
+            this.txtCancelLbl.Text = "label1";
+            this.txtCancelLbl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // OverlayForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(182, 53);
-            this.Controls.Add(this.dragPanel);
-            this.Controls.Add(this.cmdPlayPause);
+            this.Controls.Add(this.botPanel);
             this.Controls.Add(this.txtLabel);
             this.Name = "OverlayForm";
             this.Text = "OverlayTestForm";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OverlayForm_FormClosing);
             this.Load += new System.EventHandler(this.OverlayForm_Load);
+            this.botPanel.ResumeLayout(false);
+            this.botPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -89,5 +116,7 @@
         private System.Windows.Forms.Label txtLabel;
         private System.Windows.Forms.Button cmdPlayPause;
         private System.Windows.Forms.Panel dragPanel;
+        private System.Windows.Forms.Panel botPanel;
+        private System.Windows.Forms.Label txtCancelLbl;
     }
 }

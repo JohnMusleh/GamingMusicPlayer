@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.overlayLabel = new System.Windows.Forms.Label();
-            this.hotkeysLabel = new System.Windows.Forms.Label();
+            this.autoPickLabel = new System.Windows.Forms.Label();
             this.vpFeatureLabel = new System.Windows.Forms.Label();
             this.cmdToggleVPFeature = new System.Windows.Forms.Button();
             this.vpFeatureSkypeCB = new System.Windows.Forms.CheckBox();
@@ -37,27 +37,34 @@
             this.vpFeatureDiscordCB = new System.Windows.Forms.CheckBox();
             this.cmdToggleOverlay = new System.Windows.Forms.Button();
             this.overlayClickableCB = new System.Windows.Forms.CheckBox();
+            this.cmdAutoPickToggle = new System.Windows.Forms.Button();
+            this.autoPickGameplayLabel = new System.Windows.Forms.Label();
+            this.gameplayTooltipLabel = new System.Windows.Forms.Label();
+            this.gameplayTrackBar = new System.Windows.Forms.TrackBar();
+            this.gameplayMouseLabel = new System.Windows.Forms.Label();
+            this.gameplayKeyboardLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.gameplayTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // overlayLabel
             // 
             this.overlayLabel.AutoSize = true;
             this.overlayLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.overlayLabel.Location = new System.Drawing.Point(392, 24);
+            this.overlayLabel.Location = new System.Drawing.Point(412, 24);
             this.overlayLabel.Name = "overlayLabel";
             this.overlayLabel.Size = new System.Drawing.Size(73, 20);
             this.overlayLabel.TabIndex = 0;
             this.overlayLabel.Text = "Overlay";
             // 
-            // hotkeysLabel
+            // autoPickLabel
             // 
-            this.hotkeysLabel.AutoSize = true;
-            this.hotkeysLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hotkeysLabel.Location = new System.Drawing.Point(6, 247);
-            this.hotkeysLabel.Name = "hotkeysLabel";
-            this.hotkeysLabel.Size = new System.Drawing.Size(117, 32);
-            this.hotkeysLabel.TabIndex = 1;
-            this.hotkeysLabel.Text = "Hotkeys";
+            this.autoPickLabel.AutoSize = true;
+            this.autoPickLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.autoPickLabel.Location = new System.Drawing.Point(6, 247);
+            this.autoPickLabel.Name = "autoPickLabel";
+            this.autoPickLabel.Size = new System.Drawing.Size(183, 20);
+            this.autoPickLabel.TabIndex = 1;
+            this.autoPickLabel.Text = "Automatic Song Pick";
             // 
             // vpFeatureLabel
             // 
@@ -133,11 +140,73 @@
             this.overlayClickableCB.UseVisualStyleBackColor = true;
             this.overlayClickableCB.CheckedChanged += new System.EventHandler(this.overlayClickableCB_CheckedChanged);
             // 
+            // cmdAutoPickToggle
+            // 
+            this.cmdAutoPickToggle.Location = new System.Drawing.Point(67, 280);
+            this.cmdAutoPickToggle.Name = "cmdAutoPickToggle";
+            this.cmdAutoPickToggle.Size = new System.Drawing.Size(75, 23);
+            this.cmdAutoPickToggle.TabIndex = 12;
+            this.cmdAutoPickToggle.Text = "OFF";
+            this.cmdAutoPickToggle.UseVisualStyleBackColor = true;
+            this.cmdAutoPickToggle.Click += new System.EventHandler(this.cmdAutoPickToggle_Click);
+            // 
+            // autoPickGameplayLabel
+            // 
+            this.autoPickGameplayLabel.AutoSize = true;
+            this.autoPickGameplayLabel.Location = new System.Drawing.Point(69, 332);
+            this.autoPickGameplayLabel.Name = "autoPickGameplayLabel";
+            this.autoPickGameplayLabel.Size = new System.Drawing.Size(72, 17);
+            this.autoPickGameplayLabel.TabIndex = 13;
+            this.autoPickGameplayLabel.Text = "Gameplay";
+            // 
+            // gameplayTooltipLabel
+            // 
+            this.gameplayTooltipLabel.AutoSize = true;
+            this.gameplayTooltipLabel.Cursor = System.Windows.Forms.Cursors.Help;
+            this.gameplayTooltipLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gameplayTooltipLabel.Location = new System.Drawing.Point(147, 329);
+            this.gameplayTooltipLabel.Name = "gameplayTooltipLabel";
+            this.gameplayTooltipLabel.Size = new System.Drawing.Size(19, 20);
+            this.gameplayTooltipLabel.TabIndex = 14;
+            this.gameplayTooltipLabel.Text = "?";
+            // 
+            // gameplayTrackBar
+            // 
+            this.gameplayTrackBar.Location = new System.Drawing.Point(172, 352);
+            this.gameplayTrackBar.Name = "gameplayTrackBar";
+            this.gameplayTrackBar.Size = new System.Drawing.Size(104, 56);
+            this.gameplayTrackBar.TabIndex = 15;
+            this.gameplayTrackBar.ValueChanged += new System.EventHandler(this.gameplayTrackBar_ValueChanged);
+            // 
+            // gameplayMouseLabel
+            // 
+            this.gameplayMouseLabel.AutoSize = true;
+            this.gameplayMouseLabel.Location = new System.Drawing.Point(282, 362);
+            this.gameplayMouseLabel.Name = "gameplayMouseLabel";
+            this.gameplayMouseLabel.Size = new System.Drawing.Size(50, 17);
+            this.gameplayMouseLabel.TabIndex = 16;
+            this.gameplayMouseLabel.Text = "mouse";
+            // 
+            // gameplayKeyboardLabel
+            // 
+            this.gameplayKeyboardLabel.AutoSize = true;
+            this.gameplayKeyboardLabel.Location = new System.Drawing.Point(99, 362);
+            this.gameplayKeyboardLabel.Name = "gameplayKeyboardLabel";
+            this.gameplayKeyboardLabel.Size = new System.Drawing.Size(67, 17);
+            this.gameplayKeyboardLabel.TabIndex = 17;
+            this.gameplayKeyboardLabel.Text = "keyboard";
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(793, 544);
+            this.Controls.Add(this.gameplayKeyboardLabel);
+            this.Controls.Add(this.gameplayMouseLabel);
+            this.Controls.Add(this.gameplayTrackBar);
+            this.Controls.Add(this.gameplayTooltipLabel);
+            this.Controls.Add(this.autoPickGameplayLabel);
+            this.Controls.Add(this.cmdAutoPickToggle);
             this.Controls.Add(this.overlayClickableCB);
             this.Controls.Add(this.cmdToggleOverlay);
             this.Controls.Add(this.vpFeatureDiscordCB);
@@ -145,10 +214,11 @@
             this.Controls.Add(this.vpFeatureSkypeCB);
             this.Controls.Add(this.cmdToggleVPFeature);
             this.Controls.Add(this.vpFeatureLabel);
-            this.Controls.Add(this.hotkeysLabel);
+            this.Controls.Add(this.autoPickLabel);
             this.Controls.Add(this.overlayLabel);
             this.Name = "SettingsForm";
             this.Text = "Settings";
+            ((System.ComponentModel.ISupportInitialize)(this.gameplayTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -157,7 +227,7 @@
         #endregion
 
         private System.Windows.Forms.Label overlayLabel;
-        private System.Windows.Forms.Label hotkeysLabel;
+        private System.Windows.Forms.Label autoPickLabel;
         private System.Windows.Forms.Label vpFeatureLabel;
         private System.Windows.Forms.Button cmdToggleVPFeature;
         private System.Windows.Forms.CheckBox vpFeatureSkypeCB;
@@ -165,5 +235,11 @@
         private System.Windows.Forms.CheckBox vpFeatureDiscordCB;
         private System.Windows.Forms.Button cmdToggleOverlay;
         private System.Windows.Forms.CheckBox overlayClickableCB;
+        private System.Windows.Forms.Button cmdAutoPickToggle;
+        private System.Windows.Forms.Label autoPickGameplayLabel;
+        private System.Windows.Forms.Label gameplayTooltipLabel;
+        private System.Windows.Forms.TrackBar gameplayTrackBar;
+        private System.Windows.Forms.Label gameplayMouseLabel;
+        private System.Windows.Forms.Label gameplayKeyboardLabel;
     }
 }

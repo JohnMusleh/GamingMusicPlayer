@@ -1,11 +1,11 @@
-﻿using System;
+﻿/* MusicPlayer class is an implementation of a music player, the music player can load only one playlist at a time
+     *      MusicPlayer uses mci commands to communication with mci device and play music files, it only supports MP3 and WAV files.*/
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace GamingMusicPlayer.MusicPlayer
 {
-    /* MusicPlayer is an implementation of a music player, the music player can load only one playlist at a time
-         *      MusicPlayer uses mci commands to communication with mci device and play music files, it only supports MP3 and WAV files.*/
     public class MusicPlayer
     {
         private string mciCommand;

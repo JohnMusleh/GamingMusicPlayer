@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/* This class is the GUI class of the settings screen, through this class user changes settings, this class updates the main GUI class "MainForm" with any changes*/
+using System;
 using System.Windows.Forms;
 
 using GamingMusicPlayer.SignalProcessing.Keyboard;
+
 namespace GamingMusicPlayer
 {
     public partial class SettingsForm : Form
     {
         public Boolean SettingsVisible { get; private set; }
-
+        private ToolTip gameplayTooltip;
         private MainForm mainForm;
         public SettingsForm(MainForm mForm)
         {
@@ -24,7 +19,21 @@ namespace GamingMusicPlayer
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             KeyboardListener.HookKeyboard();
-            //KeyboardListener.OnKeyPressed += OnKeyPressed;
+
+            cmdToggleOverlay.GotFocus += onFocus;
+            cmdToggleVPFeature.GotFocus += onFocus;
+            vpFeatureDiscordCB.GotFocus += onFocus;
+            vpFeatureTeamspeakCB.GotFocus += onFocus;
+            vpFeatureSkypeCB.GotFocus += onFocus;
+            overlayClickableCB.GotFocus += onFocus;
+
+            gameplayTooltip = new ToolTip();
+            gameplayTooltip.ToolTipIcon = ToolTipIcon.Info;
+            gameplayTooltip.IsBalloon = true;
+            gameplayTooltip.ShowAlways = true;
+            gameplayTooltip.SetToolTip(gameplayTooltipLabel, "Automatic picking works by analyzing mouse and keyboard during gameplay\nUse this to let the system know whether the game you play is based on mouse, keyboard or both in order to get good results");
+            gameplayTooltip.AutoPopDelay = 20000;
+
             this.hide();
         }
 
@@ -59,9 +68,21 @@ namespace GamingMusicPlayer
                 overlayClickableCB.Checked = true;
             else
                 overlayClickableCB.Checked = false;
+            if (Properties.Settings.Default.songMatchOn)
+                cmdAutoPickToggle.Text = "ON";
+            else
+                cmdAutoPickToggle.Text = "OFF";
+
+            
+            gameplayTrackBar.Value = (int)(mainForm.getSongMatchingMouseWeight() * (double)(gameplayTrackBar.Maximum));
             SettingsVisible = true;
             this.ShowDialog();
             SettingsVisible = false;
+        }
+
+        private void onFocus(object sender, EventArgs e)
+        {
+            vpFeatureLabel.Focus();
         }
 
         private void cmdToggleVPFeature_Click(object sender, EventArgs e)
@@ -77,7 +98,7 @@ namespace GamingMusicPlayer
                 cmdToggleVPFeature.Text = "OFF";
             }
             Properties.Settings.Default.Save();
-            mainForm.updateSettings();
+            mainForm.updateSettings(false);
         }
 
         private void OnKeyPressed(object sender, KeyPressedArgs e)
@@ -93,21 +114,21 @@ namespace GamingMusicPlayer
         {
             Properties.Settings.Default.vpSkype = vpFeatureSkypeCB.Checked;
             Properties.Settings.Default.Save();
-            mainForm.updateSettings();
+            mainForm.updateSettings(false);
         }
 
         private void vpFeatureDiscordCB_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.vpDiscord = vpFeatureDiscordCB.Checked;
             Properties.Settings.Default.Save();
-            mainForm.updateSettings();
+            mainForm.updateSettings(false);
         }
 
         private void vpFeatureTeamspeakCB_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.vpTs3 = vpFeatureTeamspeakCB.Checked;
             Properties.Settings.Default.Save();
-            mainForm.updateSettings();
+            mainForm.updateSettings(false);
         }
 
         private void cmdToggleOverlay_Click(object sender, EventArgs e)
@@ -123,14 +144,37 @@ namespace GamingMusicPlayer
                 cmdToggleOverlay.Text = "OFF";
             }
             Properties.Settings.Default.Save();
-            mainForm.updateSettings();
+            mainForm.updateSettings(false);
         }
 
         private void overlayClickableCB_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.overlayClickable = overlayClickableCB.Checked;
             Properties.Settings.Default.Save();
-            mainForm.updateSettings();
+            mainForm.updateSettings(false);
+        }
+
+        private void gameplayTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            double mouse = (double)gameplayTrackBar.Value / (double)gameplayTrackBar.Maximum;
+            double keyboard = 1 - mouse;
+            mainForm.setSongMatchingMouseKeyboardWeights(mouse);
+        }
+
+        private void cmdAutoPickToggle_Click(object sender, EventArgs e)
+        {
+            if (cmdAutoPickToggle.Text.Equals("OFF"))
+            {
+                Properties.Settings.Default.songMatchOn = true;
+                cmdAutoPickToggle.Text = "ON";
+            }
+            else if (cmdAutoPickToggle.Text.Equals("ON"))
+            {
+                Properties.Settings.Default.songMatchOn = false;
+                cmdAutoPickToggle.Text = "OFF";
+            }
+            Properties.Settings.Default.Save();
+            mainForm.updateSettings(false);
         }
     }
 }

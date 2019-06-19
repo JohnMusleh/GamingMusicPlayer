@@ -42,22 +42,19 @@
             this.keyboardSpectIrrLabel = new System.Windows.Forms.Label();
             this.mouseYSpectIrrLabel = new System.Windows.Forms.Label();
             this.mouseXSpectIrrLabel = new System.Windows.Forms.Label();
-            this.bpmTrackBar = new System.Windows.Forms.TrackBar();
-            this.mouseBpmWeightLabel = new System.Windows.Forms.Label();
-            this.keyboardBpmWeightLabel = new System.Windows.Forms.Label();
-            this.keyboardZcrWeightLabel = new System.Windows.Forms.Label();
-            this.mouseZcrWeightLabel = new System.Windows.Forms.Label();
-            this.zcrTrackBar = new System.Windows.Forms.TrackBar();
-            this.bpmWeightLabel = new System.Windows.Forms.Label();
-            this.zcrWeightLabel = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.bpmTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.zcrTrackBar)).BeginInit();
+            this.keyboardWeightLbl = new System.Windows.Forms.Label();
+            this.mouseWeightLbl = new System.Windows.Forms.Label();
+            this.mkTrackBar = new System.Windows.Forms.TrackBar();
+            this.mkWeightLabel = new System.Windows.Forms.Label();
+            this.txtGroupLbl = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.mkTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(418, 190);
+            this.statusLabel.Location = new System.Drawing.Point(418, 241);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(80, 17);
             this.statusLabel.TabIndex = 0;
@@ -65,7 +62,7 @@
             // 
             // cmdToggleMatching
             // 
-            this.cmdToggleMatching.Location = new System.Drawing.Point(425, 232);
+            this.cmdToggleMatching.Location = new System.Drawing.Point(421, 261);
             this.cmdToggleMatching.Name = "cmdToggleMatching";
             this.cmdToggleMatching.Size = new System.Drawing.Size(121, 25);
             this.cmdToggleMatching.TabIndex = 1;
@@ -76,7 +73,7 @@
             // mouseXLabel
             // 
             this.mouseXLabel.AutoSize = true;
-            this.mouseXLabel.Location = new System.Drawing.Point(300, 9);
+            this.mouseXLabel.Location = new System.Drawing.Point(295, 71);
             this.mouseXLabel.Name = "mouseXLabel";
             this.mouseXLabel.Size = new System.Drawing.Size(92, 17);
             this.mouseXLabel.TabIndex = 4;
@@ -85,7 +82,7 @@
             // keyboardLabel
             // 
             this.keyboardLabel.AutoSize = true;
-            this.keyboardLabel.Location = new System.Drawing.Point(20, 9);
+            this.keyboardLabel.Location = new System.Drawing.Point(15, 71);
             this.keyboardLabel.Name = "keyboardLabel";
             this.keyboardLabel.Size = new System.Drawing.Size(100, 17);
             this.keyboardLabel.TabIndex = 5;
@@ -93,7 +90,7 @@
             // 
             // cmdPickTrack
             // 
-            this.cmdPickTrack.Location = new System.Drawing.Point(681, 232);
+            this.cmdPickTrack.Location = new System.Drawing.Point(677, 261);
             this.cmdPickTrack.Name = "cmdPickTrack";
             this.cmdPickTrack.Size = new System.Drawing.Size(115, 25);
             this.cmdPickTrack.TabIndex = 6;
@@ -104,7 +101,7 @@
             // keyboardTrackLabel
             // 
             this.keyboardTrackLabel.AutoSize = true;
-            this.keyboardTrackLabel.Location = new System.Drawing.Point(574, 207);
+            this.keyboardTrackLabel.Location = new System.Drawing.Point(570, 266);
             this.keyboardTrackLabel.Name = "keyboardTrackLabel";
             this.keyboardTrackLabel.Size = new System.Drawing.Size(80, 17);
             this.keyboardTrackLabel.TabIndex = 7;
@@ -113,7 +110,7 @@
             // mouseTrackLabel
             // 
             this.mouseTrackLabel.AutoSize = true;
-            this.mouseTrackLabel.Location = new System.Drawing.Point(574, 190);
+            this.mouseTrackLabel.Location = new System.Drawing.Point(570, 241);
             this.mouseTrackLabel.Name = "mouseTrackLabel";
             this.mouseTrackLabel.Size = new System.Drawing.Size(80, 17);
             this.mouseTrackLabel.TabIndex = 8;
@@ -122,7 +119,7 @@
             // mouseYLabel
             // 
             this.mouseYLabel.AutoSize = true;
-            this.mouseYLabel.Location = new System.Drawing.Point(515, 9);
+            this.mouseYLabel.Location = new System.Drawing.Point(510, 71);
             this.mouseYLabel.Name = "mouseYLabel";
             this.mouseYLabel.Size = new System.Drawing.Size(92, 17);
             this.mouseYLabel.TabIndex = 9;
@@ -131,7 +128,7 @@
             // mouseXZCRLabel
             // 
             this.mouseXZCRLabel.AutoSize = true;
-            this.mouseXZCRLabel.Location = new System.Drawing.Point(300, 41);
+            this.mouseXZCRLabel.Location = new System.Drawing.Point(296, 100);
             this.mouseXZCRLabel.Name = "mouseXZCRLabel";
             this.mouseXZCRLabel.Size = new System.Drawing.Size(87, 17);
             this.mouseXZCRLabel.TabIndex = 10;
@@ -140,7 +137,7 @@
             // mouseYZCRLabel
             // 
             this.mouseYZCRLabel.AutoSize = true;
-            this.mouseYZCRLabel.Location = new System.Drawing.Point(515, 41);
+            this.mouseYZCRLabel.Location = new System.Drawing.Point(511, 100);
             this.mouseYZCRLabel.Name = "mouseYZCRLabel";
             this.mouseYZCRLabel.Size = new System.Drawing.Size(87, 17);
             this.mouseYZCRLabel.TabIndex = 11;
@@ -149,7 +146,7 @@
             // keyboardZCRLabel
             // 
             this.keyboardZCRLabel.AutoSize = true;
-            this.keyboardZCRLabel.Location = new System.Drawing.Point(20, 41);
+            this.keyboardZCRLabel.Location = new System.Drawing.Point(16, 100);
             this.keyboardZCRLabel.Name = "keyboardZCRLabel";
             this.keyboardZCRLabel.Size = new System.Drawing.Size(99, 17);
             this.keyboardZCRLabel.TabIndex = 12;
@@ -158,7 +155,7 @@
             // keyboardSpectIrrLabel
             // 
             this.keyboardSpectIrrLabel.AutoSize = true;
-            this.keyboardSpectIrrLabel.Location = new System.Drawing.Point(20, 76);
+            this.keyboardSpectIrrLabel.Location = new System.Drawing.Point(16, 135);
             this.keyboardSpectIrrLabel.Name = "keyboardSpectIrrLabel";
             this.keyboardSpectIrrLabel.Size = new System.Drawing.Size(116, 17);
             this.keyboardSpectIrrLabel.TabIndex = 13;
@@ -167,7 +164,7 @@
             // mouseYSpectIrrLabel
             // 
             this.mouseYSpectIrrLabel.AutoSize = true;
-            this.mouseYSpectIrrLabel.Location = new System.Drawing.Point(515, 76);
+            this.mouseYSpectIrrLabel.Location = new System.Drawing.Point(511, 135);
             this.mouseYSpectIrrLabel.Name = "mouseYSpectIrrLabel";
             this.mouseYSpectIrrLabel.Size = new System.Drawing.Size(108, 17);
             this.mouseYSpectIrrLabel.TabIndex = 14;
@@ -176,95 +173,78 @@
             // mouseXSpectIrrLabel
             // 
             this.mouseXSpectIrrLabel.AutoSize = true;
-            this.mouseXSpectIrrLabel.Location = new System.Drawing.Point(300, 76);
+            this.mouseXSpectIrrLabel.Location = new System.Drawing.Point(296, 135);
             this.mouseXSpectIrrLabel.Name = "mouseXSpectIrrLabel";
             this.mouseXSpectIrrLabel.Size = new System.Drawing.Size(108, 17);
             this.mouseXSpectIrrLabel.TabIndex = 15;
             this.mouseXSpectIrrLabel.Text = "mouseXSpectIrr";
             // 
-            // bpmTrackBar
+            // keyboardWeightLbl
             // 
-            this.bpmTrackBar.LargeChange = 2;
-            this.bpmTrackBar.Location = new System.Drawing.Point(77, 151);
-            this.bpmTrackBar.Name = "bpmTrackBar";
-            this.bpmTrackBar.Size = new System.Drawing.Size(104, 56);
-            this.bpmTrackBar.TabIndex = 16;
+            this.keyboardWeightLbl.AutoSize = true;
+            this.keyboardWeightLbl.Location = new System.Drawing.Point(12, 261);
+            this.keyboardWeightLbl.Name = "keyboardWeightLbl";
+            this.keyboardWeightLbl.Size = new System.Drawing.Size(71, 17);
+            this.keyboardWeightLbl.TabIndex = 21;
+            this.keyboardWeightLbl.Text = "keyboard:";
             // 
-            // mouseBpmWeightLabel
+            // mouseWeightLbl
             // 
-            this.mouseBpmWeightLabel.AutoSize = true;
-            this.mouseBpmWeightLabel.Location = new System.Drawing.Point(178, 131);
-            this.mouseBpmWeightLabel.Name = "mouseBpmWeightLabel";
-            this.mouseBpmWeightLabel.Size = new System.Drawing.Size(54, 17);
-            this.mouseBpmWeightLabel.TabIndex = 17;
-            this.mouseBpmWeightLabel.Text = "mouse:";
+            this.mouseWeightLbl.AutoSize = true;
+            this.mouseWeightLbl.Location = new System.Drawing.Point(187, 261);
+            this.mouseWeightLbl.Name = "mouseWeightLbl";
+            this.mouseWeightLbl.Size = new System.Drawing.Size(54, 17);
+            this.mouseWeightLbl.TabIndex = 20;
+            this.mouseWeightLbl.Text = "mouse:";
             // 
-            // keyboardBpmWeightLabel
+            // mkTrackBar
             // 
-            this.keyboardBpmWeightLabel.AutoSize = true;
-            this.keyboardBpmWeightLabel.Location = new System.Drawing.Point(3, 131);
-            this.keyboardBpmWeightLabel.Name = "keyboardBpmWeightLabel";
-            this.keyboardBpmWeightLabel.Size = new System.Drawing.Size(71, 17);
-            this.keyboardBpmWeightLabel.TabIndex = 18;
-            this.keyboardBpmWeightLabel.Text = "keyboard:";
+            this.mkTrackBar.LargeChange = 2;
+            this.mkTrackBar.Location = new System.Drawing.Point(86, 281);
+            this.mkTrackBar.Name = "mkTrackBar";
+            this.mkTrackBar.Size = new System.Drawing.Size(104, 56);
+            this.mkTrackBar.TabIndex = 19;
             // 
-            // keyboardZcrWeightLabel
+            // mkWeightLabel
             // 
-            this.keyboardZcrWeightLabel.AutoSize = true;
-            this.keyboardZcrWeightLabel.Location = new System.Drawing.Point(3, 266);
-            this.keyboardZcrWeightLabel.Name = "keyboardZcrWeightLabel";
-            this.keyboardZcrWeightLabel.Size = new System.Drawing.Size(71, 17);
-            this.keyboardZcrWeightLabel.TabIndex = 21;
-            this.keyboardZcrWeightLabel.Text = "keyboard:";
+            this.mkWeightLabel.AutoSize = true;
+            this.mkWeightLabel.Location = new System.Drawing.Point(46, 241);
+            this.mkWeightLabel.Name = "mkWeightLabel";
+            this.mkWeightLabel.Size = new System.Drawing.Size(171, 17);
+            this.mkWeightLabel.TabIndex = 23;
+            this.mkWeightLabel.Text = "Mouse-Keyboard Weights";
             // 
-            // mouseZcrWeightLabel
+            // txtGroupLbl
             // 
-            this.mouseZcrWeightLabel.AutoSize = true;
-            this.mouseZcrWeightLabel.Location = new System.Drawing.Point(178, 266);
-            this.mouseZcrWeightLabel.Name = "mouseZcrWeightLabel";
-            this.mouseZcrWeightLabel.Size = new System.Drawing.Size(54, 17);
-            this.mouseZcrWeightLabel.TabIndex = 20;
-            this.mouseZcrWeightLabel.Text = "mouse:";
+            this.txtGroupLbl.AutoSize = true;
+            this.txtGroupLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtGroupLbl.Location = new System.Drawing.Point(238, 9);
+            this.txtGroupLbl.Name = "txtGroupLbl";
+            this.txtGroupLbl.Size = new System.Drawing.Size(93, 36);
+            this.txtGroupLbl.TabIndex = 24;
+            this.txtGroupLbl.Text = "group";
             // 
-            // zcrTrackBar
+            // button1
             // 
-            this.zcrTrackBar.LargeChange = 2;
-            this.zcrTrackBar.Location = new System.Drawing.Point(77, 286);
-            this.zcrTrackBar.Name = "zcrTrackBar";
-            this.zcrTrackBar.Size = new System.Drawing.Size(104, 56);
-            this.zcrTrackBar.TabIndex = 19;
-            // 
-            // bpmWeightLabel
-            // 
-            this.bpmWeightLabel.AutoSize = true;
-            this.bpmWeightLabel.Location = new System.Drawing.Point(90, 114);
-            this.bpmWeightLabel.Name = "bpmWeightLabel";
-            this.bpmWeightLabel.Size = new System.Drawing.Size(92, 17);
-            this.bpmWeightLabel.TabIndex = 22;
-            this.bpmWeightLabel.Text = "BPM Weights";
-            // 
-            // zcrWeightLabel
-            // 
-            this.zcrWeightLabel.AutoSize = true;
-            this.zcrWeightLabel.Location = new System.Drawing.Point(90, 240);
-            this.zcrWeightLabel.Name = "zcrWeightLabel";
-            this.zcrWeightLabel.Size = new System.Drawing.Size(91, 17);
-            this.zcrWeightLabel.TabIndex = 23;
-            this.zcrWeightLabel.Text = "ZCR Weights";
+            this.button1.Location = new System.Drawing.Point(227, 335);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(121, 25);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "TEST";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // SongMatcher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(808, 396);
-            this.Controls.Add(this.zcrWeightLabel);
-            this.Controls.Add(this.bpmWeightLabel);
-            this.Controls.Add(this.keyboardZcrWeightLabel);
-            this.Controls.Add(this.mouseZcrWeightLabel);
-            this.Controls.Add(this.zcrTrackBar);
-            this.Controls.Add(this.keyboardBpmWeightLabel);
-            this.Controls.Add(this.mouseBpmWeightLabel);
-            this.Controls.Add(this.bpmTrackBar);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.txtGroupLbl);
+            this.Controls.Add(this.mkWeightLabel);
+            this.Controls.Add(this.keyboardWeightLbl);
+            this.Controls.Add(this.mouseWeightLbl);
+            this.Controls.Add(this.mkTrackBar);
             this.Controls.Add(this.mouseXSpectIrrLabel);
             this.Controls.Add(this.mouseYSpectIrrLabel);
             this.Controls.Add(this.keyboardSpectIrrLabel);
@@ -281,9 +261,7 @@
             this.Controls.Add(this.statusLabel);
             this.Name = "SongMatcher";
             this.Text = "SongMatcher";
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.SongMatcher_Paint);
-            ((System.ComponentModel.ISupportInitialize)(this.bpmTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.zcrTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mkTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -305,13 +283,11 @@
         private System.Windows.Forms.Label keyboardSpectIrrLabel;
         private System.Windows.Forms.Label mouseYSpectIrrLabel;
         private System.Windows.Forms.Label mouseXSpectIrrLabel;
-        private System.Windows.Forms.TrackBar bpmTrackBar;
-        private System.Windows.Forms.Label mouseBpmWeightLabel;
-        private System.Windows.Forms.Label keyboardBpmWeightLabel;
-        private System.Windows.Forms.Label keyboardZcrWeightLabel;
-        private System.Windows.Forms.Label mouseZcrWeightLabel;
-        private System.Windows.Forms.TrackBar zcrTrackBar;
-        private System.Windows.Forms.Label bpmWeightLabel;
-        private System.Windows.Forms.Label zcrWeightLabel;
+        private System.Windows.Forms.Label keyboardWeightLbl;
+        private System.Windows.Forms.Label mouseWeightLbl;
+        private System.Windows.Forms.TrackBar mkTrackBar;
+        private System.Windows.Forms.Label mkWeightLabel;
+        private System.Windows.Forms.Label txtGroupLbl;
+        private System.Windows.Forms.Button button1;
     }
 }

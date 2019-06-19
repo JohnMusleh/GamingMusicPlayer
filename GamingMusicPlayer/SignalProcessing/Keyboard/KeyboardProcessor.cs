@@ -1,15 +1,12 @@
-﻿using System;
+﻿/*KeyboardProcessor class turns keyboard input data coming from a KeyBoardListener into a time domain signal data in order to compute relevant values on it.*/
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics;
 using System.Windows.Input;
 
 namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
-    //class that turns keyboard input data coming from a KeyBoardListener into a time domain signal data in order to compute relevant values on it.
     public class KeyboardProcessor
     {
         public const int SAMPLE_RATE = 20;

@@ -1,10 +1,10 @@
-﻿using System;
+﻿/*static class for the purpose of using mci device functions to get metadata*/
+using System;
 using System.Text;
 using System.Runtime.InteropServices;
 
 namespace GamingMusicPlayer.MusicPlayer
 {
-    //static class for the purpose of using mci device functions to get metadata
     public static class MusicFileInfo
     {
         public static string error_msg = "no error";

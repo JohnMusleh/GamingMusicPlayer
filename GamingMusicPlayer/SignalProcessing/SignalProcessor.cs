@@ -1,19 +1,12 @@
-﻿using System;
+﻿/* SignalProcessor class is used to compute values/features from a signal data*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
-using System.Diagnostics;
-using System.Windows;
 
-using NAudio.Wave.SampleProviders;
-using NAudio.Wave;
-using GamingMusicPlayer.MusicPlayer;
 
 namespace GamingMusicPlayer.SignalProcessing
 {
-    //a class to compute values from a signal data [BPM / timbre / pitch]
     class SignalProcessor
     {
         private enum Task { BPM, Timbre, Pitch }
@@ -89,6 +82,12 @@ namespace GamingMusicPlayer.SignalProcessing
             }
             Console.WriteLine("SignalProccessor: ComputerBPM(), SignalProcessor already in use.");
             return false;
+        }
+
+        public void clearMemory()
+        {
+            timeDomainData = null;
+            GC.Collect();
         }
 
         private void process()
@@ -200,11 +199,9 @@ namespace GamingMusicPlayer.SignalProcessing
                 }
                 BeatCount = beats;
                 BPM = (beats*60)/lengthInSecs;
-                //[DEBUG]
-                //Console.WriteLine("\nComputeBPM: beats:" + beats + " in " + lengthInSecs + " seconds");
-                //Console.WriteLine("ComputeBPM: BPM:" + BPM);
 
                 timeDomainData = null;
+                GC.Collect();
                 if (threadSupport)
                 {
                     onBPMReady?.Invoke(null, null);
@@ -266,14 +263,17 @@ namespace GamingMusicPlayer.SignalProcessing
                     spectralIrregularity += (Math.Pow((peaks[i + 1] - peaks[i]), 2));
                 }
                 //for future optimzation-> zcCount = peaks.Count/2
-                //[DEBUG]
-                //Console.WriteLine("\n# of peaks:" + peaks.Count+"  spectralIrreg:"+spectralIrregularity+ "  fixed:" + (spectralIrregularity/(double)timeDomainData.Length));
+                if(timeDomainData == null)
+                {
+                    Console.WriteLine("Error in signal processing: timeDomainData is null, ending processing");
+                    return;
+                }
                 double zcRate = (double)zcCount / (double)timeDomainData.Length;
-                //Console.WriteLine("zcr:" + zcCount+"  length:"+timeDomainData.Length+"  ratio:"+zcRate);
                 ZCR = zcRate;
                 SpectralIrregularity = (spectralIrregularity / (double)timeDomainData.Length);
 
                 timeDomainData = null;
+                GC.Collect();
                 if (threadSupport)
                 {
                     onTimbreReady?.Invoke(null, null);

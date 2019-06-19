@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/* KeyboardListener class is used to record keyboard data in real time,
+ * it creates a low level windows hook to scan keyboard keys, each key is grabbed by subscribing to the event OnKeyPressed,  
+ * this data will be used later to create a signal/function. [read KeyboardProcessor]*/
+using System;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Diagnostics;
 
 namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
-    //this class creates a low level windows hook to scan keyboard keys, each key is grabbed by subscribing to the event OnKeyPressed  
-    //this will be used later to create a signal from keyboard data. [read KeyboardProcessor]
     public static class KeyboardListener
     {
         public static bool hooked = false;

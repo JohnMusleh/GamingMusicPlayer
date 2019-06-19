@@ -1,14 +1,12 @@
-﻿using System;
+﻿/* Playlist class represents a music playlist; as in "a list of Tracks", it has shuffle and deshuffle features*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GamingMusicPlayer.MusicPlayer
 {
     public class Playlist
     {
-        /* Playlist represents a music playlist; as in a list of Track's, it has shuffle and deshuffle features*/
         private List<Track> tracklist;
         private List<int> play_order; //list of index's of the tracklist
         private int selected_index; //index of the play_order index of track being played

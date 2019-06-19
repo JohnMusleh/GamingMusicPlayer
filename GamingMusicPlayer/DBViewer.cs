@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*DBViewer is a Developer mode ONLY GUI used to view and edit the database during runtime, for development and testing purposes only.*/
+using System;
 using System.Windows.Forms;
 
 namespace GamingMusicPlayer
 {
-    //class to view and edit the database during runtime, for development and testing purposes only.
     public partial class DBViewer : Form
     {
         public DBViewer()

@@ -127,8 +127,17 @@
   <data name="pause_white" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pause_white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="songmatch_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\songmatch_on.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="vp_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\vp_off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="beardicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\beardicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="settings_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="next_white" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\next_white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -142,11 +151,17 @@
   <data name="beard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\beard.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="vp_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\vp_on.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="play_white_tiny" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\play_white_tiny.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="loop_white" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\loop_white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="controllericon2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\controllericon2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="play_white" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\play_white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -160,7 +175,7 @@
   <data name="shuffle_red" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\shuffle_red.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="play_white_tiny" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\play_white_tiny.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="songmatch_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\songmatch_off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

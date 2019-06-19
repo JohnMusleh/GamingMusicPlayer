@@ -20,6 +20,7 @@ namespace GamingMusicPlayer
     /*This class is used to test signal processing algorithms, it has the ability to draw a signal on the screen. */
     public partial class Grapher : Form
     {
+        private MainForm mainForm;
         private Track t;
         private KeyboardProcessor kp;
         private MouseProcessor mp;
@@ -36,8 +37,9 @@ namespace GamingMusicPlayer
             get { return Track; }
             set{ t = value;}
         }
-        public Grapher()
+        public Grapher(MainForm main)
         {
+            this.mainForm = main;
             InitializeComponent();
             t = null;
             chart1.Series.Add("wave");
@@ -88,7 +90,7 @@ namespace GamingMusicPlayer
             }
             sw.Stop();
             Console.WriteLine("plotted in:" + sw.Elapsed.TotalMilliseconds+" ms");
-            
+
             
 
         }
@@ -116,7 +118,7 @@ namespace GamingMusicPlayer
                 KeyboardListener.HookKeyboard();
                 testOn = true;
             }*/
-            kp.record(30);
+            kp.record(5);
             cmdRecordKeyboard.Text = "Recording..";
             cmdRecordKeyboard.Enabled = false;
             cmdPlotPlayingSong.Enabled = false;
@@ -129,7 +131,7 @@ namespace GamingMusicPlayer
         {
             if (drawThread != null)
             {
-                drawThread.Suspend();
+                drawThread.Abort();
             }
             sp.computeTimbre(kp.Data, 30, true);
             //sp.ComputeBPM(kp.Data, 30,true,true);
@@ -149,7 +151,7 @@ namespace GamingMusicPlayer
             
             if (drawThread != null)
             {
-                drawThread.Suspend();
+                drawThread.Abort();
             }
             string selectedCoordinate = "";
             mouseXYComboBox.Invoke(new MethodInvoker(delegate {
@@ -193,7 +195,7 @@ namespace GamingMusicPlayer
             {
                 if (drawThread != null)
                 {
-                    drawThread.Suspend();
+                    drawThread.Abort();
                 }
                 short[] trackData = readDataFromFile();
                 drawThread = new Thread(new ThreadStart(readDataAndDraw));
@@ -263,7 +265,7 @@ namespace GamingMusicPlayer
         private void cmdRecordMouse_Click(object sender, EventArgs e)
         {
             //1164,364 pos of record mouse button
-            mp.record(30);
+            mp.record(5);
             cmdRecordMouse.Text = "Recording..";
             cmdRecordMouse.Enabled = false;
             cmdRecordKeyboard.Enabled = false;
@@ -273,6 +275,91 @@ namespace GamingMusicPlayer
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void cmdPlotMatcherHistory_Click(object sender, EventArgs e)
+        {
+            double[] h = mainForm.getMouseBpmHistory().ToArray();
+            short[] p = new short[h.Length];
+            for (int i = 0; i < h.Length; i++)
+                p[i] = (short)h[i];
+            plot(p);
+            double avg = 0;
+            for (int i = 0; i < p.Length; i++)
+                avg += (double)p[i];
+            avg /= (double)p.Length;
+            Console.WriteLine("Average value:" + avg);
+        }
+
+        private void cmdPlotKeyMatcherHistory_Click(object sender, EventArgs e)
+        {
+            double[] h = mainForm.getKeyboardBpmHistory().ToArray();
+            short[] p = new short[h.Length];
+            for (int i = 0; i < h.Length; i++)
+                p[i] = (short)h[i];
+            plot(p);
+            double avg = 0;
+            for (int i = 0; i < p.Length; i++)
+                avg += (double)p[i];
+            avg /= (double)p.Length;
+            Console.WriteLine("Average value:" + avg);
+        }
+
+        private void cmdPlotMouseZcrHist_Click(object sender, EventArgs e)
+        {
+            double[] data = mainForm.getMouseZcrHistory().ToArray();
+            chart1.Invoke(new MethodInvoker(delegate {
+                chart1.Series.Remove(chart1.Series["wave"]);
+                chart1.Series.Add("wave");
+                chart1.Series["wave"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+                chart1.Series["wave"].ChartArea = "ChartArea1";
+            }));
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                chart1.Invoke(new MethodInvoker(delegate {
+                    chart1.Series["wave"].Points.Add(data[i]);
+                }));
+
+            }
+        }
+
+        private void cmdPlotKeyZcrHist_Click(object sender, EventArgs e)
+        {
+            double[] data = mainForm.getKeyboardZcrHistory().ToArray();
+            chart1.Invoke(new MethodInvoker(delegate {
+                chart1.Series.Remove(chart1.Series["wave"]);
+                chart1.Series.Add("wave");
+                chart1.Series["wave"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+                chart1.Series["wave"].ChartArea = "ChartArea1";
+            }));
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                chart1.Invoke(new MethodInvoker(delegate {
+                    chart1.Series["wave"].Points.Add(data[i]);
+                }));
+
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            double[] data = mainForm.getMouseSpectIrrHistory().ToArray();
+            chart1.Invoke(new MethodInvoker(delegate {
+                chart1.Series.Remove(chart1.Series["wave"]);
+                chart1.Series.Add("wave");
+                chart1.Series["wave"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+                chart1.Series["wave"].ChartArea = "ChartArea1";
+            }));
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                chart1.Invoke(new MethodInvoker(delegate {
+                    chart1.Series["wave"].Points.Add(data[i]);
+                }));
+
+            }
         }
     }
 }

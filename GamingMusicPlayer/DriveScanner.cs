@@ -1,8 +1,6 @@
-﻿using System;
+﻿/* DriveScanner is a class used to scan directories recursively for MP3 and WAV files*/
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
 

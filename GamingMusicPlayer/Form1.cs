@@ -1,27 +1,19 @@
-﻿using System;
+﻿/* This class is the main GUI class of the application, all features and controls are available as public methods from this class.*/
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using System.IO;
-using System.Diagnostics;
-
 using System.Configuration;
-using System.Data.SqlClient;
+using System.Collections.Specialized;
 
 using GamingMusicPlayer.MusicPlayer;
 using GamingMusicPlayer.Database;
-using System.Collections.Specialized;
 
 
 namespace GamingMusicPlayer
 {
-    /* This class is the main GUI class of the application, the user is able to use all the features from this Form.*/
     public partial class MainForm : Form
     {
         private const string TS3_APPNAME = "ts3client_win64";
@@ -33,9 +25,12 @@ namespace GamingMusicPlayer
         private bool musicTrackbarScrolling;
         private Thread updateMusicTrackbarThread;
         private Thread trackMouseOnMusicTBarThread;
-        private int lastMouseX;//used to track mouse while on track bar
+        private Thread addSongsToDbThread;
+        private List<Track> songsToAdd;
 
-        private Logger loggerForm;
+        //used to track mouse while on track bar
+        private int lastMouseX;
+
         private Grapher grapherForm;
         private SongMatcher matcherForm;
         private SettingsForm settingsForm;
@@ -48,6 +43,11 @@ namespace GamingMusicPlayer
         private DatabaseAdapter dbAdapter;
         private DriveScanner driveScanner;
 
+        private string[] dbPaths;
+
+        //when searching -> array contains indices of the results in the dbPaths array
+        private List<int> trackNameToPathIndices;
+             
         public event EventHandler onSongComplete;
         public event EventHandler onPlayingChange;
 
@@ -57,13 +57,13 @@ namespace GamingMusicPlayer
 
         public bool AutoPick { get; set; }
 
-        public bool Running { get; private set; } //to interrupt threads when closing the application
+        //to interrupt threads when closing the application
+        public bool Running { get; private set; } 
 
         private void songComplete(object sender, EventArgs e) { }
 
         private void playingChanged(object sender, EventArgs e)
         {
-
             if (Playing)
             {
                 if (updateMusicTrackbarThread != null)
@@ -79,21 +79,31 @@ namespace GamingMusicPlayer
                     updateMusicTrackbarThread = null;
                 }
             }
-            //updateMusicTrackbar_fixed
         }
 
-        public MainForm()
+        public List<double> getKeyboardBpmHistory() { return matcherForm.keyboardBpmHistory; }
+        public List<double> getMouseBpmHistory() { return matcherForm.mouseBpmHistory; }
+        public List<double> getMouseZcrHistory() { return matcherForm.mouseZcrHistory; }
+        public List<double> getKeyboardZcrHistory() { return matcherForm.keyboardZcrHistory; }
+        public List<Double> getMouseSpectIrrHistory() { return matcherForm.mouseSpectIrrHistory; }
+        public MainForm(bool devMode)
         {
             this.mp = new MusicPlayer.MusicPlayer();
             this.loop = false;
             this.musicTrackbarScrolling = false;
             this.Running = true;
             this.lastMouseX = 0;
+            trackNameToPathIndices = null;
             InitializeComponent();
-            //disable resizing of window
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-
+            if (!devMode)
+            {
+                cmdShowGrapher.Hide();
+                cmdToggleMatcher.Hide();
+                cmdSaveCsv.Hide();
+                cmdViewDB.Hide();
+            }
             onPlayingChange += playingChanged;
 
             onSongComplete += songComplete;
@@ -101,73 +111,147 @@ namespace GamingMusicPlayer
             seekLabel.Text = "";
             txtMusicProgress.Text = "";
             updateMusicTrackbarThread = new Thread(new ThreadStart(updateMusicTrackbar));
-            /*updateMusicTrackbarThread = new Thread(new ThreadStart(updateMusicTrackbar));
-            updateMusicTrackbarThread.Start();*/
 
-            loggerForm = new Logger();
-            grapherForm = new Grapher();
-
+            grapherForm = new Grapher(this);
 
             vm = new VolumeMixer();
             vm.OnPeakChanged += onPeakChanged;
 
             loweredVolume = false;
-            //for developer mode
-            //cmdShowGrapher.Visible = false;
-            //cmdLogger.Visible = false;
-            //ConfigurationManager.ConnectionStrings["GamingMusicPlayer.Properties.Settings.SongsDBConnectionString"].ConnectionString
             dbAdapter = new DatabaseAdapter(ConfigurationManager.ConnectionStrings["GamingMusicPlayer.Properties.Settings.SongsDBConnectionString"].ConnectionString);
             matcherForm = new SongMatcher(this, dbAdapter);
             settingsForm = new SettingsForm(this);
             overlayForm = new OverlayForm(this, 200, 0);
             driveScanner = null;
+            
+            ToolTip vpToggleTooltip = new ToolTip();
+            vpToggleTooltip.ToolTipIcon = ToolTipIcon.None;
+            vpToggleTooltip.IsBalloon = true;
+            vpToggleTooltip.ShowAlways = true;
+            vpToggleTooltip.AutoPopDelay = 20000;
+            vpToggleTooltip.SetToolTip(cmdVp, "Voice Prioritization Feature");
+
+            ToolTip songMatchToggleTooltip = new ToolTip();
+            songMatchToggleTooltip.ToolTipIcon = ToolTipIcon.None;
+            songMatchToggleTooltip.IsBalloon = true;
+            songMatchToggleTooltip.ShowAlways = true;
+            songMatchToggleTooltip.AutoPopDelay = 20000;
+            songMatchToggleTooltip.SetToolTip(cmdSongMatchToggle, "Automatic Song Matching Feature");
+
+
+            dbListBox.SelectionMode = SelectionMode.MultiExtended;
+            songsToAdd = new List<Track>();
+            addSongsToDbThread = new Thread(delegate ()
+            {
+                SignalProcessing.SignalProcessor sp = new SignalProcessing.SignalProcessor();
+                while (true)
+                {
+                    int c = 0;
+                    lock (songsToAdd)
+                    {
+                        c = songsToAdd.Count;
+                    }
+                    while (c > 0)
+                    {
+                        Track t = songsToAdd[0];
+                        sp.ComputeBPM(t.Data, (t.Length / 1000), false, false);
+                        t.BPM = sp.BPM;
+                        sp.computeTimbre(t.Data, t.Length / 1000, false);
+                        t.ZCR = sp.ZCR;
+                        t.SpectralIrregularity = sp.SpectralIrregularity;
+                        lock (dbAdapter)
+                        {
+                            dbAdapter.addTrack(t);
+                        }
+                        updateSettings(true);
+                        sp.clearMemory();
+                        lock (songsToAdd)
+                        {
+                            songsToAdd.RemoveAt(0);
+                            c = songsToAdd.Count;
+                        }
+                    }
+                    Thread.Sleep(1000);
+                }
+            });
+            addSongsToDbThread.Start();
         }
 
         /* Public Control Methods*/
         //Music control
-        //to add.. volume(), skipTo()..
 
-        public void updateSettings()
+        //this function must be called every time settings are changed.
+        public void updateSettings(bool updateDb)
         {
-            if (Properties.Settings.Default.vpTs3)
-                vm.subscribeApp(TS3_APPNAME);
-            else
-                vm.unsubscribeApp(TS3_APPNAME);
-            if (Properties.Settings.Default.vpDiscord)
-                vm.subscribeApp(DISCORD_APPNAME);
-            else
-                vm.unsubscribeApp(DISCORD_APPNAME);
-            if (Properties.Settings.Default.vpSkype)
-                vm.subscribeApp(SKYPE_APPNAME);
-            else
-                vm.unsubscribeApp(SKYPE_APPNAME);
-
-            volumeTrackBar.Value = Properties.Settings.Default.volume;
-            mp.setVolume(Properties.Settings.Default.volume);
-            volumeLabel.Text = volumeTrackBar.Value / 10 + "%";
-
-            if (Properties.Settings.Default.vpOn)
+            this.Invoke((MethodInvoker)delegate ()
             {
-                vm.startListening();
-            }
-            else
-            {
-                vm.stopListening();
-            }
+                if (Properties.Settings.Default.vpTs3)
+                    vm.subscribeApp(TS3_APPNAME);
+                else
+                    vm.unsubscribeApp(TS3_APPNAME);
+                if (Properties.Settings.Default.vpDiscord)
+                    vm.subscribeApp(DISCORD_APPNAME);
+                else
+                    vm.unsubscribeApp(DISCORD_APPNAME);
+                if (Properties.Settings.Default.vpSkype)
+                    vm.subscribeApp(SKYPE_APPNAME);
+                else
+                    vm.unsubscribeApp(SKYPE_APPNAME);
 
-            if (Properties.Settings.Default.overlayOn)
-            {
-                overlayForm.Hide();
-                overlayForm.showOverlay(Properties.Settings.Default.overlayClickable);
-            }
-            else
-            {
-                overlayForm.Hide();
-            }
+                volumeTrackBar.Value = Properties.Settings.Default.volume;
+                mp.setVolume(Properties.Settings.Default.volume);
+                volumeLabel.Text = volumeTrackBar.Value / 10 + "%";
 
+                if (Properties.Settings.Default.vpOn)
+                {
+                    vm.startListening();
+                    cmdVp.Image = Properties.Resources.vp_on;
+                }
+                else
+                {
+                    vm.stopListening();
+                    cmdVp.Image = Properties.Resources.vp_off;
+                }
+
+                if (Properties.Settings.Default.overlayOn)
+                {
+                    overlayForm.Hide();
+                    overlayForm.showOverlay(Properties.Settings.Default.overlayClickable);
+                }
+                else
+                {
+                    overlayForm.Hide();
+                }
+                if (Properties.Settings.Default.songMatchOn)
+                {
+                    cmdSongMatchToggle.Image = Properties.Resources.songmatch_on;
+                    matcherForm.startMatching();
+                }
+                else
+                {
+                    cmdSongMatchToggle.Image = Properties.Resources.songmatch_off;
+                    matcherForm.stopMatching();
+                }
+
+                if (updateDb)
+                {
+                    dbListBox.Items.Clear();
+                    List<Track> tracks = dbAdapter.getAllTracks();
+                    dbPaths = new string[tracks.Count];
+                    int i = 0;
+                    foreach (Track t in tracks)
+                    {
+                        dbPaths[i] = t.Path;
+                        dbListBox.Items.Add(t.Name);
+                        i++;
+                    }
+                }
+                
+            }); 
         }
 
-        public bool playPauseToggle() //return false is paused or couldnt pause, return true if resumed or kept playing
+        //return false is paused or couldnt pause, return true if resumed or kept playing
+        public bool playPauseToggle() 
         {
             if (mp.Playing)
             {
@@ -181,7 +265,7 @@ namespace GamingMusicPlayer
                 }
                 else
                 {
-                    log(mp.ErrorMsg);
+                    Console.WriteLine(mp.ErrorMsg);
                     onPlayingChange(null, null);
                     return true;
                 }
@@ -194,7 +278,11 @@ namespace GamingMusicPlayer
                     grapherForm.Track = null;
                     if (!mp.selectTrack(nameListBox.SelectedIndex))
                     {
-                        log(mp.ErrorMsg);
+                        if (!File.Exists(nameListBox.SelectedItem.ToString()))
+                        {
+                            dbAdapter.removeTrack(nameListBox.SelectedItem.ToString());
+                            updateSettings(true);
+                        }
                         if (nameListBox.Items.Count > 0)
                         {
                             nameListBox.Items.RemoveAt(mp.SelectedTrackIndex);
@@ -219,7 +307,6 @@ namespace GamingMusicPlayer
                 }
                 else
                 {
-                    log(mp.ErrorMsg);
                     onPlayingChange(null, null);
                     return false;
                 }
@@ -235,8 +322,6 @@ namespace GamingMusicPlayer
                     nameListBox.SelectedIndex = trackIndex;
                     playPauseToggle();
                 });
-
-
             }
         }
 
@@ -245,7 +330,6 @@ namespace GamingMusicPlayer
             if (!mp.next())
             {
                 cmdPlayPause.Image = Properties.Resources.play_white;
-                log(mp.ErrorMsg);
                 onPlayingChange(null, null);
                 return false;
             }
@@ -266,7 +350,6 @@ namespace GamingMusicPlayer
             if (!mp.prev())
             {
                 cmdPlayPause.Image = Properties.Resources.play_white;
-                log(mp.ErrorMsg);
                 onPlayingChange(null, null);
                 return false;
             }
@@ -292,7 +375,6 @@ namespace GamingMusicPlayer
                     grapherForm.Track = null;
                     if (!mp.selectTrack(i))
                     {
-                        log(mp.ErrorMsg);
                         return false;
                     }
                     if (nameListBox.Items.Count > 0)
@@ -305,7 +387,6 @@ namespace GamingMusicPlayer
                     matcherForm.updateTrackList(mp.PlaylistTracklist);
                     return true;
                 }
-                log("mp before selected index=" + mp.SelectedTrackIndex);
                 if (nameListBox.SelectedItems.Count > 0)
                 {
                     if (mp.removeTrack())
@@ -314,16 +395,12 @@ namespace GamingMusicPlayer
                         matcherForm.updateTrackList(mp.PlaylistTracklist);
                         nameListBox.Items.RemoveAt(i);
                         lengthListBox.Items.RemoveAt(i);
-                        log("mp after selected index=" + mp.SelectedTrackIndex);
                         if (nameListBox.Items.Count > 0)
                         {
-                            log("attemtping to select the index:" + mp.SelectedTrackIndex);
                             nameListBox.SelectedIndex = mp.SelectedTrackIndex;
                         }
-                        log(mp.ErrorMsg);
                         return true;
                     }
-                    log(mp.ErrorMsg);
                     return false;
                 }
             }
@@ -338,8 +415,6 @@ namespace GamingMusicPlayer
                 {
                     mp.addTrack(t);
                     //[UPDATE TRACKS]
-                    matcherForm.updateTrackList(mp.PlaylistTracklist);
-
                     nameListBox.Items.Add(t.Name);
                     lengthListBox.Items.Add(msToString(t.Length));
                     nameListBox.SelectedIndex = mp.SelectedTrackIndex;
@@ -355,16 +430,10 @@ namespace GamingMusicPlayer
                 SignalProcessing.SignalProcessor sp = new SignalProcessing.SignalProcessor();
                 if (threadWrap)
                 {
-                    new Thread(delegate ()
+                    lock (songsToAdd)
                     {
-                        sp.ComputeBPM(t.Data, (t.Length / 1000), false, false);
-                        t.BPM = sp.BPM;
-                        sp.computeTimbre(t.Data, t.Length / 1000, false);
-                        t.ZCR = sp.ZCR;
-                        t.SpectralIrregularity = sp.SpectralIrregularity;
-                        Console.WriteLine("adding tack: " + t.Path);
-                        dbAdapter.addTrack(t);
-                    }).Start();
+                        songsToAdd.Add(t);
+                    }
                 }
                 else
                 {
@@ -373,18 +442,29 @@ namespace GamingMusicPlayer
                     sp.computeTimbre(t.Data, t.Length / 1000, false);
                     t.ZCR = sp.ZCR;
                     t.SpectralIrregularity = sp.SpectralIrregularity;
-                    Console.WriteLine("adding tack: " + t.Path);
-                    dbAdapter.addTrack(t);
+                    lock (dbAdapter)
+                    {
+                        dbAdapter.addTrack(t);
+                    }
+                    updateSettings(true);
                 }
             }
+            matcherForm.updateTrackList(mp.LoadedPlaylist.TrackList);
         }
 
+        public void setSongMatchingMouseKeyboardWeights(double mWeight)
+        {
+            matcherForm.setMkWeights(mWeight);
+        }
+
+        public double getSongMatchingMouseWeight() { return matcherForm.getMouseWeight(); }
+        
+        
         /* Private internal methods */
         private void trackMouseOnMusicTBar()
         {
             while (Running && musicTrackbarScrolling)
             {
-
                 int mouseX = (Cursor.Position.X - this.Location.X) - musicTrackBar.Location.X;
                 if (lastMouseX != mouseX)
                 {
@@ -496,29 +576,19 @@ namespace GamingMusicPlayer
             return rtrn;
         }
 
-        private void log(string msg)
-        {
-            loggerForm.log(msg);
-        }
-
-
-
         /* Events */
         // GUI and button events
         private void cmdPlayPause_Click(object sender, EventArgs e)
         {
             playPauseToggle();
-            //Console.WriteLine("cmdPlayPause:" + playPauseToggle());
         }
         private void cmdRemove_Click(object sender, EventArgs e)
         {
             removeTrack(nameListBox.SelectedIndex);
-            //[BUG] removing song can select an unexisting index, and therefore when pressing cmdPlayPause it will remove each song 1 by 1
         }
         private void cmdNext_Click(object sender, EventArgs e)
         {
             nextTrack();
-            //Console.WriteLine("cmdNext:" + next());
         }
         private void cmdPrev_Click(object sender, EventArgs e)
         {
@@ -554,20 +624,6 @@ namespace GamingMusicPlayer
                 loop = true;
             }
         }
-        private void cmdLogger_Click(object sender, EventArgs e)
-        {
-            if (loggerForm.LoggerVisible)
-            {
-                loggerForm.hide();
-                cmdLogger.Text = "Show Logger";
-            }
-            else
-            {
-                loggerForm.show();
-                cmdLogger.Text = "Hide Logger";
-            }
-
-        }
         private void cmdShowGrapher_Click(object sender, EventArgs e)
         {
             if (grapherForm.GrapherVisible)
@@ -594,7 +650,6 @@ namespace GamingMusicPlayer
                 cmdToggleMatcher.Text = "Hide Matcher";
             }
         }
-
         private void cmdScan_Click(object sender, EventArgs e)
         {
             if (driveScanner == null || !driveScanner.Scanning)
@@ -613,41 +668,36 @@ namespace GamingMusicPlayer
                 driveScanner.onPercChanged += onScanPercChanged;
                 driveScanner.onScanComplete += onScanComplete;
                 driveScanner.scan(true);
-                cmdScan.Text = "Scanning.. \r\n(" + Math.Round(driveScanner.CompletePercentage, 2) + "%)\r\nClick to Cancel";
+                cmdScan.Text = "Scanning..\r\n(" + Math.Round(driveScanner.CompletePercentage, 2) + "%)\r\n[Cancel]";
             }
             else
             {
                 driveScanner.cancelScan();
                 cmdScan.Text = "Scan";
             }
-
-
-            /*DialogResult dupFilesRes = MessageBox.Show("After scanning 10 duplicate files were found, would you like for them to get deleted?", "Duplicate Music Files", MessageBoxButtons.YesNo,MessageBoxIcon.Question);
-            if (dupFilesRes == System.Windows.Forms.DialogResult.Yes)
-            {
-                Console.WriteLine("to delete");
-            }
-            else
-            {
-                Console.WriteLine("not to delete");
-            }*/
         }
         private void cmdAddSong_Click(object sender, EventArgs e)
         {
             OpenFileDialog songFileDialog = new OpenFileDialog();
+            songFileDialog.Multiselect = true;
             songFileDialog.Filter = "All Files|*.*|WAV Files|*.wav|MP3 Files|*.mp*";
-            songFileDialog.Title = "Select a Music File";
-            if (songFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            songFileDialog.Title = "Select Music Files";
+            if (songFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    Track t = new Track(songFileDialog.FileName);
-                    addSong(t, true, true);
-
+                    foreach(string fname in songFileDialog.FileNames)
+                    {
+                        Console.WriteLine(fname);
+                        Track t = new Track(fname);
+                        Console.WriteLine("calling add song from onclick..");
+                        addSong(t, true, true);
+                        Console.WriteLine("returned from addsong onclick..");
+                    }
                 }
                 catch (FileFormatNotSupported ffnse)
                 {
-                    log(ffnse.Message);
+                    Console.WriteLine(ffnse.Message);
                 }
             }
         }
@@ -665,7 +715,6 @@ namespace GamingMusicPlayer
         private void musicTrackBar_MouseUp(object sender, MouseEventArgs e)
         {
             int mouseX = (Cursor.Position.X - this.Location.X) - musicTrackBar.Location.X;
-            //log("mouseup:mouseX=" + mouseX);
             int musicTrackBarCapacity = musicTrackBar.Maximum - musicTrackBar.Minimum;
             int musicTrackBarWidth = musicTrackBar.Size.Width;
             if (mouseX > musicTrackBarWidth)
@@ -679,6 +728,7 @@ namespace GamingMusicPlayer
             mp.setPosition(newValue);
             musicTrackbarScrolling = false;
         }
+
         private void nameListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (nameListBox.SelectedItems.Count == 0)
@@ -695,7 +745,11 @@ namespace GamingMusicPlayer
             {
                 if (!mp.selectTrack(nameListBox.SelectedIndex))
                 {
-                    log(mp.ErrorMsg);
+                    if (!File.Exists(nameListBox.SelectedItem.ToString()))
+                    {
+                        dbAdapter.removeTrack(nameListBox.SelectedItem.ToString());
+                        updateSettings(true);
+                    }
                     nameListBox.Items.RemoveAt(mp.SelectedTrackIndex);
                     nameListBox.Items.RemoveAt(mp.SelectedTrackIndex);
                     mp.removeTrack();
@@ -717,14 +771,18 @@ namespace GamingMusicPlayer
             lengthListBox.SelectedIndex = nameListBox.SelectedIndex;
             lengthListBox.TopIndex = nameListBox.TopIndex;
         }
-
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Running = false;
+            matcherForm.stopMatching();
+            SignalProcessing.Mouse.MouseListener.UnhookMouse();
+            SignalProcessing.Keyboard.KeyboardListener.UnHookKeyboard();
+            
             if (Playing)
                 playPauseToggle();
             if (vm.Running)
                 vm.stopListening();
-
+            
             // saving playlist and musicTrackBar value
             StringCollection savedPlaylist = new StringCollection();
             Playlist p = mp.LoadedPlaylist;
@@ -742,9 +800,8 @@ namespace GamingMusicPlayer
                 updateMusicTrackbarThread.Abort();
                 updateMusicTrackbarThread = null;
             }
-            Running = false;
+            addSongsToDbThread.Abort();   
         }
-
         private void onFocus(object sender, EventArgs e)
         {
             seekLabel.Focus();
@@ -759,33 +816,27 @@ namespace GamingMusicPlayer
                 if (e.app.peak > 0.2 && !loweredVolume)
                 {
                     prevVolume = mp.Volume;
-                    Console.WriteLine(e.app.name + ":peak:" + e.app.peak);
-                    Console.WriteLine("prev volume:" + mp.Volume);
                     this.Invoke((MethodInvoker)delegate ()
                     {
                         mp.setVolume(130);
                     });
-                    Console.WriteLine("new volume:" + mp.Volume);
                     loweredVolume = true;
                 }
                 else if (e.app.peak < 0.05 && loweredVolume)
                 {
-                    Console.WriteLine(e.app.name + "peak:" + e.app.peak);
                     this.Invoke((MethodInvoker)delegate ()
                     {
                         mp.setVolume(prevVolume);
                     });
-                    Console.WriteLine("new volume:" + mp.Volume);
                     loweredVolume = false;
                 }
             }
-            //Console.WriteLine(e.app.name+" -volume peak:"+e.app.peak);
         }
         private void onScanPercChanged(object sender, EventArgs e)
         {
             cmdScan.Invoke((MethodInvoker)delegate ()
             {
-                cmdScan.Text = "Scanning.. (" + Math.Round(driveScanner.CompletePercentage, 2) + "%)\r\nClick to Cancel";
+                cmdScan.Text = "Scanning..\r\n(" + Math.Round(driveScanner.CompletePercentage, 2) + "%)\r\n[Cancel]";
             });
         }
         private void onScanComplete(object sender, EventArgs e)
@@ -799,7 +850,6 @@ namespace GamingMusicPlayer
                 List<Track> tracks = driveScanner.Tracks;
                 if (tracks != null)
                 {
-                    Console.WriteLine(" MAIN FORM --- : scan complete-- #ofTracks:" + driveScanner.Tracks.Count);
                     foreach (Track t in tracks)
                     {
                         addSong(t, false, false);
@@ -813,14 +863,6 @@ namespace GamingMusicPlayer
 
             }
         }
-
-        private void cmdSettings_Click(object sender, EventArgs e)
-        {
-            settingsForm.show();
-            Console.WriteLine("MAIN FORM:done showing settings");
-        }
-
-
         private void volumeTrackBar_Scroll(object sender, EventArgs e)
         {
             if (loweredVolume)
@@ -838,7 +880,6 @@ namespace GamingMusicPlayer
                 Properties.Settings.Default.Save();
             });
         }
-
         private void MainForm_Load(object sender, EventArgs e)
         {
             cmdPlayPause.GotFocus += onFocus;
@@ -848,22 +889,38 @@ namespace GamingMusicPlayer
             cmdPrev.GotFocus += onFocus;
             cmdAddSong.GotFocus += onFocus;
             cmdRemove.GotFocus += onFocus;
-            cmdSettings.GotFocus += onFocus;
             cmdScan.GotFocus += onFocus;
             cmdRemove.GotFocus += onFocus;
+            cmdDbSearchGo.GotFocus += onFocus;
+            cmdSettings.GotFocus += onFocus;
+            cmdVp.GotFocus += onFocus;
+            cmdSongMatchToggle.GotFocus += onFocus;
 
             musicTrackBar.GotFocus += onFocus;
             volumeTrackBar.GotFocus += onFocus;
 
             bottomLeftIcon.GotFocus += onFocus;
+            
 
             StringCollection savedPaylist = Properties.Settings.Default.playlist;
             if (savedPaylist != null)
             {
                 foreach (string p in savedPaylist)
                 {
-                    addSong(new Track(p), true, false);
+                    try
+                    {
+                        Console.WriteLine("adding song:" + p);
+                        if (!File.Exists(p))
+                            throw new FileNotFoundException();
+                        addSong(new Track(p), true, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    
                 }
+                Console.WriteLine("--DONE ADDING SONGS--");
             }
 
             int selectedIndex = Properties.Settings.Default.selectedTrackIndex;
@@ -874,7 +931,180 @@ namespace GamingMusicPlayer
                 mp.setPosition(musicTrackBar.Value);
 
             }
-            updateSettings();
+            matcherForm.show();
+            matcherForm.hide();
+            updateSettings(true);
+        }
+        private void cmdDbAdd_Click(object sender, EventArgs e)
+        {
+            ListBox.SelectedIndexCollection selectedIndicses = dbListBox.SelectedIndices;
+            if (selectedIndicses.Count > 0)
+            {
+                foreach(int i in selectedIndicses)
+                {
+                    if (trackNameToPathIndices == null)
+                    {
+                        addSong(new Track(dbPaths[i]), true, false);
+                    }
+                    else
+                    {
+                        addSong(new Track(dbPaths[trackNameToPathIndices[i]]), true, false);
+                    }
+                    
+                }
+            }
+        }
+        private void dbListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (dbListBox.SelectedIndex == -1)
+                cmdDbAdd.Enabled = false;
+            else
+                cmdDbAdd.Enabled = true;
+        }
+        private void nameListBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            //for drag and drop
+            //need to unlock a boolean parameter that allows onmousemove to track mouse and switch , switch also length
+            int itemIndex = nameListBox.IndexFromPoint(new Point(e.X, e.Y));
+            if (itemIndex >= 0 && itemIndex < nameListBox.Items.Count)
+            {
+                //Console.WriteLine(nameListBox.Items[itemIndex]);
+            }
+            else
+            {
+                //Console.WriteLine("no item at:"+itemIndex);
+            }
+        }
+        private void cmdDbSearchGo_Click(object sender, EventArgs e)
+        {
+            string txt = dbSearchTxtBox.Text;
+            if (txt.Equals(""))
+            {
+                trackNameToPathIndices = null;
+                updateSettings(true);
+                return;
+            }
+            List<int> tempTrackNameToPathIndices = new List<int>();
+            List<string> tempResultNames = new List<string>();
+            List<string> albums = new List<string>();
+            int i = 0;
+            foreach (Track t in dbAdapter.getAllTracks())
+            {
+                string tn = t.Name.ToLower();
+                string artist = t.Artist;
+                string album = t.Album;
+                if ( tn.Contains(txt.ToLower()) || (artist!=null && artist.ToLower().Contains(txt.ToLower()) ) || (album!=null && album.ToLower().Contains(txt.ToLower()) ) )
+                {
+                    albums.Add(album);
+                    tempResultNames.Add(tn);
+                    tempTrackNameToPathIndices.Add(i);
+                }
+                i++;
+            }
+
+
+            Dictionary<string, List<int>> map = new Dictionary<string, List<int>>();
+            for(i=0; i<albums.Count; i++)
+            {
+                if (map.ContainsKey(albums[i]))
+                {
+                    map[albums[i]].Add(i);
+                }
+                else
+                {
+                    List<int> list = new List<int>();
+                    list.Add(i);
+                    map[albums[i]] = list;
+                }
+            }
+
+            List<int> groupedIndices = new List<int>(); //list of indices in the albums/names/indices , sorted and grouped by album
+            foreach (string album in map.Keys)
+            {
+                foreach(int gi in map[album])
+                {
+                    groupedIndices.Add(gi);
+                }
+            }
+
+            List<string> resultNames = new List<string>();
+            trackNameToPathIndices = new List<int>();
+            foreach(int sorted_i in groupedIndices)
+            {
+                resultNames.Add(tempResultNames[sorted_i]);
+                trackNameToPathIndices.Add(tempTrackNameToPathIndices[sorted_i]);
+            }
+
+            //trackNameToPathIndices
+            //
+            dbListBox.Items.Clear();
+            foreach (string tn in resultNames)
+                dbListBox.Items.Add(tn);
+        }
+
+        private void cmdSettings_Click_1(object sender, EventArgs e)
+        {
+            settingsForm.show();
+        }
+
+        private void cmdSettings_MouseEnter(object sender, EventArgs e)
+        {
+            cmdSettings.Image = Properties.Resources.settings_hover;
+        }
+
+        private void cmdSettings_MouseLeave(object sender, EventArgs e)
+        {
+            cmdSettings.Image = Properties.Resources.settings;
+        }
+
+        private void cmdVp_Click(object sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.vpOn)
+            {
+                vm.stopListening();
+                Properties.Settings.Default.vpOn = false;
+                cmdVp.Image = Properties.Resources.vp_off;
+            }
+            else
+            {
+                vm.startListening();
+                Properties.Settings.Default.vpOn = true;
+                cmdVp.Image = Properties.Resources.vp_on;
+            }
+            Properties.Settings.Default.Save();
+        }
+
+        private void cmdSongMatchToggle_Click(object sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.songMatchOn)
+            {
+                Properties.Settings.Default.songMatchOn = false;
+                cmdSongMatchToggle.Image = Properties.Resources.songmatch_off;
+                matcherForm.stopMatching();
+            }
+            else
+            {
+                Properties.Settings.Default.songMatchOn = true;
+                cmdSongMatchToggle.Image = Properties.Resources.songmatch_on;
+                matcherForm.startMatching();
+            }
+            Properties.Settings.Default.Save();
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            overlayForm.showCountDown("changing action in", 10, false);
+
+            //Track t = mp.SelectedTrack;
+            //Database.DatabaseAdapter.predict((float)t.BPM, (float)t.ZCR, (float)t.SpectralIrregularity);
+            /*List < Track > ts = mp.LoadedPlaylist.TrackList;
+            String path = "C:\\Users\\John\\Desktop\\Education\\Software Engineering B.Sc\\uni\\year_4\\grad_project\\code\\GamingMusicPlayer\\data.csv";
+            File.Create(path).Close();
+            String csv = "Y,BPM,ZCR,SPECTIRR,NAME,\r\n";
+            foreach (Track t in ts)
+            {
+                csv += "0," + t.BPM + "," + t.ZCR + "," + t.SpectralIrregularity + "," + t.Name + ",\r\n";
+            }
+            File.WriteAllText(path, csv); */
         }
     }
 }

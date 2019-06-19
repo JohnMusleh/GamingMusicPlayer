@@ -1,9 +1,9 @@
-﻿using System;
-using NAudio;
+﻿/*Track class represents a music track, only MP3 and WAV is supported */
+using System;
 
 namespace GamingMusicPlayer.MusicPlayer
 {
-    /*Track represents a music track, only MP3 and WAV is supported */
+    
     public class Track : ICloneable
     {
 
@@ -56,8 +56,27 @@ namespace GamingMusicPlayer.MusicPlayer
 
         public string Artist
         {
-            get { return artist; }
+            get
+            { 
+                var tfile = TagLib.File.Create(path);
+                string artist = tfile.Tag.FirstPerformer;
+                if (artist == null)
+                    artist = "";
+                return artist;
+            }
             set { this.artist = value; }
+        }
+
+        public string Album
+        {
+            get
+            {
+                var tfile = TagLib.File.Create(path);
+                string album = tfile.Tag.Album;
+                if (album == null)
+                    album = "";
+                return album;
+            }
         }
 
 
@@ -65,10 +84,22 @@ namespace GamingMusicPlayer.MusicPlayer
         {
             get
             {
-                string[] tokens = path.Split('\\');
-                if (tokens.Length == 0)
+                string[] slashTokens = path.Split('\\');
+                if (slashTokens.Length == 0)
                     return "";
-                return tokens[tokens.Length - 1];
+
+                string name = "";
+                string[] dotTokens = slashTokens[slashTokens.Length - 1].Split('.');
+                if (dotTokens.Length > 0)
+                {
+                    for(int i=0; i < dotTokens.Length - 1; i++) {
+                        name += dotTokens[i];
+                        if (i != dotTokens.Length - 2)
+                            name += ".";
+                    }
+                }
+
+                return name;
             }
         }
 
@@ -146,12 +177,28 @@ namespace GamingMusicPlayer.MusicPlayer
             {
                 if (this.Format.Equals("MP3"))
                 {
-                    this.length = (int)new NAudio.Wave.Mp3FileReader(path).TotalTime.TotalMilliseconds;
-                   
+                    try
+                    {
+                        this.length = (int)new NAudio.Wave.Mp3FileReader(path).TotalTime.TotalMilliseconds;
+                    }
+                    catch (Exception e)
+                    {
+                        this.length = 0;
+                    }
+                    
+
                 }
                 else if (this.Format.Equals("WAV"))
                 {
-                    this.length = (int)new NAudio.Wave.WaveFileReader(path).TotalTime.TotalMilliseconds;
+                    try
+                    {
+                        this.length = (int)new NAudio.Wave.WaveFileReader(path).TotalTime.TotalMilliseconds;
+                    }
+                    catch (Exception e)
+                    {
+                        this.length = 0;
+                    }
+                    
                 }
                 
                 if (this.length < 0)

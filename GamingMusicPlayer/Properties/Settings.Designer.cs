@@ -176,5 +176,17 @@ namespace GamingMusicPlayer.Properties {
                 this["musicTrackBarValue"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool songMatchOn {
+            get {
+                return ((bool)(this["songMatchOn"]));
+            }
+            set {
+                this["songMatchOn"] = value;
+            }
+        }
     }
 }

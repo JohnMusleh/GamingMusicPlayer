@@ -1,19 +1,21 @@
-﻿using System;
+﻿/* DatabaseAdapter class is used to read and write values from the local database,
+ *      it is also used to access the machine learning model and get prediction values from it
+ * the local database holds music tracks as follows: path(as key), bpm, zcr, spectirr */
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
 
+using GamingMusicPlayer.DebugTools;
 using GamingMusicPlayer.MusicPlayer;
 
 namespace GamingMusicPlayer.Database
 {
     public class DatabaseAdapter
     {
+        static MLModel m = new MLModel();
         private string dbConnectionStr;
 
         public DatabaseAdapter(string connectionStr)
@@ -21,11 +23,38 @@ namespace GamingMusicPlayer.Database
             this.dbConnectionStr = connectionStr;
         }
 
+        public static double predict(float bpm, float zcr, float spectirr)
+        {
+            double p = m.predict(bpm, zcr, spectirr);
+            return p;
+        }
+
         //only removes if the path is in the database
-        //[missing] path check
         public void removeTrack(string path)
         {
-            if (getTrack(path)!=null)
+            bool exsists = false;
+            using (SqlConnection sqlConnection1 = new SqlConnection(dbConnectionStr))
+            using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Song where full_path='" + path + "';", sqlConnection1))
+            {
+                sqlConnection1.Open();
+                DataTable songTable = new DataTable();
+                adapter.Fill(songTable);
+                EnumerableRowCollection<DataRow> dataRows = songTable.AsEnumerable();
+                for (int i = 0; i < dataRows.Count(); i++)
+                {
+                    object[] row = dataRows.ElementAt(i).ItemArray;
+                    string ts = (string)row[1];
+                    if (ts.Equals(path))
+                    {
+                        exsists = true;
+                        break;
+                    }
+                }
+                sqlConnection1.Close();
+            }
+
+
+            if (exsists)
             {
                 string query = "DELETE FROM Song WHERE full_path='"+path+"';";
                 using (SqlConnection sqlConnection = new SqlConnection(dbConnectionStr))
@@ -43,7 +72,6 @@ namespace GamingMusicPlayer.Database
         }
 
         //only adds if file exists on drive and path is not in the database
-        //[missing] path check
         public void addTrack(Track t)
         {
             if (File.Exists(t.Path) && getTrack(t.Path) == null)
@@ -66,7 +94,6 @@ namespace GamingMusicPlayer.Database
             }
         }
 
-        //[missing] path check -> for each ' add another ' next to it
         public Track getTrack(string path) //returns null if track not found
         {
             path = strToSafeSqlFormat(path);
@@ -80,11 +107,24 @@ namespace GamingMusicPlayer.Database
                 for (int i = 0; i < dataRows.Count(); i++)
                 {
                     object[] row = dataRows.ElementAt(i).ItemArray;
-                    Track t = new Track((string)row[1]);
-                    t.BPM = (double)row[2];
-                    t.ZCR = (double)row[3];
-                    t.SpectralIrregularity = (double)row[4];
-                    return t;
+                    try
+                    {
+                        if (!File.Exists((string)row[1]))
+                            throw new FileNotFoundException();
+                        Track t = new Track((string)row[1]);
+                        t.BPM = (double)row[2];
+                        t.ZCR = (double)row[3];
+                        t.SpectralIrregularity = (double)row[4];
+                        return t;
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine("DB ADAPTER REMOVING from get track:" + (string)row[1]);
+                        removeTrack((string)row[1]);
+                        sqlConnection.Close();
+                        return null;
+                    }
+                    
                 }
                 sqlConnection.Close();
             }
@@ -104,11 +144,25 @@ namespace GamingMusicPlayer.Database
                 for(int i=0; i< dataRows.Count(); i++)
                 {
                     object[] row = dataRows.ElementAt(i).ItemArray;
-                    Track t = new Track((string)row[1]);
-                    t.BPM = (double)row[2];
-                    t.ZCR = (double)row[3];
-                    t.SpectralIrregularity = (double)row[4];
-                    tracks.Add(t);
+
+                    try
+                    {
+                        if (!File.Exists((string)row[1]))
+                            throw new FileNotFoundException();
+                        Track t = new Track((string)row[1]);
+                        t.BPM = (double)row[2];
+                        t.ZCR = (double)row[3];
+                        t.SpectralIrregularity = (double)row[4];
+                        tracks.Add(t);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine("DB ADAPTER REMOVING SONG:" + (string)row[1]);
+                        removeTrack((string)row[1]);
+                    }
+                   
+                    
                 }
                 sqlConnection.Close();
             }

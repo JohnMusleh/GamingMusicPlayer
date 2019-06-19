@@ -1,15 +1,13 @@
-﻿using System;
+﻿/*MouseProcessor class turns mouse input data coming from a MouseListener into a time domain signal data in order to compute relevant values on it.*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics;
 using System.Windows;
 
 namespace GamingMusicPlayer.SignalProcessing.Mouse
 {
-    //class that turns mouse input data coming from a MouseListener into a time domain signal data in order to compute relevant values on it.
     public class MouseProcessor
     {
         public const int SAMPLE_RATE = 20;
@@ -97,7 +95,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
 
         private void done(object sender, EventArgs e)
         {
-
+            Console.WriteLine("MOUSE DATA DONE");
         }
 
         public void record(int secs)
