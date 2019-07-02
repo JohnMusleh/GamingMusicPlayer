@@ -9,7 +9,7 @@ namespace GamingMusicPlayer.SignalProcessing.Keyboard
 {
     public class KeyboardProcessor
     {
-        public const int SAMPLE_RATE = 20;
+        public const int SAMPLE_RATE = 20;//samples per second
         private List<Key> keysDown;
 
         private Thread mainThread;

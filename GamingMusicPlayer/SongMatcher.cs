@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using System.Diagnostics;
+
 using GamingMusicPlayer.MusicPlayer;
 using GamingMusicPlayer.SignalProcessing;
 using GamingMusicPlayer.SignalProcessing.Keyboard;
@@ -52,10 +54,14 @@ namespace GamingMusicPlayer
         private MainForm playerForm;
         private Database.DatabaseAdapter dbAdapter;
 
-        private double prevD;
         private int currTrackIndex;
 
         private string prevAction;
+        private Stopwatch actionChangedStopWatch;
+
+        private Random rnd;
+
+        private const int secondsToWaitForAction = 30;
 
         //to track bpm in games, every 5 seconds add 5 samples of the computed bpm
         public List<double> keyboardBpmHistory;
@@ -96,10 +102,10 @@ namespace GamingMusicPlayer
             MatcherVisible = false;
             this.TopMost = true;
 
-            prevD = Double.MaxValue;
-
             main.onSongComplete += onSongComplete;
             prevAction = "";
+            rnd = new Random();
+            actionChangedStopWatch = new Stopwatch();
         }
 
         /* Public Control Methods*/
@@ -167,7 +173,7 @@ namespace GamingMusicPlayer
                 for (int i = 0; i < tempTracks.Count; i++)
                 {
                     // was--> (0.5 * (tempTracks[i].BPM / maxBpm)) + (0.5 * (tempTracks[i].ZCR / maxZcr));
-                    double currentD = Database.DatabaseAdapter.predict((float)tempTracks[i].BPM, (float)tempTracks[i].ZCR, (float)tempTracks[i].SpectralIrregularity); 
+                    double currentD = Database.DatabaseAdapter.predicts((float)tempTracks[i].BPM, (float)tempTracks[i].ZCR, (float)tempTracks[i].SpectralIrregularity); 
                     if (currentD < minD)
                     {
                         minD = currentD;
@@ -192,7 +198,7 @@ namespace GamingMusicPlayer
                 int minIndex = 0;
                 for (int i = 0; i < tempTracks.Count; i++)
                 {
-                    double currentD = Database.DatabaseAdapter.predict((float)tempTracks[i].BPM, (float)tempTracks[i].ZCR, (float)tempTracks[i].SpectralIrregularity);
+                    double currentD = Database.DatabaseAdapter.predicts((float)tempTracks[i].BPM, (float)tempTracks[i].ZCR, (float)tempTracks[i].SpectralIrregularity);
                     if (currentD < minD)
                     {
                         minD = currentD;
@@ -215,7 +221,7 @@ namespace GamingMusicPlayer
                 int minIndex = 0;
                 for (int i = 0; i < tempTracks.Count; i++)
                 {
-                    double currentD = Database.DatabaseAdapter.predict((float)tempTracks[i].BPM, (float)tempTracks[i].ZCR, (float)tempTracks[i].SpectralIrregularity);
+                    double currentD = Database.DatabaseAdapter.predicts((float)tempTracks[i].BPM, (float)tempTracks[i].ZCR, (float)tempTracks[i].SpectralIrregularity);
                     if (currentD < minD)
                     {
                         minD = currentD;
@@ -245,10 +251,14 @@ namespace GamingMusicPlayer
             Console.WriteLine();
             double maxBpm, maxZcr;
             maxBpm = maxZcr = Double.MinValue;
+            if (tracks == null || lowGroup==null || medGroup ==null || highGroup==null)
+            {
+                return;
+            }
             foreach (Track t in tracks)
             {
                 Console.Write(t.Name+"  :");
-                Console.WriteLine(Database.DatabaseAdapter.predict((float)t.BPM, (float)t.ZCR, (float)t.SpectralIrregularity));
+                Console.WriteLine(Database.DatabaseAdapter.predicts((float)t.BPM, (float)t.ZCR, (float)t.SpectralIrregularity));
                 if (t.BPM > maxBpm)
                     maxBpm = t.BPM;
                 if (t.ZCR > maxZcr)
@@ -357,6 +367,22 @@ namespace GamingMusicPlayer
                 bool actionChanged = false;
                 List<Track> group = null;//the group picked to pick tracks from
                 List<int> indices = null; //real index of the track in the whole list of tracks
+                if (mouseZCR + keyboardZCR == 0)
+                {
+                    mouseWeight = 1;
+                    keyboardWeight = 0;
+                }
+                else
+                {
+                    mouseWeight = (mouseZCR / (mouseZCR + keyboardZCR));
+                    keyboardWeight = 1 - mouseWeight;
+                }
+                mkWeightLabel.Invoke(new MethodInvoker(delegate
+                {
+                    mkWeightLabel.Text =" Mouse ratio:" + mouseWeight;
+                }));
+                mouseWeight = 0.5;
+                keyboardWeight = 0.5;
                 double overallZcr = (mouseWeight * mouseZCR) + (keyboardWeight * keyboardZCR);
                 currTrackIndex = playerForm.CurrentlySelectedTrackIndex;
                 if (overallZcr < 0.02)
@@ -364,18 +390,20 @@ namespace GamingMusicPlayer
                     group = lowGroup;
                     indices = lowGroupIndices;
                     if (!prevAction.Equals("low"))
-                    {
-                        actionChanged = true;
+                    {   
+                        if(actionChangedStopWatch.Elapsed.TotalSeconds> secondsToWaitForAction || !actionChangedStopWatch.IsRunning)
+                            actionChanged = true;
                         historyQueue.Clear();
                         for (int i = 0; i < historyMap.Length; i++)
                         {
                             historyMap[i] = false;
                         }
                     }
-                    prevAction = "low";
+                    if (actionChanged)
+                        prevAction = "low";
                     txtGroupLbl.Invoke(new MethodInvoker(delegate
                     {
-                        txtGroupLbl.Text = "LOW ACTION:"+overallZcr;
+                        txtGroupLbl.Text = prevAction + " ACTION:" + overallZcr;
                     }));
                 }
                 else if (overallZcr < 0.06)
@@ -384,17 +412,19 @@ namespace GamingMusicPlayer
                     indices = medGroupIndices;
                     if (!prevAction.Equals("medium"))
                     {
-                        actionChanged = true;
+                        if (actionChangedStopWatch.Elapsed.TotalSeconds > secondsToWaitForAction || !actionChangedStopWatch.IsRunning)
+                            actionChanged = true;
                         historyQueue.Clear();
                         for (int i = 0; i < historyMap.Length; i++)
                         {
                             historyMap[i] = false;
                         }
                     }
-                    prevAction = "medium";
+                    if (actionChanged)
+                        prevAction = "medium";
                     txtGroupLbl.Invoke(new MethodInvoker(delegate
                     {
-                        txtGroupLbl.Text = "MEDIUM ACTION:" + overallZcr;
+                        txtGroupLbl.Text = prevAction + " ACTION:" + overallZcr;
                     }));
                 }
                 else
@@ -403,18 +433,22 @@ namespace GamingMusicPlayer
                     indices = highGroupIndices;
                     if (!prevAction.Equals("high"))
                     {
-                        actionChanged = true;
+                        if (actionChangedStopWatch.Elapsed.TotalSeconds > secondsToWaitForAction || !actionChangedStopWatch.IsRunning)
+                            actionChanged = true;
                         historyQueue.Clear();
                         for (int i = 0; i < historyMap.Length; i++)
                         {
                             historyMap[i] = false;
                         }
                     }
-                    prevAction = "high";
+                    if (actionChanged)
+                        prevAction = "high";
+                    
                     txtGroupLbl.Invoke(new MethodInvoker(delegate
                     {
-                        txtGroupLbl.Text = "HIGH ACTION:" + overallZcr;
+                        txtGroupLbl.Text = prevAction+" ACTION:" + overallZcr;
                     }));
+
                 }
                 if (group == null)
                 {
@@ -422,27 +456,26 @@ namespace GamingMusicPlayer
                     return;
                 }
                 pickedGroupLength = group.Count;
-                double minDiff = Double.MaxValue;
-                int minIndex = -1;
+                int pickedTrackIndex = -1;
+                List<int> consideredTracksIndices = new List<int>();
                 for (int i = 0; i < group.Count; i++)
                 {
                     if (!historyMap[indices[i]] || indices[i] == currTrackIndex)
                     {
                         double d = calculateDifference(group[i]);
                         if (indices[i] == currTrackIndex)
-                        {
-                            prevD = d;
                             continue;
-                        }
-                        if (d < minDiff)
-                        {
-                            minDiff = d;
-                            minIndex = indices[i];
-                        }
+                        consideredTracksIndices.Add(indices[i]);
                     }
                 }
 
-                if (minIndex < 0)
+                //pick random index from 0 to consideredTracksIndices.length-1
+                if (consideredTracksIndices.Count > 0)
+                {
+                    pickedTrackIndex = consideredTracksIndices[rnd.Next(0, consideredTracksIndices.Count)];
+                }
+
+                if (pickedTrackIndex < 0)
                 {
                     Console.WriteLine("ERROR no song found");
                     return;
@@ -450,15 +483,20 @@ namespace GamingMusicPlayer
 
                 if (actionChanged || force)
                 {
+                    if (actionChanged)
+                    {
+                        actionChangedStopWatch.Reset();
+                        actionChangedStopWatch.Start();
+                    }
                     if (force)
                     {
-                        Console.WriteLine("-- forced --minIndex: " + minIndex + " currTrackI:" + currTrackIndex);
+                        Console.WriteLine("-- forced --minIndex: " + pickedTrackIndex + " currTrackI:" + currTrackIndex);
                     }
-                    if (minIndex != currTrackIndex && (playerForm.Playing || force) && mouseXRecordings.Count >= RECORDINGS_MAX_SIZE)
+                    if (pickedTrackIndex != currTrackIndex && (playerForm.Playing || force) && mouseXRecordings.Count >= RECORDINGS_MAX_SIZE)
                     {
                         Console.WriteLine("inside force if");
-                        playerForm.playTrack(minIndex);
-                        currTrackIndex = minIndex;
+                        playerForm.playTrack(pickedTrackIndex);
+                        currTrackIndex = pickedTrackIndex;
                         if (historyQueue.Count >= HISTORY_MAX_SIZE || historyQueue.Count >= group.Count)
                         {
                             Console.WriteLine("h queue full , clear it then add");

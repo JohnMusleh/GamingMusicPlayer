@@ -15,6 +15,7 @@ namespace GamingMusicPlayer.DebugTools
         private TransformerChain<RegressionPredictionTransformer<LinearRegressionModelParameters>> trainedModel=null;
         public MLModel()
         {
+            Console.WriteLine("ATTEMPTING TO CREATE MODEL");
             // STEP 1: Common data loading configuration
             IDataView baseTrainingDataView = mlContext.Data.LoadFromTextFile<ModelDataType>("C:\\Users\\John\\Desktop\\Education\\Software Engineering B.Sc\\uni\\year_4\\grad_project\\code\\GamingMusicPlayer\\GamingMusicPlayer\\DebugTools\\learning_data.csv", hasHeader: true, separatorChar: ',');
 
@@ -32,6 +33,7 @@ namespace GamingMusicPlayer.DebugTools
 
             this.trainedModel = trainingPipeline.Fit(baseTrainingDataView);
 
+            Console.WriteLine("CREATED MODEL");
         }
 
         public double predict(float bpm, float zcr, float spectirr)

@@ -158,6 +158,7 @@
             this.autoPickGameplayLabel.Size = new System.Drawing.Size(72, 17);
             this.autoPickGameplayLabel.TabIndex = 13;
             this.autoPickGameplayLabel.Text = "Gameplay";
+            this.autoPickGameplayLabel.Visible = false;
             // 
             // gameplayTooltipLabel
             // 
@@ -169,6 +170,7 @@
             this.gameplayTooltipLabel.Size = new System.Drawing.Size(19, 20);
             this.gameplayTooltipLabel.TabIndex = 14;
             this.gameplayTooltipLabel.Text = "?";
+            this.gameplayTooltipLabel.Visible = false;
             // 
             // gameplayTrackBar
             // 
@@ -176,6 +178,7 @@
             this.gameplayTrackBar.Name = "gameplayTrackBar";
             this.gameplayTrackBar.Size = new System.Drawing.Size(104, 56);
             this.gameplayTrackBar.TabIndex = 15;
+            this.gameplayTrackBar.Visible = false;
             this.gameplayTrackBar.ValueChanged += new System.EventHandler(this.gameplayTrackBar_ValueChanged);
             // 
             // gameplayMouseLabel
@@ -186,6 +189,7 @@
             this.gameplayMouseLabel.Size = new System.Drawing.Size(50, 17);
             this.gameplayMouseLabel.TabIndex = 16;
             this.gameplayMouseLabel.Text = "mouse";
+            this.gameplayMouseLabel.Visible = false;
             // 
             // gameplayKeyboardLabel
             // 
@@ -195,6 +199,7 @@
             this.gameplayKeyboardLabel.Size = new System.Drawing.Size(67, 17);
             this.gameplayKeyboardLabel.TabIndex = 17;
             this.gameplayKeyboardLabel.Text = "keyboard";
+            this.gameplayKeyboardLabel.Visible = false;
             // 
             // SettingsForm
             // 

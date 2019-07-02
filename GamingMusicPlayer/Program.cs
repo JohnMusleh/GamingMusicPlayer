@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using Python.Runtime;
+
 namespace GamingMusicPlayer
 {
     static class Program
@@ -15,9 +11,18 @@ namespace GamingMusicPlayer
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(false));
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainForm(true));
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("Error:"+e.Message, "Error Running App", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                throw e;
+            }
+            
         }
     }
 }

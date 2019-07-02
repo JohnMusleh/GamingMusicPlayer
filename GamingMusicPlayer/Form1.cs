@@ -931,9 +931,10 @@ namespace GamingMusicPlayer
                 mp.setPosition(musicTrackBar.Value);
 
             }
+            
+            updateSettings(true);
             matcherForm.show();
             matcherForm.hide();
-            updateSettings(true);
         }
         private void cmdDbAdd_Click(object sender, EventArgs e)
         {

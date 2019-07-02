@@ -7,6 +7,7 @@ using System.Linq;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
+using IronPython.Hosting;
 
 using GamingMusicPlayer.DebugTools;
 using GamingMusicPlayer.MusicPlayer;
@@ -25,9 +26,14 @@ namespace GamingMusicPlayer.Database
 
         public static double predict(float bpm, float zcr, float spectirr)
         {
-            double p = m.predict(bpm, zcr, spectirr);
+            double p = 0;
+            var engine = Python.CreateEngine();
+            dynamic model = engine.ImportModule("model");
+            p = model.predict(bpm, zcr, spectirr);
             return p;
         }
+
+        
 
         //only removes if the path is in the database
         public void removeTrack(string path)
@@ -180,6 +186,12 @@ namespace GamingMusicPlayer.Database
                     result += c;
             }
             return result;
+        }
+
+        public static double predicts(float bpm, float zcr, float spectirr)
+        {
+            double p = m.predict(bpm, zcr, spectirr);
+            return p;
         }
     }
 }

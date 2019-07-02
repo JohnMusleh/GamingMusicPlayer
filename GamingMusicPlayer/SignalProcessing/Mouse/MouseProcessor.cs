@@ -10,7 +10,7 @@ namespace GamingMusicPlayer.SignalProcessing.Mouse
 {
     public class MouseProcessor
     {
-        public const int SAMPLE_RATE = 20;
+        public const int SAMPLE_RATE = 20; //samples per second
         private Point currPosition;
 
         private List<short> sigDataListX;
