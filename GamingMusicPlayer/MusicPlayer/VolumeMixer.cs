@@ -76,6 +76,7 @@ namespace GamingMusicPlayer.MusicPlayer
                 {
                     lock (subscribedAppsLock)
                     {
+                        //Console.Write("IN LOCK");
                         for (int i = 0; i < subscribedApps.Count; i++)
                         {
                             if (subscribedApps[i].name.Equals(a.name))
@@ -88,8 +89,9 @@ namespace GamingMusicPlayer.MusicPlayer
                             }
                         }
                     }
-                    //Console.Write(a.name+":"+a.peak+"     ");
+                    //Console.Write("---"+a.name+":"+a.peak+"     ");
                 }
+                //Console.WriteLine("--------------");
                 Thread.Sleep(200);
                //Console.WriteLine("|");
             }
@@ -98,6 +100,7 @@ namespace GamingMusicPlayer.MusicPlayer
 
         public void updateActiveApps()
         {
+            //Console.WriteLine("updateActiveApps start:");
             MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
             MMDevice device = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Communications);
             var sessions = device.AudioSessionManager.Sessions;
@@ -110,14 +113,27 @@ namespace GamingMusicPlayer.MusicPlayer
                     try
                     {
                         var process = Process.GetProcessById((int)session.GetProcessID);
-                        activeApps.Add( new Application(process.ProcessName, (int)session.GetProcessID, session.AudioMeterInformation.MasterPeakValue) );
+                        Application na = new Application(process.ProcessName, (int)session.GetProcessID, session.AudioMeterInformation.MasterPeakValue);
+                        //if na is in active apps, only add if its a bigger value
+                        bool add = true;
+                        foreach(Application a in activeApps)
+                        {
+                            if (a.name.Equals(na.name))
+                                if (a.peak > na.peak)
+                                    add = false;
+                        }
+                        if(add)
+                            activeApps.Add(na);
+                        //Console.Write(process.ProcessName + ":" + session.AudioMeterInformation.MasterPeakValue + "     ");
                     }
                     catch (ArgumentException)
                     {
                     }
                 }
             }
-            
+
+            //Console.WriteLine("updateActiveApps END:");
+
         }
 
         public void subscribeApp(string name)
