@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
@@ -17,7 +14,8 @@ namespace GamingMusicPlayer.DebugTools
         {
             Console.WriteLine("ATTEMPTING TO CREATE MODEL");
             // STEP 1: Common data loading configuration
-            IDataView baseTrainingDataView = mlContext.Data.LoadFromTextFile<ModelDataType>("DebugTools\\learning_data.csv", hasHeader: true, separatorChar: ',');
+            Console.WriteLine(Application.StartupPath);
+            IDataView baseTrainingDataView = mlContext.Data.LoadFromTextFile<ModelDataType>(Application.StartupPath+"\\DebugTools\\learning_data.csv", hasHeader: true, separatorChar: ',');
 
             // STEP 2: Common data process configuration with pipeline data transformations
             var dataProcessPipeline = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: nameof(ModelDataType.Score))

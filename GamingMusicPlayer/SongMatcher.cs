@@ -248,46 +248,14 @@ namespace GamingMusicPlayer
             this.Show();
             MatcherVisible = true;
             setStatus("Matching Mode:" + Matching);
-            Console.WriteLine();
-            double maxBpm, maxZcr;
-            maxBpm = maxZcr = Double.MinValue;
-            if (tracks == null || lowGroup==null || medGroup ==null || highGroup==null)
-            {
-                return;
-            }
-            foreach (Track t in tracks)
-            {
-                Console.Write(t.Name+"  :");
-                Console.WriteLine(Database.DatabaseAdapter.predicts((float)t.BPM, (float)t.ZCR, (float)t.SpectralIrregularity));
-                if (t.BPM > maxBpm)
-                    maxBpm = t.BPM;
-                if (t.ZCR > maxZcr)
-                    maxZcr = t.ZCR;
-            }
-
-            Console.WriteLine("\nLOW GROUP --");
-            foreach (Track t in lowGroup)
-                Console.WriteLine(t.Name);
-            foreach (int i in lowGroupIndices)
-                Console.Write(i + "   ");
+            classifySongs();
             
-            Console.WriteLine("\n\nMED GROUP --");
-            foreach (Track t in medGroup)
-                Console.WriteLine(t.Name);
-            foreach (int i in medGroupIndices)
-                Console.Write(i + "   ");
-
-            Console.WriteLine("\n\nHIGH GROUP --");
-            foreach (Track t in highGroup)
-                Console.WriteLine(t.Name);
-            foreach (int i in highGroupIndices)
-                Console.Write(i + "   ");
-            Console.WriteLine();
         }
         public bool startMatching()
         {
             if (!Matching)
             {
+                classifySongs();
                 Matching = true;
                 match();
                 if (this.Visible)
@@ -333,7 +301,44 @@ namespace GamingMusicPlayer
         public double getMouseWeight() { return mouseWeight; }
 
         /* Private internal methods */
+        private void classifySongs()
+        {
+            Console.WriteLine("CLASSIFIYING..");
+            double maxBpm, maxZcr;
+            maxBpm = maxZcr = Double.MinValue;
+            if (tracks == null || lowGroup == null || medGroup == null || highGroup == null)
+            {
+                return;
+            }
+            foreach (Track t in tracks)
+            {
+                Console.Write(t.Name + "  :");
+                Console.WriteLine(Database.DatabaseAdapter.predicts((float)t.BPM, (float)t.ZCR, (float)t.SpectralIrregularity));
+                if (t.BPM > maxBpm)
+                    maxBpm = t.BPM;
+                if (t.ZCR > maxZcr)
+                    maxZcr = t.ZCR;
+            }
 
+            Console.WriteLine("\nLOW GROUP --");
+            foreach (Track t in lowGroup)
+                Console.WriteLine(t.Name);
+            foreach (int i in lowGroupIndices)
+                Console.Write(i + "   ");
+
+            Console.WriteLine("\n\nMED GROUP --");
+            foreach (Track t in medGroup)
+                Console.WriteLine(t.Name);
+            foreach (int i in medGroupIndices)
+                Console.Write(i + "   ");
+
+            Console.WriteLine("\n\nHIGH GROUP --");
+            foreach (Track t in highGroup)
+                Console.WriteLine(t.Name);
+            foreach (int i in highGroupIndices)
+                Console.Write(i + "   ");
+            Console.WriteLine();
+        }
         //calculate different between track values and mouse+keyboard values (bpm/zcr/spectirr)
         private double calculateDifference(Track t)
         {

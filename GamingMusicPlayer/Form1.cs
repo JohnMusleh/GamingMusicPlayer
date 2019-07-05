@@ -105,7 +105,6 @@ namespace GamingMusicPlayer
                 cmdViewDB.Hide();
             }
             onPlayingChange += playingChanged;
-
             onSongComplete += songComplete;
             AutoPick = true;
             seekLabel.Text = "";
@@ -170,6 +169,7 @@ namespace GamingMusicPlayer
                             songsToAdd.RemoveAt(0);
                             c = songsToAdd.Count;
                         }
+                        matcherForm.updateTrackList(mp.LoadedPlaylist.TrackList);
                     }
                     Thread.Sleep(1000);
                 }
@@ -447,9 +447,10 @@ namespace GamingMusicPlayer
                         dbAdapter.addTrack(t);
                     }
                     updateSettings(true);
+                    matcherForm.updateTrackList(mp.LoadedPlaylist.TrackList);
                 }
             }
-            matcherForm.updateTrackList(mp.LoadedPlaylist.TrackList);
+            
         }
 
         public void setSongMatchingMouseKeyboardWeights(double mWeight)
