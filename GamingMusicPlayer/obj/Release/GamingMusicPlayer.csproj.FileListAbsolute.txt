@@ -166,4 +166,3 @@ C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_projec
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Dynamic.xml
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Scripting.xml
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Scripting.Metadata.xml
-C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Release\GamingMusicPlayer.csprojAssemblyReference.cache
