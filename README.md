@@ -8,7 +8,7 @@ This application is for my Software Engineering B.Sc. graduation project
 
 # Download
 <!-- Place this tag where you want the button to render. -->
-<a class="github-button" href="https://github.com/alkerr/GamingMusicPlayer/archive/master.zip" data-icon="octicon-cloud-download" aria-label="Download alkerr/GamingMusicPlayer on GitHub">Download</a>
+<a class="github-button" href="https://github.com/alkerr/GamingMusicPlayer/releases/download/v1.0/GMPlayer.zip" data-icon="octicon-cloud-download" aria-label="Download alkerr/GamingMusicPlayer on GitHub">Download</a>
 
 # Requirements
 [Microsoft SQL Server Data Tools](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-2017#ssdt-for-vs-2017-standalone-installer)
