@@ -290,10 +290,14 @@ namespace GamingMusicPlayer
             {
                 Matching = true;
                 match();
-                cmdToggleMatching.Invoke(new MethodInvoker(delegate
+                if (this.Visible)
                 {
-                    cmdToggleMatching.Text = "Stop Matching";
-                }));
+                    cmdToggleMatching.Invoke(new MethodInvoker(delegate
+                    {
+                        cmdToggleMatching.Text = "Stop Matching";
+                    }));
+                }
+                playerForm.setOverlaySubLabel(prevAction+" action");
             }
             setStatus("Matching Mode:" + Matching);
             playerForm.AutoPick = false;
@@ -314,6 +318,7 @@ namespace GamingMusicPlayer
                     cmdToggleMatching.Text = "Start Matching";
                 }));
             }
+            playerForm.setOverlaySubLabel("");
             setStatus("Matching Mode:" + Matching);
             playerForm.AutoPick = true;
             return Matching;
@@ -377,10 +382,14 @@ namespace GamingMusicPlayer
                     mouseWeight = (mouseZCR / (mouseZCR + keyboardZCR));
                     keyboardWeight = 1 - mouseWeight;
                 }
-                mkWeightLabel.Invoke(new MethodInvoker(delegate
+                if (this.Visible)
                 {
-                    mkWeightLabel.Text =" Mouse ratio:" + mouseWeight;
-                }));
+                    mkWeightLabel.Invoke(new MethodInvoker(delegate
+                    {
+                        mkWeightLabel.Text = " Mouse ratio:" + mouseWeight;
+                    }));
+                }
+                
                 mouseWeight = 0.5;
                 keyboardWeight = 0.5;
                 double overallZcr = (mouseWeight * mouseZCR) + (keyboardWeight * keyboardZCR);
@@ -400,11 +409,18 @@ namespace GamingMusicPlayer
                         }
                     }
                     if (actionChanged)
-                        prevAction = "low";
-                    txtGroupLbl.Invoke(new MethodInvoker(delegate
                     {
-                        txtGroupLbl.Text = prevAction + " ACTION:" + overallZcr;
-                    }));
+                        prevAction = "low";
+                        playerForm.setOverlaySubLabel("low action");
+                    }
+                    if (this.Visible)
+                    {
+                        txtGroupLbl.Invoke(new MethodInvoker(delegate
+                        {
+                            txtGroupLbl.Text = prevAction + " ACTION:" + overallZcr;
+                        }));
+                    }
+                    
                 }
                 else if (overallZcr < 0.06)
                 {
@@ -421,11 +437,18 @@ namespace GamingMusicPlayer
                         }
                     }
                     if (actionChanged)
-                        prevAction = "medium";
-                    txtGroupLbl.Invoke(new MethodInvoker(delegate
                     {
-                        txtGroupLbl.Text = prevAction + " ACTION:" + overallZcr;
-                    }));
+                        prevAction = "medium";
+                        playerForm.setOverlaySubLabel("medium action");
+                    }
+                    if (this.Visible)
+                    {
+                        txtGroupLbl.Invoke(new MethodInvoker(delegate
+                        {
+                            txtGroupLbl.Text = prevAction + " ACTION:" + overallZcr;
+                        }));
+                    }
+                    
                 }
                 else
                 {
@@ -442,12 +465,19 @@ namespace GamingMusicPlayer
                         }
                     }
                     if (actionChanged)
-                        prevAction = "high";
-                    
-                    txtGroupLbl.Invoke(new MethodInvoker(delegate
                     {
-                        txtGroupLbl.Text = prevAction+" ACTION:" + overallZcr;
-                    }));
+                        prevAction = "high";
+                        playerForm.setOverlaySubLabel("high action");
+                    }
+
+                    if (this.Visible)
+                    {
+                        txtGroupLbl.Invoke(new MethodInvoker(delegate
+                        {
+                            txtGroupLbl.Text = prevAction + " ACTION:" + overallZcr;
+                        }));
+                    }
+                    
 
                 }
                 if (group == null)

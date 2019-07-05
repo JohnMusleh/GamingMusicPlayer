@@ -150,6 +150,19 @@ namespace GamingMusicPlayer
             
         }
 
+        public void setSubLabel(string s)
+        {
+            txtCancelLbl.Invoke((MethodInvoker)delegate ()
+            {
+                txtCancelLbl.Show();
+                txtCancelLbl.Text = s;
+                if (!s.Equals(""))
+                    txtCancelLbl.Visible = true;
+                else
+                    txtCancelLbl.Visible = false;
+            });
+        }
+
         //used to change song name
         public void setText(string txt)
         {

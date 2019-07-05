@@ -26,6 +26,8 @@ namespace GamingMusicPlayer
             vpFeatureTeamspeakCB.GotFocus += onFocus;
             vpFeatureSkypeCB.GotFocus += onFocus;
             overlayClickableCB.GotFocus += onFocus;
+            txtAboutCntxt.GotFocus += onFocus;
+            cmdClearDb.GotFocus += onFocus;
 
             gameplayTooltip = new ToolTip();
             gameplayTooltip.ToolTipIcon = ToolTipIcon.Info;
@@ -34,6 +36,10 @@ namespace GamingMusicPlayer
             gameplayTooltip.SetToolTip(gameplayTooltipLabel, "Automatic picking works by analyzing mouse and keyboard during gameplay\nUse this to let the system know whether the game you play is based on mouse, keyboard or both in order to get good results");
             gameplayTooltip.AutoPopDelay = 20000;
 
+            txtVersion.Text = "v"+Program.VERSION;
+            txtAboutCntxt.DetectUrls = true;
+            txtAboutCntxt.ReadOnly = true;
+            txtAboutCntxt.Text = "This application was developed as a Software Engineering B.Sc. graduation project at Azrieli College of Engineering\r\n\r\nFor more details visit: https://github.com/alkerr/GamingMusicPlayer";
             this.hide();
         }
 
@@ -175,6 +181,16 @@ namespace GamingMusicPlayer
             }
             Properties.Settings.Default.Save();
             mainForm.updateSettings(false);
+        }
+
+        private void txtAboutCntxt_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.LinkText);
+        }
+
+        private void cmdClearDb_Click(object sender, EventArgs e)
+        {
+            mainForm.clearDatabase();
         }
     }
 }

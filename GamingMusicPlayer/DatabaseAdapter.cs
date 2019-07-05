@@ -33,12 +33,23 @@ namespace GamingMusicPlayer.Database
             return p;
         }
 
-        
+        public void removeAllTracks()
+        {
+            string query = "DELETE FROM Song;";
+            using (SqlConnection sqlConnection = new SqlConnection(dbConnectionStr))
+            using (SqlCommand sqlCmd = new SqlCommand(query, sqlConnection))
+            {
+                sqlConnection.Open();
+                Console.WriteLine("rows affected:" + sqlCmd.ExecuteNonQuery() + "  executed query:" + sqlCmd.CommandText);
+                sqlConnection.Close();
+            }
+        }
+
 
         //only removes if the path is in the database
         public void removeTrack(string path)
         {
-            bool exsists = false;
+            bool exists = false;
             using (SqlConnection sqlConnection1 = new SqlConnection(dbConnectionStr))
             using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Song where full_path='" + path + "';", sqlConnection1))
             {
@@ -52,7 +63,7 @@ namespace GamingMusicPlayer.Database
                     string ts = (string)row[1];
                     if (ts.Equals(path))
                     {
-                        exsists = true;
+                        exists = true;
                         break;
                     }
                 }
@@ -60,7 +71,7 @@ namespace GamingMusicPlayer.Database
             }
 
 
-            if (exsists)
+            if (exists)
             {
                 string query = "DELETE FROM Song WHERE full_path='"+path+"';";
                 using (SqlConnection sqlConnection = new SqlConnection(dbConnectionStr))

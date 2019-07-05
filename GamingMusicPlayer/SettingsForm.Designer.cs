@@ -43,6 +43,11 @@
             this.gameplayTrackBar = new System.Windows.Forms.TrackBar();
             this.gameplayMouseLabel = new System.Windows.Forms.Label();
             this.gameplayKeyboardLabel = new System.Windows.Forms.Label();
+            this.txtAboutLbl = new System.Windows.Forms.Label();
+            this.txtAboutCntxt = new System.Windows.Forms.RichTextBox();
+            this.txtVersion = new System.Windows.Forms.Label();
+            this.txtDbLbl = new System.Windows.Forms.Label();
+            this.cmdClearDb = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gameplayTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
@@ -50,7 +55,7 @@
             // 
             this.overlayLabel.AutoSize = true;
             this.overlayLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.overlayLabel.Location = new System.Drawing.Point(412, 24);
+            this.overlayLabel.Location = new System.Drawing.Point(374, 24);
             this.overlayLabel.Name = "overlayLabel";
             this.overlayLabel.Size = new System.Drawing.Size(73, 20);
             this.overlayLabel.TabIndex = 0;
@@ -121,7 +126,7 @@
             // 
             // cmdToggleOverlay
             // 
-            this.cmdToggleOverlay.Location = new System.Drawing.Point(437, 47);
+            this.cmdToggleOverlay.Location = new System.Drawing.Point(399, 47);
             this.cmdToggleOverlay.Name = "cmdToggleOverlay";
             this.cmdToggleOverlay.Size = new System.Drawing.Size(75, 23);
             this.cmdToggleOverlay.TabIndex = 10;
@@ -132,7 +137,7 @@
             // overlayClickableCB
             // 
             this.overlayClickableCB.AutoSize = true;
-            this.overlayClickableCB.Location = new System.Drawing.Point(437, 83);
+            this.overlayClickableCB.Location = new System.Drawing.Point(399, 83);
             this.overlayClickableCB.Name = "overlayClickableCB";
             this.overlayClickableCB.Size = new System.Drawing.Size(194, 21);
             this.overlayClickableCB.TabIndex = 11;
@@ -201,11 +206,64 @@
             this.gameplayKeyboardLabel.Text = "keyboard";
             this.gameplayKeyboardLabel.Visible = false;
             // 
+            // txtAboutLbl
+            // 
+            this.txtAboutLbl.AutoSize = true;
+            this.txtAboutLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtAboutLbl.Location = new System.Drawing.Point(374, 247);
+            this.txtAboutLbl.Name = "txtAboutLbl";
+            this.txtAboutLbl.Size = new System.Drawing.Size(57, 20);
+            this.txtAboutLbl.TabIndex = 18;
+            this.txtAboutLbl.Text = "About";
+            // 
+            // txtAboutCntxt
+            // 
+            this.txtAboutCntxt.Location = new System.Drawing.Point(399, 303);
+            this.txtAboutCntxt.Name = "txtAboutCntxt";
+            this.txtAboutCntxt.Size = new System.Drawing.Size(319, 169);
+            this.txtAboutCntxt.TabIndex = 19;
+            this.txtAboutCntxt.Text = "";
+            this.txtAboutCntxt.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtAboutCntxt_LinkClicked);
+            // 
+            // txtVersion
+            // 
+            this.txtVersion.AutoSize = true;
+            this.txtVersion.Location = new System.Drawing.Point(396, 274);
+            this.txtVersion.Name = "txtVersion";
+            this.txtVersion.Size = new System.Drawing.Size(69, 17);
+            this.txtVersion.TabIndex = 20;
+            this.txtVersion.Text = "VERSION";
+            // 
+            // txtDbLbl
+            // 
+            this.txtDbLbl.AutoSize = true;
+            this.txtDbLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDbLbl.Location = new System.Drawing.Point(4, 362);
+            this.txtDbLbl.Name = "txtDbLbl";
+            this.txtDbLbl.Size = new System.Drawing.Size(89, 20);
+            this.txtDbLbl.TabIndex = 21;
+            this.txtDbLbl.Text = "Database";
+            // 
+            // cmdClearDb
+            // 
+            this.cmdClearDb.Location = new System.Drawing.Point(65, 385);
+            this.cmdClearDb.Name = "cmdClearDb";
+            this.cmdClearDb.Size = new System.Drawing.Size(99, 36);
+            this.cmdClearDb.TabIndex = 22;
+            this.cmdClearDb.Text = "Clear Data";
+            this.cmdClearDb.UseVisualStyleBackColor = true;
+            this.cmdClearDb.Click += new System.EventHandler(this.cmdClearDb_Click);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(793, 544);
+            this.Controls.Add(this.cmdClearDb);
+            this.Controls.Add(this.txtDbLbl);
+            this.Controls.Add(this.txtVersion);
+            this.Controls.Add(this.txtAboutCntxt);
+            this.Controls.Add(this.txtAboutLbl);
             this.Controls.Add(this.gameplayKeyboardLabel);
             this.Controls.Add(this.gameplayMouseLabel);
             this.Controls.Add(this.gameplayTrackBar);
@@ -246,5 +304,10 @@
         private System.Windows.Forms.TrackBar gameplayTrackBar;
         private System.Windows.Forms.Label gameplayMouseLabel;
         private System.Windows.Forms.Label gameplayKeyboardLabel;
+        private System.Windows.Forms.Label txtAboutLbl;
+        private System.Windows.Forms.RichTextBox txtAboutCntxt;
+        private System.Windows.Forms.Label txtVersion;
+        private System.Windows.Forms.Label txtDbLbl;
+        private System.Windows.Forms.Button cmdClearDb;
     }
 }

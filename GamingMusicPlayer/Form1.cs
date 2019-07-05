@@ -459,6 +459,16 @@ namespace GamingMusicPlayer
 
         public double getSongMatchingMouseWeight() { return matcherForm.getMouseWeight(); }
         
+        public void setOverlaySubLabel(string s)
+        {
+            overlayForm.setSubLabel(s);
+        }
+
+        public void clearDatabase()
+        {
+            dbAdapter.removeAllTracks();
+            updateSettings(true);
+        }
         
         /* Private internal methods */
         private void trackMouseOnMusicTBar()
@@ -924,7 +934,7 @@ namespace GamingMusicPlayer
             }
 
             int selectedIndex = Properties.Settings.Default.selectedTrackIndex;
-            if (selectedIndex < mp.LoadedPlaylist.Count)
+            if (selectedIndex < mp.LoadedPlaylist.Count && selectedIndex<nameListBox.Items.Count)
             {
                 nameListBox.SelectedIndex = selectedIndex;
                 musicTrackBar.Value = Properties.Settings.Default.musicTrackBarValue;

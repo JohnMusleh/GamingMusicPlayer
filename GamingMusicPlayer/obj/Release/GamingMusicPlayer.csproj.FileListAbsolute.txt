@@ -152,3 +152,17 @@ C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_projec
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Release\GamingMusicPlayer.csproj.CopyComplete
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Release\GamingMusicPlayer.exe
 C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\obj\Release\GamingMusicPlayer.pdb
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\IronPython.dll
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\IronPython.Modules.dll
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\IronPython.SQLite.dll
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\IronPython.Wpf.dll
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Dynamic.dll
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Scripting.dll
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Scripting.Metadata.dll
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\IronPython.xml
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\IronPython.Modules.xml
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\IronPython.SQLite.xml
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\IronPython.Wpf.xml
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Dynamic.xml
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Scripting.xml
+C:\Users\John\Desktop\Education\Software Engineering B.Sc\uni\year_4\grad_project\code\GamingMusicPlayer\GamingMusicPlayer\bin\Release\Microsoft.Scripting.Metadata.xml
