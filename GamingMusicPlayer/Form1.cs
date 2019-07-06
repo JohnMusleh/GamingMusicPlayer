@@ -225,6 +225,7 @@ namespace GamingMusicPlayer
                 if (Properties.Settings.Default.songMatchOn)
                 {
                     cmdSongMatchToggle.Image = Properties.Resources.songmatch_on;
+                    matcherForm.updateTrackList(mp.LoadedPlaylist.TrackList);
                     matcherForm.startMatching();
                 }
                 else
@@ -1098,6 +1099,7 @@ namespace GamingMusicPlayer
             {
                 Properties.Settings.Default.songMatchOn = true;
                 cmdSongMatchToggle.Image = Properties.Resources.songmatch_on;
+                matcherForm.updateTrackList(mp.LoadedPlaylist.TrackList);
                 matcherForm.startMatching();
             }
             Properties.Settings.Default.Save();
